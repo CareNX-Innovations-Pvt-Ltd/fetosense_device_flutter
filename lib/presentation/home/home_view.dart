@@ -1,0 +1,268 @@
+import 'package:fetosense_device_flutter/core/app_routes.dart';
+import 'package:fetosense_device_flutter/core/color_manager.dart';
+import 'package:fetosense_device_flutter/core/dependency_injection.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ServiceLocator.bluetoothServiceHelper.disconnect();
+    ServiceLocator.bluetoothServiceHelper.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: ColorManager.white,
+        appBar: AppBar(
+          title: const Text('Fetosense'),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.notifications),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.settings),
+            ),
+            PopupMenuButton<String>(
+              color: ColorManager.white,
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (kDebugMode) {
+                  print("Selected: $value");
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: "Option 1",
+                  child: Text("About"),
+                ),
+                const PopupMenuItem(
+                  value: "Option 2",
+                  child: Text("AMC Details"),
+                ),
+                const PopupMenuItem(
+                  value: "Option 3",
+                  child: Text("Acoustic Stimulator"),
+                ),
+                const PopupMenuItem(
+                  value: "Option 3",
+                  child: Text("Sign Out"),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: Center(
+          child: SizedBox(
+            width: 500,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: textEditingController,
+                  decoration: InputDecoration(
+                    hintText: "Search for mother's name",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: const BorderSide(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            context.pushNamed(AppRoutes.dopplerConnectionView);
+                          },
+                        text: 'START INSTANT TEST ',
+                        style: const TextStyle(
+                          color: ColorManager.primaryButtonColor,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const WidgetSpan(
+                        child: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: ColorManager.primaryButtonColor,
+                          size: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            context.pushNamed(AppRoutes.registerMother);
+                          },
+                        text: 'CLICK HERE TO REGISTER NEW MOTHER ',
+                        style: const TextStyle(
+                          color: ColorManager.primaryButtonColor,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const WidgetSpan(
+                        child: Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: ColorManager.primaryButtonColor,
+                          size: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 20,
+                width: 20,
+                child: Image.asset('assets/whatsapp.PNG'),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              RichText(
+                textAlign: TextAlign.center,
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'For queries chat with us on ',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: ColorManager.primaryButtonColor,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '+91 9326775598',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        // decoration: TextDecoration.underline,
+                        fontSize: 14,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' you can even give us a call.',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: ColorManager.primaryButtonColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  OverlayEntry? _overlayEntry;
+
+  void _toggleMenu(BuildContext context, GlobalKey key) {
+    if (_overlayEntry == null) {
+      _overlayEntry = _createOverlayEntry(context, key);
+      Overlay.of(context).insert(_overlayEntry!);
+    } else {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+  }
+
+  OverlayEntry _createOverlayEntry(BuildContext context, GlobalKey key) {
+    RenderBox renderBox = key.currentContext!.findRenderObject() as RenderBox;
+    Offset position = renderBox.localToGlobal(Offset.zero);
+
+    return OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                _toggleMenu(context, key);
+              },
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+          ),
+          Positioned(
+            top: position.dy + renderBox.size.height,
+            right: 16,
+            child: Material(
+              elevation: 4.0,
+              borderRadius: BorderRadius.circular(8.0),
+              child: Container(
+                width: 150,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      title: const Text("Option 1"),
+                      onTap: () {},
+                    ),
+                    ListTile(
+                      title: const Text("Option 2"),
+                      onTap: () {},
+                    ),
+                    ListTile(
+                      title: const Text("Option 3"),
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

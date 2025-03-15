@@ -1,0 +1,6 @@
+# ninja log v5
+0	116	1741853452087207189	CMakeFiles/adpcm.dir/adpcm.cpp.o	5b2e0e2491e6e562
+116	154	1741853452125567064	/Users/pranavpatel/fetosense_device_flutter/build/app/intermediates/cxx/Debug/1u614351/obj/x86/libadpcm.so	80ef1389605172a4
+0	67	1741860866727303403	/Users/pranavpatel/fetosense_device_flutter/build/app/intermediates/cxx/Debug/1u614351/obj/x86/libadpcm.so	80ef1389605172a4
+3	150	1741866831818689387	/Users/pranavpatel/fetosense_device_flutter/build/app/intermediates/cxx/Debug/1u614351/obj/x86/libadpcm.so	80ef1389605172a4
+2	58	1742020946937410383	/Users/pranavpatel/fetosense_device_flutter/build/app/intermediates/cxx/Debug/1u614351/obj/x86/libadpcm.so	80ef1389605172a4
