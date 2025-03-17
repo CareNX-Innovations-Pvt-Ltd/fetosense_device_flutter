@@ -18,7 +18,8 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
 
   final BluetoothSerialService _bluetoothService = ServiceLocator.bluetoothServiceHelper;
 
-  List<BluetoothDevice> _pairedDevices = [];
+  //List<BluetoothDevice> _pairedDevices = [];
+  late BluetoothDevice _device;
 
   void _initializeBluetooth() async {
     // Enable Bluetooth
@@ -28,13 +29,21 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
           const SnackBar(content: Text('Bluetooth could not be enabled')));
       return;
     }
+    debugPrint("_initializeBluetooth--->> $bluetoothEnabled");
 
     List<BluetoothDevice> devices = await _bluetoothService.getPairedDevices();
-    setState(() {
-      _pairedDevices = devices;
-    });
-    print("devices--->> ${_pairedDevices[0].name}");
-    _connectToDevice(_pairedDevices[0]);
+    debugPrint("device--->> ${devices.toList()}");
+    for (var device in devices) {
+      debugPrint("device--->> ${device.name}");
+      if((device.name?.toUpperCase().contains("EFM"))??false){
+        setState(() {
+          _device = device;
+        });
+        _connectToDevice(device);
+      }
+    }
+    //print("devices--->> ${_pairedDevices[0].name}");
+    //_connectToDevice(_pairedDevices[0]);
   }
 
   // Method to connect to a specific device

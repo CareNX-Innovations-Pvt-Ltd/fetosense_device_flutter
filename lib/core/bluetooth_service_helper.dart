@@ -112,13 +112,8 @@ class BluetoothSerialService {
 
     switch (data.dataType) {
       case 1:
-        Int16List value = Int16List(200);
-        ADPCM().decodeAdpcm(value, 0, data.mValue, 3, 100, data.mValue[104],
-            data.mValue[105], data.mValue[106]);
-        decodeData(value);
-        // if (mLMTPDecoderListener != null) {
-        //   mLMTPDecoderListener.fhrAudioChanged(value);
-        // }
+        decodeData(ADPCM().decodeAdpcm(data));
+        //decodeData(data.mValue.sublist(3, 103));
         break;
 
       case 2:
@@ -234,10 +229,10 @@ class BluetoothSerialService {
     // myAudioTrack16Bit.prepareAudioTrack();
     int len = decodeValue.length;
     if (myAudioTrack16Bit.initialized) {
-      myAudioTrack16Bit.writeAudioTrack(decodeValue, 0, 200, false);
+      myAudioTrack16Bit.playPCM(decodeValue);
     }
-    if (len == 400) {
+    /*if (len == 400) {
       myAudioTrack16Bit.writeAudioTrack(decodeValue, 200, 200, false);
-    }
+    }*/
   }
 }

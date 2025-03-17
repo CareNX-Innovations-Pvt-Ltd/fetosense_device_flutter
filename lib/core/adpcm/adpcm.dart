@@ -2,7 +2,9 @@ import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:io';
 
+import 'package:fetosense_device_flutter/core/fhr_byte_data_buffer.dart';
 import 'package:ffi/ffi.dart';
+import 'package:flutter/material.dart';
 
 /// Native function type definitions
 typedef DecodeAdpcmNative = Int32 Function(
@@ -72,26 +74,22 @@ class ADPCM {
   }
 
   /// Decode ADPCM data
-  List<int> decodeAdpcm(
-      Int16List output,
-      int var1,
-      Uint8List input,
-      int var3,
-      int var4,
-      int var5,
-      int var6,
-      int var7) {
-    final outputPtr = calloc<Int16>(output.length);
-    final inputPtr = calloc<Uint8>(input.length);
+  List<int> decodeAdpcm(BluetoothData data) {
+    final outputPtr = calloc<Int16>(200);
+    final inputPtr = calloc<Uint8>(data.mValue.length);
 
-    for (int i = 0; i < input.length; i++) {
-      inputPtr[i] = input[i];
-    }
+    Uint8List inputBytes = inputPtr.asTypedList(data.mValue.length);
+    inputBytes.setAll(0, data.mValue);  // Copy data correctly
 
-    _decodeAdpcm(
-        outputPtr, var1, inputPtr, var3, var4, var5, var6, var7);
+    debugPrint("Input length: ${inputBytes.length}");
+    debugPrint("Output buffer allocated: ${outputPtr.value.bitLength}");
+    debugPrint("Sample rate: 100");
+    debugPrint("Params: ${inputBytes[104]}, ${inputBytes[105]}, ${inputBytes[106]}");
 
-    final result = List<int>.generate(output.length, (i) => outputPtr[i]);
+    _decodeAdpcm(outputPtr, 0, inputPtr, 3, 100, inputBytes[104], inputBytes[105], inputBytes[106]);
+
+    final result = outputPtr.asTypedList(200);
+    debugPrint("Output result : ${result.length}");
 
     calloc.free(outputPtr);
     calloc.free(inputPtr);
