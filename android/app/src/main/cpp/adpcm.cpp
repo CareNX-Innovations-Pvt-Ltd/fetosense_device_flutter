@@ -26,45 +26,163 @@ public:
     #include <algorithm>
 #include <stdint.h>
 
-static void decodeAdpcm(int16_t* out, int outOffset, const uint8_t* in, int inOffset,
-                        int len, int16_t predSample, uint8_t index, uint8_t flag) {
-    int step, idx;
+    static void decodeAdpcm(int16_t* out, int outOffset, const uint8_t* in, int inOffset,
+                            int len, int16_t predSample, uint8_t index, uint8_t flag) {
+        int step, idx;
 
-    idx = index;
+        idx = index;
 
-    for (int i = 0; i < len; i++) {
-        uint8_t inputByte = in[i + inOffset];
+        for (int i = 0; i < len; i++) {
+            uint8_t inputByte = in[i + inOffset];
 
-        for (int j = 0; j < 2; j++) {
-            uint8_t code = (j == 0) ? ((inputByte >> 0) & 0x0F) : ((inputByte >> 4) & 0x0F);
+            for (int j = 0; j < 2; j++) {
+                uint8_t code = (j == 0) ? ((inputByte >> 0) & 0x0F) : ((inputByte >> 4) & 0x0F);
 
-            step = stepSizeTable[idx];
+                step = stepSizeTable[idx];
 
-            // Inverse quantize the ADPCM code
-            int diff = (step >> 3);
-            if ((code & 4) != 0) diff += step;
-            if ((code & 2) != 0) diff += step >> 1;
-            if ((code & 1) != 0) diff += step >> 2;
+                // Inverse quantize the ADPCM code
+                int diff = (step >> 3);
+                if ((code & 4) != 0) diff += step;
+                if ((code & 2) != 0) diff += step >> 1;
+                if ((code & 1) != 0) diff += step >> 2;
 
-            // Add or subtract from the predicted sample
-            if (code & 8) {
-                predSample -= diff;
-            } else {
-                predSample += diff;
+                // Add or subtract from the predicted sample
+                if (code & 8) {
+                    predSample -= diff;
+                } else {
+                    predSample += diff;
+                }
+
+                // Clamp predicted sample to 16-bit range
+                predSample = std::max<int16_t>(-32768, std::min<int16_t>(32767, predSample));
+
+                // Update step size index
+                idx = std::max(0, std::min(88, idx + indexTable[code]));
+                out[outOffset++] = predSample;
             }
-
-            // Clamp predicted sample to 16-bit range
-            predSample = std::max<int16_t>(-32768, std::min<int16_t>(32767, predSample));
-
-            // Update step size index
-            idx = std::max(0, std::min(88, idx + indexTable[code]));
-            out[outOffset++] = predSample;
         }
     }
+
+  static int decodeAdpcmFromBuffer2(int16_t* outputBuffer, int outputOffset,
+                            const uint8_t* inputBuffer, int inputOffset,
+                            uint inputLength, uint8_t initialIndex,
+                            uint8_t initialPredSampleLowByte, uint8_t initialPredSampleHighByte) {
+
+    uint currentIndex = std::min(88u, static_cast<uint>(initialIndex));
+    int predictedSample = (initialPredSampleHighByte << 8) | initialPredSampleLowByte;
+    int currentStepSize = stepSizeTable[currentIndex];
+
+    for (uint inputIndex = 0; inputIndex < inputLength; ++inputIndex) {
+        uint8_t inputByte = inputBuffer[inputOffset + inputIndex];
+
+        for (int nibbleIndex = 0; nibbleIndex < 2; ++nibbleIndex) {
+            uint currentNibble = (nibbleIndex == 0) ? (inputByte >> 4) : (inputByte & 0xF);
+
+            // Manual clamp implementation
+            currentIndex = std::min(88, std::max(0, (int)(currentIndex + indexTable[currentNibble])));
+            currentStepSize = stepSizeTable[currentIndex];
+
+            int diff = currentStepSize >> 3;
+            if (currentNibble & 4) diff += currentStepSize;
+            if (currentNibble & 2) diff += currentStepSize >> 1;
+            if (currentNibble & 1) diff += currentStepSize >> 2;
+
+            predictedSample += (currentNibble & 8) ? -diff : diff;
+            predictedSample = std::min(32767, std::max(-32768, predictedSample));
+
+            outputBuffer[outputOffset++] = predictedSample;
+        }
+    }
+    return inputLength * 2;
 }
 
+    static int decodeAdpcmFromBuffer(int16_t* outputBuffer, int outputOffset, const uint8_t* inputBuffer, int inputOffset,
+                                uint inputLength, uint8_t initialIndex, uint8_t initialPredSampleLowByte, uint8_t initialPredSampleHighByte) {
 
-    
+    bool secondNibble;
+    int currentStepSize;
+    int predictedSample;
+    uint currentIndex;
+    uint currentNibble;
+    uint tempPredictedSample;
+    uint tempIndex;
+    int16_t decodedSample;
+    int outputIndex;
+
+    // Initialize current index and predicted sample
+    currentIndex = (uint)initialIndex;
+    if (0x33 < currentIndex) {
+        currentIndex = 0x34;
+    }
+    predictedSample = (uint)initialPredSampleLowByte + (uint)initialPredSampleHighByte * 0x100;
+    currentStepSize = *(int *)(stepSizeTable + currentIndex * 4);
+
+    // Loop over input length
+    for (outputIndex = 0; outputIndex < (int)inputLength; outputIndex = outputIndex + 1) {
+        uint8_t inputByte = *(uint8_t *)(inputBuffer + inputOffset + outputIndex);
+        secondNibble = false;
+        currentNibble = (int)inputByte >> 4;
+        int16_t* outputSamplePtr = (int16_t *)(outputBuffer + (outputOffset + outputIndex * 2));
+
+        while (true) {
+            // Update current index
+            currentIndex = currentIndex + *(int *)(indexTable + currentNibble * 4);
+            if ((int)currentIndex < 0) {
+                currentIndex = 0;
+            } else if (0x33 < (int)currentIndex) {
+                currentIndex = 0x34;
+            }
+
+            // Calculate diff
+            int diff = currentStepSize >> 3;
+            if ((currentNibble & 4) != 0) {
+                diff = diff + currentStepSize;
+            }
+            if ((currentNibble & 2) != 0) {
+                diff = diff + (currentStepSize >> 1);
+            }
+            if ((int)(currentNibble << 0x1f) < 0) {
+                diff = diff + (currentStepSize >> 2);
+            }
+
+            // Update predicted sample
+            if ((currentNibble & 8) == 0) {
+                predictedSample = predictedSample + diff;
+                if (0x3fe < (int)predictedSample) {
+                    predictedSample = 0x3ff;
+                }
+            } else {
+                predictedSample = predictedSample - diff & ~((int)(predictedSample - diff) >> 0x1f);
+            }
+
+            // Update current step size
+            currentStepSize = *(int *)(stepSizeTable + currentIndex * 4);
+
+            // Calculate decoded sample
+            int tempDecodedSample = (predictedSample - 0x200) * 0x80;
+            if (tempDecodedSample < 0x8000) {
+                if (tempDecodedSample < -0x7fff) {
+                    tempDecodedSample = -0x7fff;
+                }
+                decodedSample = (int16_t)tempDecodedSample;
+            } else {
+                decodedSample = 0x7fff;
+            }
+
+            // Store decoded sample
+            *outputSamplePtr = decodedSample;
+
+            // Process second nibble
+            if (secondNibble) break;
+            secondNibble = true;
+            currentNibble = inputByte & 0xf;
+            outputSamplePtr = outputSamplePtr + 1;
+        }
+    }
+
+    // Return the number of decoded samples
+    return (inputLength & ~((int)inputLength >> 0x1f)) << 1;
+}       
     /* static void decodeAdpcm(int16_t* out, int outOffset, const uint8_t* in, int inOffset,
                                 int len, int16_t predsample, uint8_t index, uint8_t flag) {
         int step, predSample, idx;
@@ -250,8 +368,9 @@ const int8_t ADPCM::indexTable[16] = {
 extern "C" {
     void decode_adpcm(int16_t* out, int outOffset, const uint8_t* in, int inOffset,
                     int len, int16_t predsample, uint8_t index, uint8_t flag) {
-        ADPCM::decodeAdpcm(out, outOffset, in, inOffset, len, predsample, index, flag);
+        ADPCM::decodeAdpcmFromBuffer2(out, outOffset, in, inOffset, len, predsample, index, flag);
     }
+
 
     void decode_adpcm_for_10_or_12_bit_and_100ms(int16_t* out, int outOffset, const uint8_t* in,
                                                 int inOffset, int len, int16_t predsample,

@@ -35,7 +35,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
     debugPrint("device--->> ${devices.toList()}");
     for (var device in devices) {
       debugPrint("device--->> ${device.name}");
-      if((device.name?.toUpperCase().contains("EFM"))??false){
+      if((device.name?.toUpperCase().contains("EFM602023030657"))??false){
         setState(() {
           _device = device;
         });
@@ -56,6 +56,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
         ),
       );
     } else {
+      debugPrint("Failed to connect to  ${device.name}");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to connect to ${device.name}'),
@@ -109,82 +110,83 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
                       ],
                     ),
                     const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 30),
-                      width: 800,
-                      height: 400,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: ColorManager.white,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(38.0),
-                                child: SizedBox(
-                                  height: 600,
-                                  child: Image.asset('assets/ic_probe.png'),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Text(
-                                            '1. Turn on the doppler.',
-                                            style: TextStyle(
-                                              fontSize: 22,
-                                            ),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Text(
-                                            '2. Make sure the battery is charged.',
-                                            style: TextStyle(
-                                              fontSize: 22,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 30),
+                        width: 800,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: ColorManager.white,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(38.0),
+                                  child: SizedBox(
+                                    height: 600,
+                                    child: Image.asset('assets/ic_probe.png'),
                                   ),
-                                  Row(
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // _bluetoothService.dispose();
-                                          _initializeBluetooth();
-                                        },
-                                        style: const ButtonStyle(
-                                          backgroundColor:
-                                              WidgetStatePropertyAll<Color>(
-                                            ColorManager.primaryButtonColor,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Row(
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Text(
+                                              '1. Turn on the doppler.',
+                                              style: TextStyle(
+                                                fontSize: 22,
+                                              ),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                              '2. Make sure the battery is charged.',
+                                              style: TextStyle(
+                                                fontSize: 22,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            // _bluetoothService.dispose();
+                                            _initializeBluetooth();
+                                          },
+                                          style: const ButtonStyle(
+                                            backgroundColor:
+                                                WidgetStatePropertyAll<Color>(
+                                              ColorManager.primaryButtonColor,
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'RETRY',
+                                            style: TextStyle(
+                                                color: ColorManager.white),
                                           ),
                                         ),
-                                        child: const Text(
-                                          'RETRY',
-                                          style: TextStyle(
-                                              color: ColorManager.white),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ],
+                                      ],
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
