@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'package:fetosense_device_flutter/core/adpcm/adpcm.dart';
 import 'package:fetosense_device_flutter/core/audio.dart';
-import 'package:fetosense_device_flutter/core/dependency_injection.dart';
 import 'package:fetosense_device_flutter/core/fhr_byte_data_buffer.dart';
-import 'package:fetosense_device_flutter/data/models.dart';
+import 'package:fetosense_device_flutter/data/models/my_fhr_data.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:typed_data';
 
 class BluetoothSerialService {
   static final BluetoothSerialService _instance =
-      BluetoothSerialService._internal();
+  BluetoothSerialService._internal();
 
   factory BluetoothSerialService() => _instance;
 
@@ -17,9 +16,14 @@ class BluetoothSerialService {
 
   BluetoothConnection? _connection;
   final FhrByteDataBuffer _buffer = FhrByteDataBuffer();
-  Function(BluetoothData)? onDataReceived; // Callback to send data to BLoC
-  final MyAudioTrack16Bit myAudioTrack16Bit = ServiceLocator.myAudioTrack;
+  Function(BluetoothData)? onDataReceived;
+  final MyAudioTrack16Bit myAudioTrack16Bit = MyAudioTrack16Bit();
 
+  final StreamController<MyFhrData> _dataStreamController = StreamController<MyFhrData>.broadcast();
+
+  MyFhrData? lastFhr;
+
+  Stream<MyFhrData> get dataStream => _dataStreamController.stream;
 
   Future<List<BluetoothDevice>> getPairedDevices() async {
     try {
@@ -43,8 +47,11 @@ class BluetoothSerialService {
       });
       Timer.periodic(
         const Duration(milliseconds: 10),
-        (timer) {
+            (timer) {
           _settingBuffer();
+          if(timer.tick%100 == 0 && lastFhr!=null){
+            _dataStreamController.add(lastFhr!);
+          }
         },
       );
       return true;
@@ -65,21 +72,18 @@ class BluetoothSerialService {
   void _settingBuffer() {
     if (_buffer.canRead()) {
       BluetoothData? parsedData = _buffer.getBag();
-
-      // print("Parsed Data: ${parsedData}");
-
-      if (parsedData != null && onDataReceived != null) {
-        // print("Sending parsed data to BLoC...");
-        onDataReceived!(parsedData);
-        dataAnalyze(parsedData);
+      if (parsedData != null ) {
+        // onDataReceived!(parsedData);
+        final last = dataAnalyze(parsedData);
+        if(last!=null && last is MyFhrData){
+          // print("parsed data = ${lastFhr.toString()} : last $last");
+          lastFhr = last;
+        }
       } else {
         print("Parsed data is NULL. Possible issue in getBag()");
       }
-    } else {
-      // print("Buffer cannot be read yet. Waiting for more data...");
     }
   }
-
 
   Future<void> disconnect() async {
     if (_connection != null) {
@@ -106,8 +110,7 @@ class BluetoothSerialService {
     disconnect();
   }
 
-  void dataAnalyze(BluetoothData data) {
-    List<int>? value;
+  dynamic dataAnalyze(BluetoothData data) {
     MyFhrData? fhr;
 
     switch (data.dataType) {
@@ -129,23 +132,7 @@ class BluetoothSerialService {
         fhr.isHaveFhr2 = ((data.mValue[8] & 32) != 0 ? 1 : 0);
         fhr.isHaveToco = ((data.mValue[8] & 64) != 0 ? 1 : 0);
         fhr.isHaveAfm = ((data.mValue[8] & 128) != 0 ? 1 : 0);
-        //
-        // if (getFM()) {
-        //   fhr.fmFlag = 1;
-        // }
-        //
-        // if (getToco()) {
-        //   fhr.tocoFlag = 1;
-        // }
-        //
-        // if (getDocMark()) {
-        //   fhr.docFlag = 1;
-        // }
-
-        // if (mLMTPDecoderListener != null) {
-        //   mLMTPDecoderListener.fhrDataChanged(fhr);
-        // }
-        break;
+        return fhr;
 
       case 3:
         int checkSum = 0;
@@ -182,6 +169,8 @@ class BluetoothSerialService {
           fhr.isHaveToco = ((data.mValue[10] & 64) != 0 ? 1 : 0);
           fhr.isHaveAfm = ((data.mValue[10] & 128) != 0 ? 1 : 0);
 
+          _dataStreamController.add(fhr);
+
           // if (getFM()) {
           //   fhr.fmFlag = 1;
           // }
@@ -212,12 +201,13 @@ class BluetoothSerialService {
         break;
 
       case 5:
-        // clearStartOrStopCmd();
-        // needLoopTranslate = true;
-        // monCount = 0;
+      // clearStartOrStopCmd();
+      // needLoopTranslate = true;
+      // monCount = 0;
         break;
 
       case 6:
+        print("case 6");
         // clearStartOrStopCmd();
         // needLoopTranslate = false;
         // monCount = 0;

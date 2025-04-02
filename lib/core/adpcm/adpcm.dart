@@ -81,15 +81,15 @@ class ADPCM {
     Uint8List inputBytes = inputPtr.asTypedList(data.mValue.length);
     inputBytes.setAll(0, data.mValue);  // Copy data correctly
 
-    debugPrint("Input length: ${inputBytes.length}");
-    debugPrint("Output buffer allocated: ${outputPtr.value.bitLength}");
-    debugPrint("Sample rate: 100");
-    debugPrint("Params: ${inputBytes[104]}, ${inputBytes[105]}, ${inputBytes[106]}");
+    // debugPrint("Input length: ${inputBytes.length}");
+    // debugPrint("Output buffer allocated: ${outputPtr.value.bitLength}");
+    // debugPrint("Sample rate: 100");
+    // debugPrint("Params: ${inputBytes[104]}, ${inputBytes[105]}, ${inputBytes[106]}");
 
     _decodeAdpcm(outputPtr, 0, inputPtr, 3, 100, inputBytes[104], inputBytes[105], inputBytes[106]);
 
     final result = outputPtr.asTypedList(200);
-    debugPrint("Output result : ${result.length}");
+    // debugPrint("Output result : ${result.length}");
 
     calloc.free(outputPtr);
     calloc.free(inputPtr);

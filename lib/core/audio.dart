@@ -1,7 +1,4 @@
-import 'dart:math';
-import 'dart:typed_data';
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
-//import 'package:flutter_sound/flutter_sound.dart';
 
 class MyAudioTrack16Bit {
   static final MyAudioTrack16Bit _instance = MyAudioTrack16Bit._internal();
@@ -57,7 +54,7 @@ class MyAudioTrack16Bit {
     if (!initialized) {
       print("audio is playing? $pcmData");
     } else {
-      print("is initialised? $initialized");
+      // print("is initialised? $initialized");
     }
 
     // Write PCM data to the stream
