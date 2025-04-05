@@ -1,10 +1,21 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
+import 'package:fetosense_device_flutter/core/app_routes.dart';
 import 'package:fetosense_device_flutter/core/color_manager.dart';
+import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
+import 'package:fetosense_device_flutter/core/dependency_injection.dart';
+import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
+import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/date_picker_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class RegisterMotherView extends StatefulWidget {
-  const RegisterMotherView({super.key});
+  final Test? test;
+  final String? previousRoute;
+
+  const RegisterMotherView({super.key, this.test, this.previousRoute});
 
   @override
   State<RegisterMotherView> createState() => _RegisterMotherViewState();
@@ -15,6 +26,59 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController lmpDateController = TextEditingController();
+  Test? test;
+  String? route;
+  DateTime? pickedDate;
+  AppwriteService client = ServiceLocator.appwriteService;
+
+  @override
+  void initState() {
+    super.initState();
+    test = widget.test;
+    route = widget.previousRoute;
+  }
+
+  int getGestationalAgeWeeks(DateTime lastMenstrualPeriod) {
+    DateTime today = DateTime.now();
+    return (today.difference(lastMenstrualPeriod).inDays / 7).floor();
+  }
+
+  saveTest() async {
+    Databases databases = Databases(client.client);
+    try {
+      Document result = await databases.createDocument(
+        databaseId: AppConstants.appwriteDatabaseId,
+        collectionId: AppConstants.testCollectionId,
+        documentId: ID.unique(),
+        data: test!.toJson(),
+      );
+      if (result.data.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Test saved'),
+          ),
+        );
+      }
+    } catch (e, s) {
+      if (kDebugMode) {
+        print(e);
+        print(s);
+      }
+    }
+  }
+
+
+  navigate() {
+    test!.motherName = nameController.text;
+    test!.age = int.parse(ageController.text);
+    test!.gAge = getGestationalAgeWeeks(pickedDate!);
+    if (route == AppConstants.instantTest) {
+      context.pushReplacement(AppRoutes.detailsView, extra: test);
+    } else {
+      context.pushReplacement(AppRoutes.dopplerConnectionView,
+          extra: {'test': test, 'route': AppConstants.registeredMother});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,74 +95,80 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
           ),
         ),
         body: Center(
-          child: SizedBox(
-            width: 500,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    hintText: "Name",
+          child: SingleChildScrollView(
+            child: SizedBox(
+              width: 500,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      hintText: "Name",
+                    ),
+                    keyboardType: TextInputType.name,
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: phoneNumberController,
-                  decoration: const InputDecoration(
-                    hintText: "Phone Number",
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: ageController,
-                  decoration: const InputDecoration(
-                    hintText: "Age",
+                  TextField(
+                    controller: phoneNumberController,
+                    decoration: const InputDecoration(
+                      hintText: "Phone Number",
+                      counterText: ''
+                    ),
+                    maxLength: 10,
+                    keyboardType: TextInputType.phone,
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                // TextField(
-                //   controller: lmpDateController,
-                //   decoration: const InputDecoration(
-                //     hintText: "LMP Date",
-                //   ),
-                // ),
-                DatePickerTextField(
-                  controller: lmpDateController,
-                  label: "LMP Date",
-                  onDateSelected: (DateTime date) {
-                    print(date);
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  height: 60,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: const ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll<Color>(
-                        ColorManager.primaryButtonColor,
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: ageController,
+                    decoration: const InputDecoration(
+                      hintText: "Age",
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  DatePickerTextField(
+                    controller: lmpDateController,
+                    label: "LMP Date",
+                    onDateSelected: (DateTime date) {
+                      if (kDebugMode) {
+                        print(date);
+                        pickedDate = date;
+                      }
+                    },
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    height: 60,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: const ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll<Color>(
+                          ColorManager.primaryButtonColor,
+                        ),
+                      ),
+                      onPressed: () {
+                        navigate();
+                      },
+                      child: const Text(
+                        'Register Mother',
+                        style: TextStyle(color: ColorManager.white),
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      'Register Mother',
-                      style: TextStyle(color: ColorManager.white),
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

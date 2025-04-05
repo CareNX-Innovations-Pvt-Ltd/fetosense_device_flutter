@@ -52,7 +52,7 @@ class FhrByteDataBuffer {
             _advanceBuffer(3);
         }
 
-        print("Packet successfully extracted: Type = ${data.dataType}");
+        // print("Packet successfully extracted: Type = ${data.dataType}");
         return data;
       } else {
         print("Invalid packet start sequence. Advancing buffer...");

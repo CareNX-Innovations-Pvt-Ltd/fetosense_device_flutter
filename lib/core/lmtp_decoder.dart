@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fetosense_device_flutter/core/fhr_byte_data_buffer.dart';
-import 'package:fetosense_device_flutter/data/models.dart';
+import 'package:fetosense_device_flutter/data/my_fhr_data.dart';
 
 class LMTPDecoder {
   // Data streams for processing

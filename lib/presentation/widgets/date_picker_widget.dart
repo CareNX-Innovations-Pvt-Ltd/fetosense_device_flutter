@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DatePickerTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -23,12 +24,12 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
 
     if (picked != null) {
       setState(() {
-        widget.controller.text = "${picked.day}/${picked.month}/${picked.year}";
+        widget.controller.text = DateFormat('dd-MM-yyyy').format(picked);
       });
 
       if (widget.onDateSelected != null) {

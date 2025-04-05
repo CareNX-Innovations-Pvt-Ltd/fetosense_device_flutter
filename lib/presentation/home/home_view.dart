@@ -1,6 +1,8 @@
 import 'package:fetosense_device_flutter/core/app_routes.dart';
 import 'package:fetosense_device_flutter/core/color_manager.dart';
+import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/dependency_injection.dart';
+import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,6 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     ServiceLocator.bluetoothServiceHelper.disconnect();
     ServiceLocator.bluetoothServiceHelper.dispose();
@@ -100,7 +101,8 @@ class _HomeViewState extends State<HomeView> {
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            context.pushNamed(AppRoutes.dopplerConnectionView);
+                            context.pushNamed(AppRoutes.dopplerConnectionView,
+                                extra: {'test': Test(), 'route':AppConstants.instantTest});
                           },
                         text: 'START INSTANT TEST ',
                         style: const TextStyle(
@@ -128,7 +130,10 @@ class _HomeViewState extends State<HomeView> {
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            context.pushNamed(AppRoutes.registerMother);
+                            context.pushNamed(AppRoutes.registerMother, extra: {
+                              'test': Test(),
+                              'route': AppConstants.homeRoute
+                            });
                           },
                         text: 'CLICK HERE TO REGISTER NEW MOTHER ',
                         style: const TextStyle(
