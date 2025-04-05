@@ -3,6 +3,7 @@ import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/core/utils/svg_strings.dart';
 import 'package:fetosense_device_flutter/data/models/intrepretations2.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
+import 'package:get_it/get_it.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -294,9 +295,11 @@ class Header extends pw.StatelessWidget {
   late int timeScaleFactor;
   late int scale;
 
+  final prefs = GetIt.I<PreferenceHelper>();
+
   @override
   pw.Widget build(dynamic context) {
-    scale = PreferenceHelper.getInt('scale') as int;
+    scale = prefs.getInt('scale') ?? 1;
     timeScaleFactor = scale == 3 ? 2 : 6;
     return pw.Container(
       //margin: const pw.EdgeInsets.only(top: 2 * PdfPageFormat.mm),
@@ -313,11 +316,13 @@ class Header extends pw.StatelessWidget {
             margin: const pw.EdgeInsets.only(
                 right: 3 * PdfPageFormat.mm, left: PdfPageFormat.mm * 2),
             child: pw.FittedBox(
-                child: pw.Flexible(
-                    child: pw.SvgImage(
-              svg: SvgStrings.fetosense_icon,
-              fit: pw.BoxFit.contain,
-            ))), //.asset("assets/images/ic_fetosense.png")
+              child: pw.Flexible(
+                child: pw.SvgImage(
+                  svg: SvgStrings.fetosense_icon,
+                  fit: pw.BoxFit.contain,
+                ),
+              ),
+            ),
           ),
           pw.Column(
               mainAxisAlignment: pw.MainAxisAlignment.start,

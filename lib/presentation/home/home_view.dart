@@ -1,7 +1,7 @@
-import 'package:fetosense_device_flutter/core/app_routes.dart';
-import 'package:fetosense_device_flutter/core/color_manager.dart';
+import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
+import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
-import 'package:fetosense_device_flutter/core/dependency_injection.dart';
+import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -31,14 +31,39 @@ class _HomeViewState extends State<HomeView> {
       child: Scaffold(
         backgroundColor: ColorManager.white,
         appBar: AppBar(
-          title: const Text('Fetosense'),
+          title: const Text(
+            'Fetosense',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           actions: [
+            TextButton(
+              onPressed: () {
+                context.push(AppRoutes.allMothersView);
+              },
+              child: const Text(
+                "All Mothers",
+                style: TextStyle(
+                  fontSize: 17,
+                  color: ColorManager.primaryButtonColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                context.push(AppRoutes.notificationView);
+              },
               icon: const Icon(Icons.notifications),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                context.push(AppRoutes.appSettingsView);
+              },
               icon: const Icon(Icons.settings),
             ),
             PopupMenuButton<String>(
@@ -102,7 +127,10 @@ class _HomeViewState extends State<HomeView> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             context.pushNamed(AppRoutes.dopplerConnectionView,
-                                extra: {'test': Test(), 'route':AppConstants.instantTest});
+                                extra: {
+                                  'test': Test(),
+                                  'route': AppConstants.instantTest
+                                });
                           },
                         text: 'START INSTANT TEST ',
                         style: const TextStyle(

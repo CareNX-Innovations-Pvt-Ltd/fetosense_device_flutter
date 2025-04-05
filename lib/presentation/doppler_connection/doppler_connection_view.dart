@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:fetosense_device_flutter/core/app_routes.dart';
-import 'package:fetosense_device_flutter/core/bluetooth_service_helper.dart';
-import 'package:fetosense_device_flutter/core/color_manager.dart';
-import 'package:fetosense_device_flutter/core/dependency_injection.dart';
+import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
+import 'package:fetosense_device_flutter/core/utils/bluetooth_service_helper.dart';
+import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
+import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +77,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
       test?.movementEntries = [];
       test?.associations = <String, dynamic>{};
       test?.autoFetalMovement = [];
-      test?.autoInterpretations = <String, dynamic>{};
+      // test?.autoInterpretations = <String, dynamic>{};
       test?.baseLineEntries = [];
       test?.bpmEntries2 = [];
       test?.mhrEntries = [];

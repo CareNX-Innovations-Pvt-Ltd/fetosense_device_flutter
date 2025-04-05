@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:fetosense_device_flutter/core/fhr_byte_data_buffer.dart';
+import 'package:fetosense_device_flutter/core/utils/fhr_byte_data_buffer.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
-import '../../core/bluetooth_service_helper.dart';
+import '../../core/utils/bluetooth_service_helper.dart';
 
 part 'bluetoothlocal_event.dart';
 

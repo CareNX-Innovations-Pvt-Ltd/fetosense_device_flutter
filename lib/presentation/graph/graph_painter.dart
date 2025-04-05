@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:fetosense_device_flutter/data/models/intrepretations2.dart';
-import 'package:fetosense_device_flutter/data/models/markerIndices.dart';
+import 'package:fetosense_device_flutter/data/models/marker_indices.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:flutter/material.dart';
 

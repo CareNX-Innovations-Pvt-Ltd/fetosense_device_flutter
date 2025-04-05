@@ -1,18 +1,30 @@
-import 'package:fetosense_device_flutter/core/color_manager.dart';
-import 'package:fetosense_device_flutter/core/utilities.dart';
+import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
+import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
+import 'package:fetosense_device_flutter/core/utils/utilities.dart';
 import 'package:fetosense_device_flutter/presentation/login/login_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
+
+  const LoginView({super.key});
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  bool isPasswordVisible = false;
 
-  LoginView({super.key});
+  final TextEditingController passwordController = TextEditingController();
+
+  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    emailController.text = "test@example.com";
+    passwordController.text = "tes1234t";
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -22,11 +34,16 @@ class LoginView extends StatelessWidget {
             listener: (context, state) {
               if (state is LoginSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Login Successful')),
+                  const SnackBar(
+                    content: Text('Login Successful'),
+                  ),
                 );
+                context.pushReplacement(AppRoutes.home);
               } else if (state is LoginFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.error)),
+                  SnackBar(
+                    content: Text(state.error),
+                  ),
                 );
               }
             },

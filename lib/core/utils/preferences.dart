@@ -1,7 +1,19 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceHelper {
+  static final PreferenceHelper _instance = PreferenceHelper._internal();
+  static SharedPreferences? _prefs;
+
+  PreferenceHelper._internal();
+
+  factory PreferenceHelper() {
+    return _instance;
+  }
+
+  static Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
   static const String _IS_AUTO_LOGIN = "IsAutoLogin";
   static const String _USERS = "users";
   static const String _DAILY_TIP_DISPLAYED = "DailyTipDisplay";
@@ -16,197 +28,65 @@ class PreferenceHelper {
   static const String _IS_BABY = "IsBaby";
   static const String _IS_BABYBEAT_ONBOARDING = "IsBabybeatOnboarding";
 
-  static setAutoLogin(bool isAutoLogin) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_AUTO_LOGIN, isAutoLogin);
+  SharedPreferences get _prefsInstance {
+    if (_prefs == null) {
+      throw Exception("PreferenceHelper not initialized. Call PreferenceHelper.init() first.");
+    }
+    return _prefs!;
   }
 
-  static getAutoLogin() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_AUTO_LOGIN) ?? false;
-  }
+  void setAutoLogin(bool isAutoLogin) => _prefsInstance.setBool(_IS_AUTO_LOGIN, isAutoLogin);
+  bool getAutoLogin() => _prefsInstance.getBool(_IS_AUTO_LOGIN) ?? false;
 
-  // static setUser(Users user) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   inspect(user);
-  //
-  //   debugPrint("Pref USER: "+user.toJson().toString());
-  //   String value = json.encode(user);
-  //   print("Peref USER: "+value);
-  //   prefs.setString(_USERS, value);
-  // }
-  //
-  // static Future<Users?> getUser() async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   var user = prefs.getString(_USERS);
-  //
-  //   if (user != null) {
-  //     var map = json.decode(user);
-  //     Users users = Users.fromJson(map);
-  //     return users;
-  //   }
-  //   return null;
-  // }
+  void removeUser() => _prefsInstance.remove(_USERS);
 
-  static removeUser() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove(_USERS);
-  }
+  void setDailyTipDay(int day) => _prefsInstance.setInt(_DAILY_TIP_DISPLAYED, day);
+  int getDailyTipDay() => _prefsInstance.getInt(_DAILY_TIP_DISPLAYED) ?? 0;
 
-  static setDailyTipDay(int day) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt(_DAILY_TIP_DISPLAYED, day);
-  }
+  void setAppOpenAt(int time) => _prefsInstance.setInt(_APP_OPEN_AT, time);
+  int? getAppOpenAt() => _prefsInstance.getInt(_APP_OPEN_AT);
 
-  static Future<int> getDailyTipDay() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_DAILY_TIP_DISPLAYED) ?? 0;
-  }
+  void setTempAddress(List<String> address) => _prefsInstance.setStringList(_TEMP_ADDRESS, address);
+  List<String>? getTempAddress() => _prefsInstance.getStringList(_TEMP_ADDRESS);
+  void clear() => _prefsInstance.remove(_TEMP_ADDRESS);
 
-  static setAppOpenAt(int time) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt(_APP_OPEN_AT, time);
-  }
+  void setWhatsAppEnabled(bool isEnabled) => _prefsInstance.setBool(_IS_WHATSAPP_ENABLED, isEnabled);
+  bool getWhatsAppEnabled() => _prefsInstance.getBool(_IS_WHATSAPP_ENABLED) ?? false;
 
-  static Future<int?> getAppOpenAt() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(_APP_OPEN_AT);
-  }
+  void setFetosense(bool isEnabled) => _prefsInstance.setBool(_IS_FETOSENSE, isEnabled);
+  bool getFetosense() => _prefsInstance.getBool(_IS_FETOSENSE) ?? false;
 
-  static setTempAddress(List<String> address) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setStringList(_TEMP_ADDRESS, address);
-  }
+  void setLinkageFlag(bool isEnabled) => _prefsInstance.setBool("IsLinkage", isEnabled);
+  bool getLinkageFlag() => _prefsInstance.getBool("IsLinkage") ?? false;
 
-  static clear() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove(_TEMP_ADDRESS);
-  }
+  void saveReadArticleList(List<String> articleIds, String weekKey) => _prefsInstance.setStringList(weekKey, articleIds);
+  List<String>? getReadArticleList(String weekKey) => _prefsInstance.getStringList(weekKey);
 
-  static Future<List<String>?> getTempAddress() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(_TEMP_ADDRESS);
-  }
+  void setUpdate(bool isOpened) => _prefsInstance.setBool(_IS_UPDATED, isOpened);
+  bool getUpdate() => _prefsInstance.getBool(_IS_UPDATED) ?? false;
 
-  static setWhatsAppEnabled(bool isWhatsAppEnabled) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_WHATSAPP_ENABLED, isWhatsAppEnabled);
-  }
+  void setIsFirstTime(bool isFirst) => _prefsInstance.setBool(_IS_FIRST_TIME, isFirst);
+  bool getIsFirstTime() => _prefsInstance.getBool(_IS_FIRST_TIME) ?? true;
 
-  static Future<bool> getWhatsAppEnabled() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_WHATSAPP_ENABLED) ?? false;
-  }
+  void setBabybeat(bool isEnabled) => _prefsInstance.setBool(_IS_BABYBEAT, isEnabled);
+  bool getBabybeat() => _prefsInstance.getBool(_IS_BABYBEAT) ?? false;
 
-  static setFetosense(bool isFetosenseEnabled) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_FETOSENSE, isFetosenseEnabled);
-  }
+  void setBaby(bool isEnabled) => _prefsInstance.setBool(_IS_BABY, isEnabled);
+  bool getBaby() => _prefsInstance.getBool(_IS_BABY) ?? false;
 
-  static Future<bool> getFetosense() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_FETOSENSE) ?? false;
-  }
+  void setBabybeatOnBoarding(bool isEnabled) => _prefsInstance.setBool(_IS_BABYBEAT_ONBOARDING, isEnabled);
+  bool getBabybeatOnBoarding() => _prefsInstance.getBool(_IS_BABYBEAT_ONBOARDING) ?? false;
 
-  static setLinkageFlag(bool isLinkageEnabled) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("IsLinkage", isLinkageEnabled);
-  }
+  void setAnandiMaa(bool isEnabled) => _prefsInstance.setBool(_IS_ANANDI_MAA, isEnabled);
+  bool getAnandiMaa() => _prefsInstance.getBool(_IS_ANANDI_MAA) ?? false;
 
-  static Future<bool> getLinkageFlag() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool("IsLinkage") ?? false;
-  }
+  void setInt(String key, int value) => _prefsInstance.setInt(key, value);
+  int? getInt(String key) => _prefsInstance.getInt(key);
 
-  static saveReadArticleList(
-      List<String> articleIdList, String weekPrefKey) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setStringList(weekPrefKey, articleIdList);
-  }
+  void setBool(String key, bool value) => _prefsInstance.setBool(key, value);
+  bool? getBool(String key) => _prefsInstance.getBool(key);
 
-  static Future<List<String>?> getReadArticleList(String weekPrefKey) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(weekPrefKey);
-  }
-
-  static setUpdate(bool isOpened) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_UPDATED, isOpened);
-  }
-
-  static Future<bool> getUpdate() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_UPDATED) ?? false;
-  }
-
-  static setIsFirstTime(bool isFirst) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_FIRST_TIME, isFirst);
-  }
-
-  static Future<bool> getIsFirstTime() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_FIRST_TIME) ?? true;
-  }
-
-  static setBabybeat(bool isBabybeat) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_BABYBEAT, isBabybeat);
-  }
-
-  static Future<bool> getBabybeat() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_BABYBEAT) ?? false;
-  }
-
-  static setBaby(bool isBabybeat) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_BABY, isBabybeat);
-  }
-
-  static Future<bool> getBabybeatOnBoarding() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_BABYBEAT_ONBOARDING) ?? false;
-  }
-
-  static setBabybeatOnBoarding(bool isBabybeatOnboarding) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_BABYBEAT_ONBOARDING, isBabybeatOnboarding);
-  }
-
-  static Future<bool> getBaby() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_BABY) ?? false;
-  }
-
-  static setAnandiMaa(bool isAnandiMaaEnabled) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(_IS_ANANDI_MAA, isAnandiMaaEnabled);
-  }
-
-  static Future<bool> getAnandiMaa() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_IS_ANANDI_MAA) ?? false;
-  }
-
-  static setInt(String key, int value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(key, value);
-  }
-
-  static Future<int?> getInt(String key) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(key);
-  }
-
-  static setBool(String key, bool value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(key, value);
-  }
-
-  static Future <bool?> getBool(String key)async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(key);
-  }
-
+  void setString(String key, String value) => _prefsInstance.setString(key, value);
+  String? getString(String key) => _prefsInstance.getString(key);
 }
+
