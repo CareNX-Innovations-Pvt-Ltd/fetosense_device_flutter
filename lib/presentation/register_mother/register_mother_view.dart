@@ -1,14 +1,16 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
-import 'package:fetosense_device_flutter/core/app_routes.dart';
-import 'package:fetosense_device_flutter/core/color_manager.dart';
+import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
+import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
-import 'package:fetosense_device_flutter/core/dependency_injection.dart';
+import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
 import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
+import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/date_picker_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class RegisterMotherView extends StatefulWidget {
@@ -25,17 +27,22 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController ageController = TextEditingController();
+  TextEditingController patientIdController = TextEditingController();
   TextEditingController lmpDateController = TextEditingController();
   Test? test;
   String? route;
   DateTime? pickedDate;
   AppwriteService client = ServiceLocator.appwriteService;
+  bool showPatientId = false;
 
   @override
   void initState() {
     super.initState();
     test = widget.test;
     route = widget.previousRoute;
+    setState(() {
+      showPatientId = GetIt.I<PreferenceHelper>().getBool(AppConstants.patientIdKey) ?? false;
+    });
   }
 
   int getGestationalAgeWeeks(DateTime lastMenstrualPeriod) {
@@ -72,6 +79,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
     test!.motherName = nameController.text;
     test!.age = int.parse(ageController.text);
     test!.gAge = getGestationalAgeWeeks(pickedDate!);
+    test!.patientId = patientIdController.text;
     if (route == AppConstants.instantTest) {
       context.pushReplacement(AppRoutes.detailsView, extra: test);
     } else {
@@ -82,6 +90,10 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
 
   @override
   Widget build(BuildContext context) {
+    nameController.text = "testing";
+    phoneNumberController.text = '1010441010';
+    ageController.text= '32';
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: ColorManager.white,
@@ -133,6 +145,23 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                   const SizedBox(
                     height: 20,
                   ),
+                  Visibility(
+                    visible: showPatientId,
+                    replacement: Container(),
+                    child: Column(
+                    children: [
+                      TextField(
+                        controller: patientIdController,
+                        decoration: const InputDecoration(
+                          hintText: "Patient Id",
+                        ),
+                        keyboardType: TextInputType.text,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  ),),
                   DatePickerTextField(
                     controller: lmpDateController,
                     label: "LMP Date",

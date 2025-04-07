@@ -1,9 +1,12 @@
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/main.dart';
+import 'package:fetosense_device_flutter/presentation/all_mothers/all_mothers_view.dart';
+import 'package:fetosense_device_flutter/presentation/app_settings/app_setting.dart';
 import 'package:fetosense_device_flutter/presentation/details/details_view.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/doppler_connection_view.dart';
 import 'package:fetosense_device_flutter/presentation/home/home_view.dart';
 import 'package:fetosense_device_flutter/presentation/login/login_view.dart';
+import 'package:fetosense_device_flutter/presentation/notification/notification_view.dart';
 import 'package:fetosense_device_flutter/presentation/register_mother/register_mother_view.dart';
 import 'package:fetosense_device_flutter/presentation/splash/splash_screen.dart';
 import 'package:fetosense_device_flutter/presentation/test/test_view.dart';
@@ -18,6 +21,9 @@ abstract class AppRoutes {
   static const registerMother = '/register_mother';
   static const testView = '/test';
   static const detailsView = '/details_view';
+  static const allMothersView = '/all-mothers-view';
+  static const notificationView = '/notification-view';
+  static const appSettingsView = '/settings-view';
 }
 
 final GoRouter appRouter = GoRouter(
@@ -85,6 +91,27 @@ final GoRouter appRouter = GoRouter(
         return DetailsView(
           test: test,
         );
+      },
+    ),
+    GoRoute(
+      name: '/all-mothers-view',
+      path: AppRoutes.allMothersView,
+      builder: (context, state) {
+        return const AllMothersView();
+      },
+    ),
+    GoRoute(
+      name: '/notification-view',
+      path: AppRoutes.notificationView,
+      builder: (context, state) {
+        return const NotificationView();
+      },
+    ),
+    GoRoute(
+      name: '/settings-view',
+      path: AppRoutes.appSettingsView,
+      builder: (context, state) {
+        return const AppSetting();
       },
     ),
   ],

@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:io';
 
-import 'package:fetosense_device_flutter/core/fhr_byte_data_buffer.dart';
+import 'package:fetosense_device_flutter/core/utils/fhr_byte_data_buffer.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 

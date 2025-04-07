@@ -1,19 +1,21 @@
 import 'dart:async';
-import 'dart:io' as io;
 
-import 'package:fetosense_device_flutter/core/utilities.dart';
+import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
+import 'package:fetosense_device_flutter/core/utils/bluetooth_service_helper.dart';
+import 'package:fetosense_device_flutter/core/utils/utilities.dart';
 import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/data/models/intrepretations2.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/graph/graph_painter.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/custom_radio_btn.dart';
-import 'package:fetosense_device_flutter/presentation/widgets/fhr_pdf_view.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/fhr_pdf_view_2.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/interpretation_dialog.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/pdf_base_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:permission_handler/permission_handler.dart';
@@ -41,10 +43,10 @@ class DetailsView extends StatefulWidget {
   DetailsView({super.key, required this.test});
 
   @override
-  _DetailsViewState createState() => _DetailsViewState();
+  DetailsViewState createState() => DetailsViewState();
 }
 
-class _DetailsViewState extends State<DetailsView>
+class DetailsViewState extends State<DetailsView>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   Test? test;
@@ -58,8 +60,6 @@ class _DetailsViewState extends State<DetailsView>
   bool isLoadingShare = false;
   bool isLoadingPrint = false;
 
-  var pdfFile;
-
   late pdf.Document pdfDoc;
   Action? action;
 
@@ -72,6 +72,7 @@ class _DetailsViewState extends State<DetailsView>
   List<String>? paths;
 
   String? movements;
+  final prefs = GetIt.I<PreferenceHelper>();
 
   static const printChannel = MethodChannel('com.carenx.fetosense/print');
 
@@ -81,8 +82,6 @@ class _DetailsViewState extends State<DetailsView>
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _animationController.repeat(reverse: true);
     super.initState();
-    /*interpretation =
-        Interpretation.fromList(widget.test.gAge, widget.test.bpmEntries);*/
     test = widget.test;
     if (test!.lengthOfTest! > 180 && test!.lengthOfTest! < 3600) {
       interpretations =
@@ -98,15 +97,16 @@ class _DetailsViewState extends State<DetailsView>
       interpretations = Interpretations2();
     }
     radioValue = test!.interpretationType;
-    int _movements =
+    int movements =
         test!.movementEntries!.length + test!.autoFetalMovement!.length;
-    movements = _movements < 10 ? "0$_movements" : '$_movements';
+    this.movements = movements < 10 ? "0$movements" : '$movements';
 
-    if (test!.isLive()!) {
+    if (test!.live!) {
       int timDiff = DateTime.now().millisecondsSinceEpoch -
           test!.createdOn!.millisecondsSinceEpoch;
       timDiff = (timDiff / 1000).truncate();
     }
+    BluetoothSerialService().dispose();
   }
 
   @override
@@ -135,7 +135,7 @@ class _DetailsViewState extends State<DetailsView>
                   iconSize: 35,
                   icon: const Icon(Icons.arrow_back,
                       size: 30, color: Colors.teal),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pushReplacement(AppRoutes.home),
                 ),
                 subtitle: Text(
                   DateFormat('dd MMM yy - hh:mm a').format(test!.createdOn!),
@@ -182,7 +182,7 @@ class _DetailsViewState extends State<DetailsView>
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: !test!.isLive()!
+              child: !test!.live!
                   ? CustomRadioBtn(
                       buttonColor: Theme.of(context).canvasColor,
                       buttonLables: const [
@@ -227,7 +227,6 @@ class _DetailsViewState extends State<DetailsView>
                           ),
                         ],
                       ),
-
                     ),
             ),
             Expanded(
@@ -533,16 +532,121 @@ class _DetailsViewState extends State<DetailsView>
                 ],
               ),
             ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Container(
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                                bottom:
+                                    BorderSide(width: 0.5, color: Colors.grey)),
+                          ),
+                          child: SizedBox(
+                            height: 54.h,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  interpretations!.getBasalHeartRateStr(),
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      color: Colors.black87,
+                                      height: 1,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.center,
+                                ),
+                                Text(
+                                  "BASAL HR",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black87,
+                                    fontSize: 8.sp,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          child: SizedBox(
+                            height: 54.h,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  interpretations!.getnAccelerationsStr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      color: Colors.black87,
+                                      height: 1,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  "ACCELERATION",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black87,
+                                    fontSize: 8.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          child: SizedBox(
+                            height: 54.h,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  interpretations!.getnDecelerationsStr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      color: Colors.black87,
+                                      height: 1,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  "DECELERATION",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black87,
+                                    fontSize: 8.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             decoration: const BoxDecoration(
                               border: Border(
@@ -552,165 +656,28 @@ class _DetailsViewState extends State<DetailsView>
                             child: SizedBox(
                               height: 54.h,
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    interpretations!.getBasalHeartRateStr(),
-                                    style: TextStyle(
-                                        fontSize: 22.sp,
-                                        color: Colors.black87,
-                                        height: 1,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    "BASAL HR",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black87,
-                                      fontSize: 8.sp,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  width: 0.5,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            child: SizedBox(
-                              height: 54.h,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    interpretations!.getnAccelerationsStr(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22.sp,
-                                        color: Colors.black87,
-                                        height: 1,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    "ACCELERATION",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black87,
-                                      fontSize: 8.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  width: 0.5,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            child: SizedBox(
-                              height: 54.h,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    interpretations!.getnDecelerationsStr(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22.sp,
-                                        color: Colors.black87,
-                                        height: 1,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    "DECELERATION",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black87,
-                                      fontSize: 8.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        width: 0.5, color: Colors.grey)),
-                              ),
-                              child: SizedBox(
-                                height: 54.h,
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(
-                                        '$movements',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 22.sp,
-                                            color: Colors.black87,
-                                            height: 1,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        "MOVEMENTS",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w300,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Text(
+                                      '$movements',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 22.sp,
                                           color: Colors.black87,
-                                          fontSize: 8.sp,
-                                        ),
+                                          height: 1,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      "MOVEMENTS",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.black87,
+                                        fontSize: 8.sp,
                                       ),
-                                    ]),
-                              )),
-                          Container(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        width: 0.5, color: Colors.grey)),
-                              ),
-                              child: SizedBox(
-                                height: 54.h,
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(
-                                        interpretations!
-                                            .getShortTermVariationBpmStr(),
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 22.sp,
-                                            color: Colors.black87,
-                                            height: 1,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        "SHORT TERM VARI",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w300,
-                                          color: Colors.black87,
-                                          fontSize: 8.sp,
-                                        ),
-                                      ),
-                                    ]),
-                              )),
-                          Container(
+                                    ),
+                                  ]),
+                            )),
+                        Container(
                             padding: const EdgeInsets.symmetric(vertical: 4),
                             decoration: const BoxDecoration(
                               border: Border(
@@ -720,35 +687,67 @@ class _DetailsViewState extends State<DetailsView>
                             child: SizedBox(
                               height: 54.h,
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    interpretations!.getLongTermVariationStr(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22.sp,
-                                        color: Colors.black87,
-                                        height: 1,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  Text(
-                                    "LONG TERM VARI",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black87,
-                                      fontSize: 8.sp,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Text(
+                                      interpretations!
+                                          .getShortTermVariationBpmStr(),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 22.sp,
+                                          color: Colors.black87,
+                                          height: 1,
+                                          fontWeight: FontWeight.w500),
                                     ),
+                                    Text(
+                                      "SHORT TERM VARI",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.black87,
+                                        fontSize: 8.sp,
+                                      ),
+                                    ),
+                                  ]),
+                            )),
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: const BoxDecoration(
+                            border: Border(
+                                bottom:
+                                    BorderSide(width: 0.5, color: Colors.grey)),
+                          ),
+                          child: SizedBox(
+                            height: 54.h,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  interpretations!.getLongTermVariationStr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 22.sp,
+                                      color: Colors.black87,
+                                      height: 1,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  "LONG TERM VARI",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: Colors.black87,
+                                    fontSize: 8.sp,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
             Container(
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 color: Colors.white,
@@ -859,13 +858,10 @@ class _DetailsViewState extends State<DetailsView>
   void _handleZoomChange() {
     setState(() {
       gridPreMin = gridPreMin == 1 ? 3 : 1;
-      //Fluttertoast.showToast(msg: 'Correct !',toastLength: Toast.LENGTH_SHORT);
-      //return gridPreMin;
     });
   }
 
   _onDragStart(BuildContext context, DragStartDetails start) {
-    print(start.globalPosition.toString());
     RenderBox getBox = context.findRenderObject() as RenderBox;
     mTouchStart = getBox.globalToLocal(start.globalPosition).dx;
     //print(mTouchStart.dx.toString() + "|" + mTouchStart.dy.toString());
@@ -879,23 +875,22 @@ class _DetailsViewState extends State<DetailsView>
     setState(() {
       mOffset = trap(mOffset + (newChange / (gridPreMin * 5)).truncate());
     });
-    print(mOffset.toString());
   }
 
   int trap(int pos) {
     if (pos < 0) {
       return 0;
-    } else if (pos > test!.bpmEntries!.length)
+    } else if (pos > test!.bpmEntries!.length) {
       pos = test!.bpmEntries!.length - 10;
-
+    }
     return pos;
   }
 
   Future<void> printAndroid() async {
-    var scale = PreferenceHelper.getInt('scale') ?? 1;
-    var comments = PreferenceHelper.getBool('comments') ?? false;
-    var interpretations = PreferenceHelper.getBool('interpretations') ?? false;
-    var highlight = PreferenceHelper.getBool('highlight') ?? false;
+    var scale = prefs.getInt('scale');
+    var comments = prefs.getBool('comments');
+    var interpretations = prefs.getBool('interpretations');
+    var highlight = prefs.getBool('highlight');
     try {
       final String? result = await printChannel
           .invokeMethod(action == Action.PRINT ? 'printTest' : "shareTest", {
@@ -941,7 +936,6 @@ class _DetailsViewState extends State<DetailsView>
       case PrintStatus.GENERATING_FILE:
         break;
       case PrintStatus.GENERATING_PRINT:
-        // TODO: Handle this case.
         pdfDoc.addPage(pdf.MultiPage(
             pageFormat: PdfPageFormat.a4,
             build: (pdf.Context context) => <pdf.Widget>[pdf.Text("hello")]));
@@ -951,7 +945,6 @@ class _DetailsViewState extends State<DetailsView>
         break;
       case PrintStatus.FILE_READY:
         // TODO: Handle this case.
-
         break;
     }
     setState(() {
@@ -959,15 +952,6 @@ class _DetailsViewState extends State<DetailsView>
     });
   }
 
-  /// Generates a PDF document for the given test data.
-  ///
-  /// This function creates a PDF document with the NST graph and interpretations
-  /// for the provided test data. It uses the `FhrPdfView2` class to generate the
-  /// NST graph images and adds them to the PDF document.
-  ///
-  /// \param format The page format for the PDF document.
-  /// \param test The test data to be included in the PDF document.
-  /// \return A `pdf.Document` containing the NST graph and interpretations.
   Future<pdf.Document> _generatePdf(PdfPageFormat format, Test test) async {
     final pdf1 = pdf.Document();
     int index = 1;

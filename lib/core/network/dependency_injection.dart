@@ -1,7 +1,7 @@
-import 'package:fetosense_device_flutter/core/audio.dart';
-import 'package:fetosense_device_flutter/core/bluetooth_service_helper.dart';
+import 'package:fetosense_device_flutter/presentation/widgets/audio.dart';
+import 'package:fetosense_device_flutter/core/utils/bluetooth_service_helper.dart';
 import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
-import 'package:fetosense_device_flutter/core/shared_prefs_helper.dart';
+import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -14,8 +14,8 @@ class ServiceLocator {
       () => BluetoothSerialService(),
     );
 
-    _getIt.registerLazySingleton<SharedPrefsHelper>(
-      () => SharedPrefsHelper(),
+    _getIt.registerLazySingleton<PreferenceHelper>(
+      () => PreferenceHelper(),
     );
 
     _getIt.registerFactory<BluetoothConnectionBloc>(
@@ -35,7 +35,7 @@ class ServiceLocator {
       _getIt<BluetoothConnectionBloc>();
 
   static Future<void> get sharedPrefsHelper =>
-      _getIt<SharedPrefsHelper>().init();
+      PreferenceHelper.init();
 
   static BluetoothSerialService get bluetoothServiceHelper =>
       BluetoothSerialService();
