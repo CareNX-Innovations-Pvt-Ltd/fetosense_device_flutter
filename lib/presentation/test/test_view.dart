@@ -78,16 +78,56 @@ class _TestViewState extends State<TestView> {
     startTimer();
   }
 
+  Future<void> incrementMotherTestCount(String motherName) async {
+    final databases = Databases(client.client);
+
+    try {
+      // Step 1: Search for the mother by name
+      final result = await databases.listDocuments(
+        databaseId: AppConstants.appwriteDatabaseId,
+        collectionId: AppConstants.userCollectionId,
+        queries: [
+          Query.equal('name', motherName),
+          Query.equal('type', 'mother'),
+        ],
+      );
+
+      if (result.documents.isEmpty) {
+        debugPrint('Mother not found');
+        return;
+      }
+
+      final doc = result.documents.first;
+      final currentCount = doc.data['noOfTests'] ?? 0;
+
+      // Step 2: Update the test count
+      await databases.updateDocument(
+        databaseId: AppConstants.appwriteDatabaseId,
+        collectionId: AppConstants.userCollectionId,
+        documentId: doc.$id,
+        data: {
+          'noOfTests': currentCount + 1,
+        },
+      );
+
+      debugPrint('Mother\'s test count updated.');
+    } catch (e) {
+      debugPrint('Error updating test count: $e');
+    }
+  }
+
+
   saveTest() async {
     Databases databases = Databases(client.client);
     try {
       Document result = await databases.createDocument(
         databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.testCollectionId,
+        collectionId: AppConstants.testsCollectionId,
         documentId: ID.unique(),
         data: test!.toJson(),
       );
       if (result.data.isNotEmpty) {
+        incrementMotherTestCount(test!.motherName!);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Test saved'),
@@ -337,6 +377,7 @@ class _TestViewState extends State<TestView> {
                                 ),
                                 DropdownButton<String>(
                                   alignment: Alignment.center,
+
                                   value: selectedValue,
                                   items: timerOptions.keys.map((String item) {
                                     return DropdownMenuItem<String>(

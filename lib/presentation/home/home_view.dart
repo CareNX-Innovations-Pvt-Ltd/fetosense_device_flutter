@@ -2,10 +2,12 @@ import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
+import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeView extends StatefulWidget {
@@ -87,9 +89,14 @@ class _HomeViewState extends State<HomeView> {
                   value: "Option 3",
                   child: Text("Acoustic Stimulator"),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: "Option 3",
-                  child: Text("Sign Out"),
+                  child: const Text("Sign Out"),
+                  onTap: () {
+                    GetIt.I<PreferenceHelper>().removeUser();
+                    GetIt.I<PreferenceHelper>().setAutoLogin(false);
+                    context.pushReplacement(AppRoutes.login);
+                  },
                 ),
               ],
             ),

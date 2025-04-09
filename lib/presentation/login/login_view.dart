@@ -23,7 +23,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    emailController.text = "test@example.com";
+    emailController.text = "CMFETO01001@example.com";
     passwordController.text = "tes1234t";
     return SafeArea(
       child: Scaffold(

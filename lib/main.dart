@@ -1,6 +1,7 @@
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
+import 'package:fetosense_device_flutter/presentation/all_mothers/all_mothers_cubit.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:fetosense_device_flutter/presentation/login/login_cubit.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => BluetoothConnectionBloc(ServiceLocator.bluetoothServiceHelper),
+        ),
+        BlocProvider(
+          create: (context) => AllMothersCubit(),
         ),
       ],
       child: MaterialApp.router(
