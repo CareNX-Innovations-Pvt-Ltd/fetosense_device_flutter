@@ -40,7 +40,7 @@ class _DatePickerTextFieldState extends State<DatePickerTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: widget.controller,
       readOnly: true, // Prevents manual input
       decoration: InputDecoration(

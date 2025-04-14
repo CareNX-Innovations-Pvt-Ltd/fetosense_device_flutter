@@ -182,8 +182,7 @@ class DetailsViewState extends State<DetailsView>
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: !test!.live!
-                  ? CustomRadioBtn(
+              child: CustomRadioBtn(
                       buttonColor: Theme.of(context).canvasColor,
                       buttonLables: const [
                         "Normal",
@@ -201,33 +200,6 @@ class DetailsViewState extends State<DetailsView>
                       radioButtonValue: (value) => _handleRadioClick(value),
                       selectedColor: Colors.blue,
                     )
-                  : Container(
-                      color: Colors.tealAccent,
-                      padding: const EdgeInsets.all(10),
-                      alignment: Alignment.center,
-                      child: Row(
-                        children: [
-                          FadeTransition(
-                            opacity: _animationController,
-                            child: const Icon(
-                              Icons.circle,
-                              size: 18,
-                              color: Colors.red,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 7,
-                          ),
-                          const Text(
-                            "Live test. Updates every 30 seconds.",
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    ),
             ),
             Expanded(
               child: Row(
