@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:fetosense_device_flutter/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceHelper {
@@ -14,19 +17,11 @@ class PreferenceHelper {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  static const String _IS_AUTO_LOGIN = "IsAutoLogin";
-  static const String _USERS = "users";
-  static const String _DAILY_TIP_DISPLAYED = "DailyTipDisplay";
-  static const String _TEMP_ADDRESS = "TempAddress";
-  static const String _IS_WHATSAPP_ENABLED = "IsWhatsappEnabled";
-  static const String _IS_FETOSENSE = "IsFetosenseEnabled";
+  static const String autoLogin = "IsAutoLogin";
+  static const String users = "users";
   static const String _APP_OPEN_AT = "AppOpenAt";
   static const String _IS_UPDATED = "IsUpdated";
   static const String _IS_FIRST_TIME = "FirstTime";
-  static const String _IS_BABYBEAT = "IsBabybeat";
-  static const String _IS_ANANDI_MAA = "IsAnandiMaa";
-  static const String _IS_BABY = "IsBaby";
-  static const String _IS_BABYBEAT_ONBOARDING = "IsBabybeatOnboarding";
 
   SharedPreferences get _prefsInstance {
     if (_prefs == null) {
@@ -35,26 +30,26 @@ class PreferenceHelper {
     return _prefs!;
   }
 
-  void setAutoLogin(bool isAutoLogin) => _prefsInstance.setBool(_IS_AUTO_LOGIN, isAutoLogin);
-  bool getAutoLogin() => _prefsInstance.getBool(_IS_AUTO_LOGIN) ?? false;
+  void setAutoLogin(bool isAutoLogin) => _prefsInstance.setBool(autoLogin, isAutoLogin);
+  bool getAutoLogin() => _prefsInstance.getBool(autoLogin) ?? false;
 
-  void removeUser() => _prefsInstance.remove(_USERS);
+  void removeUser() => _prefsInstance.remove(users);
 
-  void setDailyTipDay(int day) => _prefsInstance.setInt(_DAILY_TIP_DISPLAYED, day);
-  int getDailyTipDay() => _prefsInstance.getInt(_DAILY_TIP_DISPLAYED) ?? 0;
+  Future<void> saveUser(UserModel user) async {
+    String userJson = jsonEncode(user.toJson());
+    await _prefsInstance.setString(users, userJson);
+  }
+
+  UserModel? getUser() {
+    String? userJson = _prefsInstance.getString(users);
+    if (userJson == null) return null;
+
+    Map<String, dynamic> userMap = jsonDecode(userJson);
+    return UserModel.fromJson(userMap);
+  }
 
   void setAppOpenAt(int time) => _prefsInstance.setInt(_APP_OPEN_AT, time);
   int? getAppOpenAt() => _prefsInstance.getInt(_APP_OPEN_AT);
-
-  void setTempAddress(List<String> address) => _prefsInstance.setStringList(_TEMP_ADDRESS, address);
-  List<String>? getTempAddress() => _prefsInstance.getStringList(_TEMP_ADDRESS);
-  void clear() => _prefsInstance.remove(_TEMP_ADDRESS);
-
-  void setWhatsAppEnabled(bool isEnabled) => _prefsInstance.setBool(_IS_WHATSAPP_ENABLED, isEnabled);
-  bool getWhatsAppEnabled() => _prefsInstance.getBool(_IS_WHATSAPP_ENABLED) ?? false;
-
-  void setFetosense(bool isEnabled) => _prefsInstance.setBool(_IS_FETOSENSE, isEnabled);
-  bool getFetosense() => _prefsInstance.getBool(_IS_FETOSENSE) ?? false;
 
   void setLinkageFlag(bool isEnabled) => _prefsInstance.setBool("IsLinkage", isEnabled);
   bool getLinkageFlag() => _prefsInstance.getBool("IsLinkage") ?? false;
@@ -67,18 +62,6 @@ class PreferenceHelper {
 
   void setIsFirstTime(bool isFirst) => _prefsInstance.setBool(_IS_FIRST_TIME, isFirst);
   bool getIsFirstTime() => _prefsInstance.getBool(_IS_FIRST_TIME) ?? true;
-
-  void setBabybeat(bool isEnabled) => _prefsInstance.setBool(_IS_BABYBEAT, isEnabled);
-  bool getBabybeat() => _prefsInstance.getBool(_IS_BABYBEAT) ?? false;
-
-  void setBaby(bool isEnabled) => _prefsInstance.setBool(_IS_BABY, isEnabled);
-  bool getBaby() => _prefsInstance.getBool(_IS_BABY) ?? false;
-
-  void setBabybeatOnBoarding(bool isEnabled) => _prefsInstance.setBool(_IS_BABYBEAT_ONBOARDING, isEnabled);
-  bool getBabybeatOnBoarding() => _prefsInstance.getBool(_IS_BABYBEAT_ONBOARDING) ?? false;
-
-  void setAnandiMaa(bool isEnabled) => _prefsInstance.setBool(_IS_ANANDI_MAA, isEnabled);
-  bool getAnandiMaa() => _prefsInstance.getBool(_IS_ANANDI_MAA) ?? false;
 
   void setInt(String key, int value) => _prefsInstance.setInt(key, value);
   int? getInt(String key) => _prefsInstance.getInt(key);

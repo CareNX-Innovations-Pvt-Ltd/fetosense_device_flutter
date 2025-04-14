@@ -6,12 +6,9 @@ abstract class AppConstants {
 
   ///appwrite credentials
   static const String appwriteDatabaseId = '67ece4a7002a0a732dfd';
-  static const String testCollectionId = '67ece4b2000ee3f96faa';
-  static const String userCollectionId = '67ef73de000ae068fa30';
-
-  ///fetosense mis
-  static const String misDatabase = '67e14dc00025fa9f71ad';
-  static const String misUserCollection = '67e293bc001845f81688';
+  static const String userCollectionId = '67f36a7e002c46ea05f0';
+  static const String deviceCollectionId = '67f36766002068046589';
+  static const String testsCollectionId = '67f3790a0024f8f61684';
 
   ///app settings keys
   ///test section

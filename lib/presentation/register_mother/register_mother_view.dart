@@ -1,11 +1,12 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart';
 import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
 import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
 import 'package:fetosense_device_flutter/core/utils/preferences.dart';
+import 'package:fetosense_device_flutter/core/utils/utilities.dart';
+import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/date_picker_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -41,58 +42,130 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
     test = widget.test;
     route = widget.previousRoute;
     setState(() {
-      showPatientId = GetIt.I<PreferenceHelper>().getBool(AppConstants.patientIdKey) ?? false;
+      showPatientId =
+          GetIt.I<PreferenceHelper>().getBool(AppConstants.patientIdKey) ??
+              false;
     });
   }
 
-  int getGestationalAgeWeeks(DateTime lastMenstrualPeriod) {
-    DateTime today = DateTime.now();
-    return (today.difference(lastMenstrualPeriod).inDays / 7).floor();
-  }
-
-  saveTest() async {
+  Future<bool?> saveMother() async {
     Databases databases = Databases(client.client);
     try {
-      Document result = await databases.createDocument(
+      final String motherName = nameController.text.trim();
+      final int motherAge = int.parse(ageController.text);
+      int gestationalAge = Utilities.getGestationalAgeWeeks(pickedDate!);
+      Mother mother = Mother();
+      mother.name = motherName;
+      mother.age = motherAge;
+      mother.lmp = pickedDate;
+      mother.deviceName = test?.deviceName;
+      mother.deviceId = test?.deviceId;
+      mother.type = 'mother';
+      test!.motherName = motherName;
+      test!.age = motherAge;
+      test!.gAge = gestationalAge;
+      test!.patientId = patientIdController.text;
+      await databases.createDocument(
         databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.testCollectionId,
+        collectionId: AppConstants.userCollectionId,
         documentId: ID.unique(),
-        data: test!.toJson(),
+        data: mother.toJson(),
       );
-      if (result.data.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Test saved'),
-          ),
-        );
-      }
+
+      debugPrint('Mother created successfully.');
+      return true;
     } catch (e, s) {
       if (kDebugMode) {
-        print(e);
+        print('Error saving mother: $e');
         print(s);
       }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save mother: ${e.toString()}')),
+        );
+      }
+      return false;
     }
   }
 
 
+  Future<void> saveTest() async {
+    Databases databases = Databases(client.client);
+    try {
+      final String motherName = nameController.text.trim();
+      final int motherAge = int.parse(ageController.text);
+      final String patientId = patientIdController.text;
+
+      Mother mother = Mother();
+      mother.name = motherName;
+      mother.age = motherAge;
+      mother.lmp = pickedDate;
+      mother.deviceName = test!.deviceName;
+      mother.deviceId = test!.deviceId;
+      mother.type = 'mother';
+      mother.noOfTests = 1;
+
+      await databases.createDocument(
+          databaseId: AppConstants.appwriteDatabaseId,
+          collectionId: AppConstants.userCollectionId,
+          documentId: ID.unique(),
+          data: mother.toJson());
+
+      debugPrint('Mother created successfully.');
+
+      // Calculate gestational age
+      int gestationalAge = Utilities.getGestationalAgeWeeks(pickedDate!);
+
+      // Prepare and save test
+      test!.motherName = motherName;
+      test!.age = motherAge;
+      test!.gAge = gestationalAge;
+      test!.patientId = patientId;
+
+      var testResult = await databases.createDocument(
+        databaseId: AppConstants.appwriteDatabaseId,
+        collectionId: AppConstants.testsCollectionId,
+        documentId: ID.unique(),
+        data: test!.toJson(),
+      );
+
+      if (testResult.$id.isNotEmpty && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Test saved')),
+        );
+      }
+    } catch (e, s) {
+      if (kDebugMode) {
+        print('Error saving test: $e');
+        print(s);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save test: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
   navigate() {
-    test!.motherName = nameController.text;
-    test!.age = int.parse(ageController.text);
-    test!.gAge = getGestationalAgeWeeks(pickedDate!);
-    test!.patientId = patientIdController.text;
     if (route == AppConstants.instantTest) {
+      saveTest();
       context.pushReplacement(AppRoutes.detailsView, extra: test);
     } else {
-      context.pushReplacement(AppRoutes.dopplerConnectionView,
-          extra: {'test': test, 'route': AppConstants.registeredMother});
+      saveMother().then((onValue){
+        if(mounted){
+          context.pushReplacement(AppRoutes.dopplerConnectionView,
+              extra: {'test': test, 'route': AppConstants.registeredMother});
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = "testing";
-    phoneNumberController.text = '1010441010';
-    ageController.text= '32';
+    nameController.text = "Alice Wonderland";
+    phoneNumberController.text = '1010441000';
+    ageController.text = '32';
 
     return SafeArea(
       child: Scaffold(
@@ -126,9 +199,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                   TextField(
                     controller: phoneNumberController,
                     decoration: const InputDecoration(
-                      hintText: "Phone Number",
-                      counterText: ''
-                    ),
+                        hintText: "Phone Number", counterText: ''),
                     maxLength: 10,
                     keyboardType: TextInputType.phone,
                   ),
@@ -149,26 +220,27 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                     visible: showPatientId,
                     replacement: Container(),
                     child: Column(
-                    children: [
-                      TextField(
-                        controller: patientIdController,
-                        decoration: const InputDecoration(
-                          hintText: "Patient Id",
+                      children: [
+                        TextField(
+                          controller: patientIdController,
+                          decoration: const InputDecoration(
+                            hintText: "Patient Id",
+                          ),
+                          keyboardType: TextInputType.text,
                         ),
-                        keyboardType: TextInputType.text,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
                   DatePickerTextField(
                     controller: lmpDateController,
                     label: "LMP Date",
                     onDateSelected: (DateTime date) {
                       if (kDebugMode) {
-                        print(date);
                         pickedDate = date;
+                        print(pickedDate);
                       }
                     },
                   ),

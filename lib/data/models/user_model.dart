@@ -1,220 +1,201 @@
 
 class UserModel {
-  String? type;
-  String? organizationId;
-  String? organizationName;
-  String? organizationIdBabyBeat;
-  String? organizationNameBabyBeat;
   String? name;
   String? email;
-  String? mobileNo;
-  String? uid;
-  String? notificationToken;
-  String? documentId;
+  int? mobileNo;
+  String? organizationId;
+  String? organizationName;
+  int? age;
   bool delete = false;
-  DateTime? createdOn;
+  DateTime? autoModifiedTimeStamp;
   String? createdBy;
+  DateTime? createdOn;
+  String? deviceId;
+  String? deviceName;
+  String? doctorId;
+  List<dynamic>? amcLog;
+  dynamic amcPayment;
+  String? amcStartDate;
+  String? amcValidity;
+  String? appVersion;
   Map? associations;
-  Map? babyBeatAssociation;
+  Map? bulletin;
+  String? deviceCode;
+  bool? isActive;
+  String? lastSeenTime;
+  DateTime? modifiedAt;
+  String? modifiedTimeStamp;
+  int? noOfMother;
+  int? noOfTests;
+  String? notificationToken;
+  int? sync;
+  bool? testAccount;
+  String? type;
+  String? uid;
+  double? weight;
+  String? patientId;
+  String? platformId;
+  String? platformRegAt;
 
-  UserModel.withData(
-      {type,
-      organizationId,
-      organizationName,
-      organizationIdBabyBeat,
-      organizationNameBabyBeat,
-      name,
-      email,
-      mobileNo,
-      uid,
-      notificationToken,
-      documentId,
-      delete = false,
-      createdOn,
-      createdBy,
-      associations, babyBeatAssociation});
+  UserModel.withData({
+    this.name = '',
+    this.email,
+    this.mobileNo,
+    this.organizationId,
+    this.organizationName = '',
+    this.age,
+    this.delete = false,
+    this.autoModifiedTimeStamp,
+    this.createdBy,
+    this.createdOn,
+    this.deviceId,
+    this.deviceName,
+    this.doctorId,
+    this.amcLog = const [],
+    this.amcPayment,
+    this.amcStartDate,
+    this.amcValidity,
+    this.appVersion,
+    this.associations,
+    this.bulletin,
+    this.deviceCode,
+    this.isActive,
+    this.lastSeenTime,
+    this.modifiedAt,
+    this.modifiedTimeStamp,
+    this.noOfMother = 0,
+    this.noOfTests = 0,
+    this.notificationToken,
+    this.sync,
+    this.testAccount,
+    this.type,
+    this.uid,
+    this.weight,
+    this.patientId,
+    this.platformId,
+    this.platformRegAt,
+  });
 
   UserModel.fromMap(Map snapshot, String id)
-      : type = snapshot['type'] ?? '',
-        organizationId = snapshot['organizationId'] ?? '',
-        organizationName = snapshot['organizationName'] ?? '',
-        organizationIdBabyBeat = snapshot['organizationIdBabyBeat'] ?? '',
-        organizationNameBabyBeat = snapshot['organizationNameBabyBeat'] ?? '',
-        name = snapshot['name'] ?? '',
-        email = snapshot['email'] ?? '',
-        mobileNo = snapshot['mobileNo'] ?? '',
-        uid = snapshot['uid'] ?? '',
-        notificationToken = snapshot['notificationToken'] ?? '',
-        documentId = snapshot['documentId'] ?? '',
+      :
+        type = snapshot['type'],
+        organizationId = snapshot['organizationId'],
+        organizationName = snapshot['organizationName'],
+        name = snapshot['name'],
+        email = snapshot['email'],
+        mobileNo = snapshot['mobileNo'],
+        uid = snapshot['uid'],
+        notificationToken = snapshot['notificationToken'],
         delete = snapshot['delete'] ?? false,
         createdOn = snapshot['createdOn']?.toDate(),
-        createdBy = snapshot['createdBy'] ?? '',
+        createdBy = snapshot['createdBy'],
         associations = snapshot['associations'],
-        babyBeatAssociation = snapshot['babyBeatAssociation'];
+        age = snapshot['age'],
+        autoModifiedTimeStamp = snapshot['autoModifiedTimeStamp'],
+        deviceId = snapshot['deviceId'],
+        deviceName = snapshot['deviceName'],
+        doctorId = snapshot['doctorId'],
+        amcLog = snapshot['amcLog'],
+        amcPayment = snapshot['amcPayment'],
+        amcStartDate = snapshot['amcStartDate'],
+        amcValidity = snapshot['amcValidity'],
+        appVersion = snapshot['appVersion'],
+        bulletin = snapshot['bulletin'],
+        deviceCode = snapshot['deviceCode'],
+        isActive = snapshot['isActive'],
+        lastSeenTime = snapshot['lastSeenTime'],
+        modifiedAt = snapshot['modifiedAt'],
+        modifiedTimeStamp = snapshot['modifiedTimeStamp'],
+        noOfMother = snapshot['noOfMother'],
+        noOfTests = snapshot['noOfTests'],
+        sync = snapshot['sync'],
+        testAccount = snapshot['testAccount'],
+        weight = snapshot['weight'],
+        patientId = snapshot['patientId'],
+        platformId = snapshot['platformId'],
+        platformRegAt = snapshot['platformRegAt'];
 
   UserModel();
-
-/*
-  User({this.name,
-    this.email,
-    this.createdOn,
-    this.createdBy,
-    this.uid,
-})
-*/
-
-  String? getType() {
-    return type;
-  }
-
-  void setType(String type) {
-    this.type = type;
-  }
-
-  String? getOrganizationName() {
-    return organizationName;
-  }
-
-  void setOrganizationName(String organizationName) {
-    this.organizationName = organizationName;
-  }
-
-  String? getOrganizationId() {
-    return organizationId;
-  }
-
-  void setOrganizationId(String organizationId) {
-    this.organizationId = organizationId;
-  }
-
-  String? getOrganizationNameBabyBeat() {
-    return organizationNameBabyBeat;
-  }
-
-  void setOrganizationNameBabyBeat(String organizationName) {
-    organizationNameBabyBeat = organizationName;
-  }
-
-  String? getOrganizationIdBabyBeat() {
-    return organizationIdBabyBeat;
-  }
-
-  void setOrganizationIdBabyBeat(String organizationId) {
-    organizationIdBabyBeat = organizationId;
-  }
-
-  String? getName() {
-    return name;
-  }
-
-  void setName(String name) {
-    this.name = name;
-  }
-
-  String? getEmail() {
-    return email;
-  }
-
-  void setEmail(String email) {
-    this.email = email;
-  }
-
-  String? getMobileNo() {
-    return mobileNo;
-  }
-
-  void setMobileNo(String mobileNo) {
-    this.mobileNo = mobileNo;
-  }
-
-  String? getUid() {
-    return uid;
-  }
-
-  void setUid(String uid) {
-    this.uid = uid;
-  }
-
-  String? getNotificationToken() {
-    return notificationToken;
-  }
-
-  void setNotificationToken(String notificationToken) {
-    this.notificationToken = notificationToken;
-  }
-
-  String? getDocumentId() {
-    return documentId;
-  }
-
-  void setDocumentId(String documentId) {
-    this.documentId = documentId;
-  }
-
-  DateTime? getCreatedOn() {
-    return createdOn;
-  }
-
-  void setCreatedOn(DateTime createdOn) {
-    this.createdOn = createdOn;
-  }
-
-  String? getCreatedBy() {
-    return createdBy;
-  }
-
-  void setCreatedBy(String createdBy) {
-    this.createdBy = createdBy;
-  }
-
-  bool isDelete() {
-    return delete;
-  }
-
-  void setDelete(bool delete) {
-    this.delete = delete;
-  }
 
   Map<String, Object?> toJson() {
     return {
       'type': type,
       'organizationId': organizationId,
       'organizationName': organizationName,
-      'organizationIdBabyBeat': organizationIdBabyBeat,
-      'organizationNameBabyBeat': organizationNameBabyBeat,
       'name': name,
       'email': email,
       'mobileNo': mobileNo,
       'uid': uid,
       'notificationToken': notificationToken,
-      'documentId': documentId,
       'delete': delete,
       'createdOn': createdOn,
       'createdBy': createdBy,
       'associations': associations,
-      'babyBeatAssociation': babyBeatAssociation
+      'age': age,
+      'autoModifiedTimeStamp': autoModifiedTimeStamp,
+      'deviceId': deviceId,
+      'deviceName': deviceName,
+      'doctorId': doctorId,
+      'amcLog': amcLog,
+      'amcPayment': amcPayment,
+      'amcStartDate': amcStartDate,
+      'amcValidity': amcValidity,
+      'appVersion': appVersion,
+      'bulletin': bulletin,
+      'deviceCode': deviceCode,
+      'isActive': isActive,
+      'lastSeenTime': lastSeenTime,
+      'modifiedAt': modifiedAt,
+      'modifiedTimeStamp': modifiedTimeStamp,
+      'noOfMother': noOfMother,
+      'noOfTests': noOfTests,
+      'sync': sync,
+      'testAccount': testAccount,
+      'weight': weight,
+      'patientId': patientId,
+      'platformId': platformId,
+      'platformRegAt': platformRegAt,
     };
   }
 
-  factory UserModel.fromJson(Map<String, Object> doc) {
-    UserModel user = new UserModel.withData(
-        type: doc['type'],
-        organizationId: doc['organizationId'],
-        organizationName: doc['organizationName'],
-        organizationIdBabyBeat: doc['organizationIdBabyBeat'],
-        organizationNameBabyBeat: doc['organizationNameBabyBeat'],
-        name: doc['name'],
-        email: doc['email'],
-        mobileNo: doc['mobileNo'],
-        uid: doc['uid'],
-        notificationToken: doc['notificationToken'],
-        documentId: doc['documentId'],
-        delete: doc['delete'],
-        createdOn: doc['createdOn'],
-        createdBy: doc['createdBy'],
-        associations: doc['associations'],
-        babyBeatAssociation: doc['babyBeatAssociation']);
-    return user;
+  factory UserModel.fromJson(Map<String, dynamic> doc) {
+    return UserModel.withData(
+      type: doc['type'],
+      organizationId: doc['organizationId'],
+      organizationName: doc['organizationName'],
+      name: doc['name'],
+      email: doc['email'],
+      mobileNo: doc['mobileNo'],
+      uid: doc['uid'],
+      notificationToken: doc['notificationToken'],
+      delete: doc['delete'],
+      createdOn: doc['createdOn'],
+      createdBy: doc['createdBy'],
+      associations: doc['associations'],
+      age: doc['age'],
+      autoModifiedTimeStamp: doc['autoModifiedTimeStamp'],
+      deviceId: doc['deviceId'],
+      deviceName: doc['deviceName'],
+      doctorId: doc['doctorId'],
+      amcLog: doc['amcLog'],
+      amcPayment: doc['amcPayment'],
+      amcStartDate: doc['amcStartDate'],
+      amcValidity: doc['amcValidity'],
+      appVersion: doc['appVersion'],
+      bulletin: doc['bulletin'],
+      deviceCode: doc['deviceCode'],
+      isActive: doc['isActive'],
+      lastSeenTime: doc['lastSeenTime'],
+      modifiedAt: doc['modifiedAt'],
+      modifiedTimeStamp: doc['modifiedTimeStamp'],
+      noOfMother: doc['noOfMother'],
+      noOfTests: doc['noOfTests'],
+      sync: doc['sync'],
+      testAccount: doc['testAccount'],
+      weight: doc['weight'],
+      patientId: doc['patientId'],
+      platformId: doc['platformId'],
+      platformRegAt: doc['platformRegAt'],
+    );
   }
-
 }
