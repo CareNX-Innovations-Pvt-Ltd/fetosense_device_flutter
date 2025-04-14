@@ -46,8 +46,8 @@ class Test {
   String? interpretationType;
   String? interpretationExtraComments;
 
-  Map<String, dynamic>? associations;
-  Map<String, dynamic>? autoInterpretations;
+ dynamic associations;
+ dynamic autoInterpretations;
 
   bool? delete = false;
   DateTime? createdOn;
@@ -203,7 +203,7 @@ class Test {
         associations = snapshot['association'] ?? <String, dynamic>{},
         autoInterpretations = snapshot['autoInterpretations'] ?? <String, dynamic>{},
         delete = snapshot['delete'],
-        createdOn = snapshot['createdOn'].toDate(),
+        createdOn = snapshot['createdOn'],
         createdBy = snapshot['createdBy'];
 
   /// Default constructor for the [Test] class.
@@ -246,7 +246,7 @@ class Test {
       'autoInterpretations': autoInterpretations.toString(),
       'type': "test",
       'delete': delete,
-      'createdOn': createdOn!.toIso8601String(),
+      'createdOn': createdOn,
       'createdBy': createdBy,
     };
   }

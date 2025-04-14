@@ -1,11 +1,14 @@
+import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/main.dart';
+import 'package:fetosense_device_flutter/presentation/about/about_view.dart';
 import 'package:fetosense_device_flutter/presentation/all_mothers/all_mothers_view.dart';
 import 'package:fetosense_device_flutter/presentation/app_settings/app_setting.dart';
 import 'package:fetosense_device_flutter/presentation/details/details_view.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/doppler_connection_view.dart';
 import 'package:fetosense_device_flutter/presentation/home/home_view.dart';
 import 'package:fetosense_device_flutter/presentation/login/login_view.dart';
+import 'package:fetosense_device_flutter/presentation/mother_details/mother_details_view.dart';
 import 'package:fetosense_device_flutter/presentation/notification/notification_view.dart';
 import 'package:fetosense_device_flutter/presentation/register_mother/register_mother_view.dart';
 import 'package:fetosense_device_flutter/presentation/splash/splash_screen.dart';
@@ -24,6 +27,8 @@ abstract class AppRoutes {
   static const allMothersView = '/all-mothers-view';
   static const notificationView = '/notification-view';
   static const appSettingsView = '/settings-view';
+  static const motherDetails = '/mother-details';
+  static const aboutView = '/about';
 }
 
 final GoRouter appRouter = GoRouter(
@@ -37,7 +42,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       name: '/login',
       path: AppRoutes.login,
-      builder: (context, state) => LoginView(),
+      builder: (context, state) => const LoginView(),
     ),
     GoRoute(
       name: '/home',
@@ -51,9 +56,11 @@ final GoRouter appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>?;
         var test = extra?['test'] as Test;
         var previousRoute = extra?['route'];
+        var mother = extra?['mother'];
         return DopplerConnectionView(
           previousRoute: previousRoute,
           test: test,
+          mother: mother,
         );
       },
     ),
@@ -77,9 +84,11 @@ final GoRouter appRouter = GoRouter(
         final extra = state.extra as Map<String, dynamic>?;
         var test = extra?['test'] as Test;
         var previousRoute = extra?['route'];
+        var mother = extra?['mother'];
         return TestView(
           test: test,
           previousRoute: previousRoute,
+          mother: mother,
         );
       },
     ),
@@ -112,6 +121,23 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.appSettingsView,
       builder: (context, state) {
         return const AppSetting();
+      },
+    ),
+    GoRoute(
+      name: '/mother-details',
+      path: AppRoutes.motherDetails,
+      builder: (context, state) {
+        var model = state.extra as Mother;
+        return MotherDetailsPage(
+          mother: model,
+        );
+      },
+    ),
+    GoRoute(
+      name: '/about',
+      path: AppRoutes.aboutView,
+      builder: (context, state) {
+        return const AboutView();
       },
     ),
   ],

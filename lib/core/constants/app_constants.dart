@@ -3,6 +3,7 @@ abstract class AppConstants {
   static const String registeredMother = 'registered';
   static const String testRoute = 'test-route';
   static const String homeRoute = 'home-route';
+  static const String motherDetailsRoute = 'mother-detail-route';
 
   ///appwrite credentials
   static const String appwriteDatabaseId = '67ece4a7002a0a732dfd';

@@ -4,6 +4,7 @@ import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/bluetooth_service_helper.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
+import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,10 @@ import 'package:intl/intl.dart';
 class DopplerConnectionView extends StatefulWidget {
   final String? previousRoute;
   final Test? test;
+  final Mother? mother;
 
-  const DopplerConnectionView({super.key, this.previousRoute, this.test});
+  const DopplerConnectionView(
+      {super.key, this.previousRoute, this.test, this.mother});
 
   @override
   State<DopplerConnectionView> createState() => _DopplerConnectionViewState();
@@ -25,6 +28,7 @@ class DopplerConnectionView extends StatefulWidget {
 class _DopplerConnectionViewState extends State<DopplerConnectionView> {
   final bool _isLoading = false;
   Test? test;
+  Mother? mother;
   final BluetoothSerialService _bluetoothService =
       ServiceLocator.bluetoothServiceHelper;
 
@@ -56,12 +60,10 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
     final formattedString = DateFormat("MMMM d, yyyy 'at' hh:mm:ss a 'UTC'XXX")
         .format(dateTime.toUtc().add(const Duration(hours: 5, minutes: 30)));
 
-    // Parsing the formatted string back to DateTime
     return DateFormat("MMMM d, yyyy 'at' hh:mm:ss a 'UTC'XXX")
         .parse(formattedString);
   }
 
-  // Method to connect to a specific device
   void _connectToDevice(BluetoothDevice device) async {
     bool success = await _bluetoothService.connect(device);
     if (success) {
@@ -77,7 +79,6 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
       test?.movementEntries = [];
       test?.associations = <String, dynamic>{};
       test?.autoFetalMovement = [];
-      // test?.autoInterpretations = <String, dynamic>{};
       test?.baseLineEntries = [];
       test?.bpmEntries2 = [];
       test?.mhrEntries = [];
@@ -93,7 +94,8 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
       test?.doctorId = '';
 
       if (mounted) {
-        context.push(AppRoutes.testView, extra: {'test': test, 'route': route});
+        context.push(AppRoutes.testView,
+            extra: {'test': test, 'route': route, 'mother': mother});
       }
     } else {
       setState(() {
@@ -112,9 +114,10 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
   void initState() {
     super.initState();
     test = widget.test;
+    mother = widget.mother;
     _initializeBluetooth();
     Timer(const Duration(seconds: 30), () {
-      if(mounted){
+      if (mounted) {
         setState(() => showLoader = false);
       }
     });

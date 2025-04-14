@@ -12,6 +12,7 @@ import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
 import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/core/utils/utilities.dart';
 import 'package:fetosense_device_flutter/data/models/intrepretations2.dart';
+import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/my_fhr_data.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/graph/graph_painter.dart';
@@ -24,8 +25,9 @@ import 'package:go_router/go_router.dart';
 class TestView extends StatefulWidget {
   final Test? test;
   final String? previousRoute;
+  final Mother? mother;
 
-  const TestView({super.key, this.test, this.previousRoute});
+  const TestView({super.key, this.test, this.previousRoute, this.mother});
 
   @override
   State<TestView> createState() => _TestViewState();
@@ -38,8 +40,7 @@ class _TestViewState extends State<TestView> {
   String? radioValue;
   String? route;
   AppwriteService client = ServiceLocator.appwriteService;
-
-  // final databaseReference = FirebaseFirestore.instance;
+  Mother? mother;
   double mTouchStart = 0;
   int mOffset = 0;
   int gridPreMin = 3;
@@ -55,8 +56,8 @@ class _TestViewState extends State<TestView> {
   bool isAlert = false;
   String selectedValue = '20 min';
   final AudioPlayer _audioPlayer = AudioPlayer();
-
-   late int remainingSeconds ;
+  late int remainingSeconds;
+  Timer? _updateTimer;
 
   final Map<String, int> timerOptions = {
     '10 min': 600,
@@ -116,6 +117,16 @@ class _TestViewState extends State<TestView> {
     }
   }
 
+  void _updateTest() async {
+    Databases databases = Databases(client.client);
+    test!.lengthOfTest = getActualDurationInSeconds();
+    await databases.updateDocument(
+      databaseId: AppConstants.appwriteDatabaseId,
+      collectionId: AppConstants.testsCollectionId,
+      documentId: test!.documentId!,
+      data: test!.toJson(),
+    );
+  }
 
   saveTest() async {
     Databases databases = Databases(client.client);
@@ -127,6 +138,7 @@ class _TestViewState extends State<TestView> {
         data: test!.toJson(),
       );
       if (result.data.isNotEmpty) {
+        test!.documentId = result.$id;
         incrementMotherTestCount(test!.motherName!);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -145,7 +157,8 @@ class _TestViewState extends State<TestView> {
 
   void endTest() {
     countdownTimer?.cancel();
-
+    _updateTimer?.cancel();
+    _updateTest();
     setState(() {
       isTestRunning = false;
       hasTestStarted = false;
@@ -172,7 +185,7 @@ class _TestViewState extends State<TestView> {
     return _endTime!.difference(_startTime!).inSeconds;
   }
 
-  void startTimer() {
+  void startTimer() async {
     test!.live = false;
     test!.testByMother = true;
 
@@ -184,19 +197,40 @@ class _TestViewState extends State<TestView> {
       isTestRunning = true;
       hasTestStarted = true;
     });
-
+    test = await saveInitialTest();
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         remainingSeconds++;
       });
 
+      _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+        if (isTestRunning) {
+          _updateTest();
+        } else {
+          _updateTimer?.cancel();
+        }
+      });
+
       final selectedDuration = timerOptions[selectedValue] ?? 0;
 
-      // Only auto-end if a fixed duration is selected (non-zero)
       if (selectedDuration > 0 && remainingSeconds >= selectedDuration) {
         endTest();
       }
     });
+  }
+
+  Future<Test> saveInitialTest() async {
+    Databases databases = Databases(client.client);
+    test!.live = true;
+    final result = await databases.createDocument(
+      databaseId: AppConstants.appwriteDatabaseId,
+      collectionId: AppConstants.testsCollectionId,
+      documentId: ID.unique(),
+      data: test!.toJson(),
+    );
+
+    test!.documentId = result.$id;
+    return test!;
   }
 
   void runInterpretations() {
@@ -223,8 +257,11 @@ class _TestViewState extends State<TestView> {
     super.initState();
     test = widget.test;
     route = widget.previousRoute;
+    mother = widget.mother;
+    print("mother data is here ------> ${mother?.name}");
     setState(() {
-      selectedValue = prefs.getString(AppConstants.defaultTestDurationKey) ?? '20 min';
+      selectedValue =
+          prefs.getString(AppConstants.defaultTestDurationKey) ?? '20 min';
       isAlert = prefs.getBool(AppConstants.fhrAlertsKey) ?? false;
     });
   }
@@ -254,6 +291,7 @@ class _TestViewState extends State<TestView> {
   void dispose() {
     super.dispose();
     _audioPlayer.dispose();
+    _updateTimer?.cancel();
   }
 
   @override
@@ -284,10 +322,11 @@ class _TestViewState extends State<TestView> {
               child: IconButton(
                 iconSize: 35,
                 icon: _isAlertOnCooldown
-                ? const Icon(
+                    ? const Icon(
                         Icons.warning,
                         color: Colors.red,
-                      ) : const Icon(Icons.warning_amber_outlined),
+                      )
+                    : const Icon(Icons.warning_amber_outlined),
                 onPressed: _handleZoomChange,
               ),
             ),
