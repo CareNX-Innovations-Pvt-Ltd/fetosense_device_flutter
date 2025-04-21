@@ -1,3 +1,4 @@
+import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/utils/utilities.dart';
 import 'package:fetosense_device_flutter/presentation/all_mothers/all_mothers_cubit.dart';
@@ -93,13 +94,13 @@ class _AllMothersViewState extends State<AllMothersView> {
                   return const Center(child: Text("No mothers found."));
                 }
 
-                final rows = mothers.map((mother) {
-                  return {
-                    "All mothers": mother.name ?? "Unknown",
-                    "AGE": mother.age ?? "-",
-                    "GEST": Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now()),
-                  };
-                }).toList();
+                // final rows = mothers.map((mother) {
+                //   return {
+                //     "All mothers": mother.name ?? "Unknown",
+                //     "AGE": mother.age ?? "-",
+                //     "GEST": Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now()),
+                //   };
+                // }).toList();
 
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,6 +198,7 @@ class _AllMothersViewState extends State<AllMothersView> {
                     ),
                     Expanded(
                       child: DataTable(
+                        showCheckboxColumn: false, // Make sure this is false (it's true by default)
                         columns: [
                           DataColumn(
                             label: Text(
@@ -229,27 +231,34 @@ class _AllMothersViewState extends State<AllMothersView> {
                             ),
                           ),
                         ],
-                        rows: rows.map((row) {
-                          return DataRow(cells: [
-                            DataCell(
-                              Text(
-                                row["All mothers"].toString(),
-                                style: TextStyle(fontSize: 18.sp),
+                        rows: mothers.map((mother) {
+                          return DataRow(
+                            cells: [
+                              DataCell(
+                                InkWell(
+                                  onTap: () {
+                                    context.push(AppRoutes.motherDetails, extra:mother);
+                                  },
+                                  child: Text(
+                                    mother.name ?? "Unknown",
+                                    style: TextStyle(fontSize: 18.sp),
+                                  ),
+                                ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                row["AGE"].toString(),
-                                style: TextStyle(fontSize: 18.sp),
+                              DataCell(
+                                Text(
+                                  mother.age?.toString() ?? "-",
+                                  style: TextStyle(fontSize: 18.sp),
+                                ),
                               ),
-                            ),
-                            DataCell(
-                              Text(
-                                row["GEST"].toString(),
-                                style: TextStyle(fontSize: 18.sp),
+                              DataCell(
+                                Text(
+                                  "${Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now())}",
+                                  style: TextStyle(fontSize: 18.sp),
+                                ),
                               ),
-                            ),
-                          ]);
+                            ],
+                          );
                         }).toList(),
                       ),
                     ),

@@ -77,9 +77,12 @@ class _HomeViewState extends State<HomeView> {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: "Option 1",
-                  child: Text("About"),
+                  child: const Text("About"),
+                  onTap: (){
+                    context.push(AppRoutes.aboutView);
+                  },
                 ),
                 const PopupMenuItem(
                   value: "Option 2",
