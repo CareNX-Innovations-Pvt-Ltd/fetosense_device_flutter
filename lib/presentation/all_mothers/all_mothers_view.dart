@@ -9,7 +9,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class AllMothersView extends StatefulWidget {
-  const AllMothersView({super.key});
+  final bool autoFocus;
+   const AllMothersView({super.key, this.autoFocus = false});
 
   @override
   State<AllMothersView> createState() => _AllMothersViewState();
@@ -54,19 +55,24 @@ class _AllMothersViewState extends State<AllMothersView> {
                     width: 1,
                   ),
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    hintText: "Search Mother by name or id",
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(color: Colors.grey),
+                child: Hero(
+                  tag: 'search',
+                  child: Material(
+                    child: TextField(
+                      autofocus: widget.autoFocus,
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: "Search Mother by name or id",
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                      style: const TextStyle(color: Colors.black),
+                      onChanged: (query) {
+                        context.read<AllMothersCubit>().filterMothers(query);
+                      },
+                    ),
                   ),
-                  style: const TextStyle(color: Colors.black),
-                  onChanged: (query) {
-                    context.read<AllMothersCubit>().filterMothers(query);
-                  },
                 ),
-
               ),
             ),
           ),
@@ -191,75 +197,78 @@ class _AllMothersViewState extends State<AllMothersView> {
                     VerticalDivider(
                       color: Colors.grey,
                       thickness: 2,
-                      width: 20.sp, // Space around the divider
+                      width: 20.sp,
                     ),
                     SizedBox(
                       width: 10.sp,
                     ),
-                    Expanded(
-                      child: DataTable(
-                        showCheckboxColumn: false, // Make sure this is false (it's true by default)
-                        columns: [
-                          DataColumn(
-                            label: Text(
-                              'All mothers',
-                              style: TextStyle(
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.bold,
-                                color: ColorManager.primaryButtonColor,
+                    SizedBox(
+                      width: 620.sp,
+                      child: SingleChildScrollView(
+                        child: DataTable(
+                          showCheckboxColumn: false,
+                          columns: [
+                            DataColumn(
+                              label: Text(
+                                'All mothers',
+                                style: TextStyle(
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorManager.primaryButtonColor,
+                                ),
                               ),
                             ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'AGE',
-                              style: TextStyle(
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.bold,
-                                color: ColorManager.primaryButtonColor,
+                            DataColumn(
+                              label: Text(
+                                'AGE',
+                                style: TextStyle(
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorManager.primaryButtonColor,
+                                ),
                               ),
                             ),
-                          ),
-                          DataColumn(
-                            label: Text(
-                              'GEST',
-                              style: TextStyle(
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.bold,
-                                color: ColorManager.primaryButtonColor,
+                            DataColumn(
+                              label: Text(
+                                'GEST',
+                                style: TextStyle(
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorManager.primaryButtonColor,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                        rows: mothers.map((mother) {
-                          return DataRow(
-                            cells: [
-                              DataCell(
-                                InkWell(
-                                  onTap: () {
-                                    context.push(AppRoutes.motherDetails, extra:mother);
-                                  },
-                                  child: Text(
-                                    mother.name ?? "Unknown",
+                          ],
+                          rows: mothers.map((mother) {
+                            return DataRow(
+                              cells: [
+                                DataCell(
+                                  InkWell(
+                                    onTap: () {
+                                      context.push(AppRoutes.motherDetails, extra:mother);
+                                    },
+                                    child: Text(
+                                      mother.name ?? "Unknown",
+                                      style: TextStyle(fontSize: 18.sp),
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    mother.age?.toString() ?? "-",
                                     style: TextStyle(fontSize: 18.sp),
                                   ),
                                 ),
-                              ),
-                              DataCell(
-                                Text(
-                                  mother.age?.toString() ?? "-",
-                                  style: TextStyle(fontSize: 18.sp),
+                                DataCell(
+                                  Text(
+                                    "${Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now())}",
+                                    style: TextStyle(fontSize: 18.sp),
+                                  ),
                                 ),
-                              ),
-                              DataCell(
-                                Text(
-                                  "${Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now())}",
-                                  style: TextStyle(fontSize: 18.sp),
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
+                              ],
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ],

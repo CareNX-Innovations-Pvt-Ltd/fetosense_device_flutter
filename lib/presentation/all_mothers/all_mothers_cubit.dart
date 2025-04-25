@@ -7,50 +7,63 @@ import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../core/utils/preferences.dart';
+
 part 'all_mothers_state.dart';
 
 class AllMothersCubit extends Cubit<AllMothersState> {
   AllMothersCubit() : super(AllMothersInitial());
   List<Mother> allMothers = [];
+
   Future<void> getMothersList() async {
     emit(AllMothersLoading());
     try {
       final client = GetIt.I<AppwriteService>().client;
       final database = Databases(client);
-
+      final prefs = GetIt.I<PreferenceHelper>();
+      final user = prefs.getUser();
+      debugPrint('user -> ${user?.toJson()}');
       final result = await database.listDocuments(
         databaseId: AppConstants.appwriteDatabaseId,
         collectionId: AppConstants.userCollectionId,
         queries: [
           Query.equal('type', 'mother'),
+          Query.equal('organizationName', user?.organizationName),
         ],
       );
-
       if (result.total > 0) {
-        final mothersList =
+        allMothers =
             result.documents.map((doc) => Mother.fromJson(doc.data)).toList();
-        emit(AllMothersSuccess(mothersList));
+        emit(AllMothersSuccess(allMothers));
       } else {
         emit(const AllMothersFailure('No Data'));
       }
     } catch (e) {
       debugPrint("error -> $e");
-      emit(AllMothersFailure(e.toString()));
+      emit(
+        AllMothersFailure(
+          e.toString(),
+        ),
+      );
     }
   }
 
   void filterMothers(String query) {
     if (query.isEmpty) {
-      getMothersList();
       emit(AllMothersSuccess(allMothers));
+      return;
+    }
+
+    final lowercaseQuery = query.toLowerCase().trim();
+    final filteredMothers = allMothers.where((mother) {
+      final name = mother.name?.toLowerCase() ?? '';
+      return name.contains(lowercaseQuery);
+    }).toList();
+
+    if (filteredMothers.isEmpty) {
+      emit(const AllMothersSuccess([]));
     } else {
-      final filtered = allMothers.where((mother) {
-        final name = mother.name?.toLowerCase() ?? "";
-        final id = mother.deviceId?.toLowerCase() ?? "";
-        final search = query.toLowerCase();
-        return name.contains(search) || id.contains(search);
-      }).toList();
-      emit(AllMothersSuccess(filtered));
+      emit(AllMothersSuccess(filteredMothers));
     }
   }
 }

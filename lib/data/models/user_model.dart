@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 class UserModel {
   String? name;
@@ -18,8 +19,8 @@ class UserModel {
   String? amcStartDate;
   String? amcValidity;
   String? appVersion;
-  Map? associations;
-  Map? bulletin;
+  Map<String, dynamic>? associations;
+  Map<String, dynamic>? bulletin;
   String? deviceCode;
   bool? isActive;
   String? lastSeenTime;
@@ -76,9 +77,10 @@ class UserModel {
     this.platformRegAt,
   });
 
+  UserModel();
+
   UserModel.fromMap(Map snapshot, String id)
-      :
-        type = snapshot['type'],
+      : type = snapshot['type'],
         organizationId = snapshot['organizationId'],
         organizationName = snapshot['organizationName'],
         name = snapshot['name'],
@@ -87,9 +89,15 @@ class UserModel {
         uid = snapshot['uid'],
         notificationToken = snapshot['notificationToken'],
         delete = snapshot['delete'] ?? false,
-        createdOn = snapshot['createdOn']?.toDate(),
+        createdOn =
+            snapshot['createdOn'] is DateTime ? snapshot['createdOn'] : null,
         createdBy = snapshot['createdBy'],
-        associations = snapshot['associations'],
+        associations = snapshot['associations'] is String
+            ? jsonDecode(snapshot['associations'])
+            : snapshot['associations'],
+        bulletin = snapshot['bulletin'] is String
+            ? jsonDecode(snapshot['bulletin'])
+            : snapshot['bulletin'],
         age = snapshot['age'],
         autoModifiedTimeStamp = snapshot['autoModifiedTimeStamp'],
         deviceId = snapshot['deviceId'],
@@ -100,7 +108,6 @@ class UserModel {
         amcStartDate = snapshot['amcStartDate'],
         amcValidity = snapshot['amcValidity'],
         appVersion = snapshot['appVersion'],
-        bulletin = snapshot['bulletin'],
         deviceCode = snapshot['deviceCode'],
         isActive = snapshot['isActive'],
         lastSeenTime = snapshot['lastSeenTime'],
@@ -115,8 +122,6 @@ class UserModel {
         platformId = snapshot['platformId'],
         platformRegAt = snapshot['platformRegAt'];
 
-  UserModel();
-
   Map<String, Object?> toJson() {
     return {
       'type': type,
@@ -128,9 +133,10 @@ class UserModel {
       'uid': uid,
       'notificationToken': notificationToken,
       'delete': delete,
-      'createdOn': createdOn,
+      'createdOn': createdOn?.toIso8601String(),
       'createdBy': createdBy,
-      'associations': associations,
+      'associations': jsonEncode(associations ?? {}),
+      'bulletin': jsonEncode(bulletin ?? {}),
       'age': age,
       'autoModifiedTimeStamp': autoModifiedTimeStamp,
       'deviceId': deviceId,
@@ -141,7 +147,6 @@ class UserModel {
       'amcStartDate': amcStartDate,
       'amcValidity': amcValidity,
       'appVersion': appVersion,
-      'bulletin': bulletin,
       'deviceCode': deviceCode,
       'isActive': isActive,
       'lastSeenTime': lastSeenTime,
@@ -171,7 +176,12 @@ class UserModel {
       delete: doc['delete'],
       createdOn: doc['createdOn'],
       createdBy: doc['createdBy'],
-      associations: doc['associations'],
+      associations: doc['associations'] is String
+          ? jsonDecode(doc['associations'])
+          : doc['associations'],
+      bulletin: doc['bulletin'] is String
+          ? jsonDecode(doc['bulletin'])
+          : doc['bulletin'],
       age: doc['age'],
       autoModifiedTimeStamp: doc['autoModifiedTimeStamp'],
       deviceId: doc['deviceId'],
@@ -182,7 +192,6 @@ class UserModel {
       amcStartDate: doc['amcStartDate'],
       amcValidity: doc['amcValidity'],
       appVersion: doc['appVersion'],
-      bulletin: doc['bulletin'],
       deviceCode: doc['deviceCode'],
       isActive: doc['isActive'],
       lastSeenTime: doc['lastSeenTime'],

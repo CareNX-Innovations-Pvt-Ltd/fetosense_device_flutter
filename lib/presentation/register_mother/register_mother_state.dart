@@ -12,7 +12,11 @@ final class RegisterMotherInitial extends RegisterMotherState {}
 
 final class RegisterMotherLoading extends RegisterMotherState {}
 
-final class RegisterMotherSuccess extends RegisterMotherState {}
+final class RegisterMotherSuccess extends RegisterMotherState {
+  final Test? test;
+  final Mother? mother;
+  const RegisterMotherSuccess(this.test, this.mother);
+}
 
 final class RegisterMotherFailure extends RegisterMotherState {
   final String failure;

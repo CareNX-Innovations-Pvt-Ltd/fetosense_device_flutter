@@ -30,10 +30,10 @@ class TestView extends StatefulWidget {
   const TestView({super.key, this.test, this.previousRoute, this.mother});
 
   @override
-  State<TestView> createState() => _TestViewState();
+  State<TestView> createState() => TestViewState();
 }
 
-class _TestViewState extends State<TestView> {
+class TestViewState extends State<TestView> {
   Test? test;
   Interpretations2? interpretations;
   Interpretations2? interpretations2;
@@ -131,19 +131,27 @@ class _TestViewState extends State<TestView> {
   saveTest() async {
     Databases databases = Databases(client.client);
     try {
-      Document result = await databases.createDocument(
+      Document result = await databases.updateDocument(
         databaseId: AppConstants.appwriteDatabaseId,
         collectionId: AppConstants.testsCollectionId,
-        documentId: ID.unique(),
+        documentId: test!.documentId!,
         data: test!.toJson(),
       );
       if (result.data.isNotEmpty) {
-        test!.documentId = result.$id;
         incrementMotherTestCount(test!.motherName!);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Test saved'),
           ),
+        );
+        await databases.updateDocument(
+          databaseId: AppConstants.appwriteDatabaseId,
+          collectionId: AppConstants.userCollectionId,
+          documentId: mother!.documentId!,
+          data: {
+            'organizationId': test!.organizationId,
+            'organizationName': test!.organizationName,
+          },
         );
         context.pushReplacement(AppRoutes.detailsView, extra: test);
       }
@@ -156,9 +164,9 @@ class _TestViewState extends State<TestView> {
   }
 
   void endTest() {
+    test!.live = false;
     countdownTimer?.cancel();
     _updateTimer?.cancel();
-    _updateTest();
     setState(() {
       isTestRunning = false;
       hasTestStarted = false;
@@ -186,10 +194,8 @@ class _TestViewState extends State<TestView> {
   }
 
   void startTimer() async {
-    test!.live = false;
-    test!.testByMother = true;
-
     countdownTimer?.cancel();
+    _updateTimer?.cancel();
     remainingSeconds = 0;
     _startTime = DateTime.now();
 
@@ -197,31 +203,38 @@ class _TestViewState extends State<TestView> {
       isTestRunning = true;
       hasTestStarted = true;
     });
+
     test = await saveInitialTest();
+
+    // 1-second countdown timer
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         remainingSeconds++;
       });
 
-      _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-        if (isTestRunning) {
-          _updateTest();
-        } else {
-          _updateTimer?.cancel();
-        }
-      });
-
       final selectedDuration = timerOptions[selectedValue] ?? 0;
-
       if (selectedDuration > 0 && remainingSeconds >= selectedDuration) {
         endTest();
       }
     });
+
+    // 30-second update timer
+    _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (isTestRunning) {
+        print('🟡 Auto-updating test...');
+        _updateTest();
+      } else {
+        print('🛑 Stopping update timer');
+        _updateTimer?.cancel();
+      }
+    });
   }
+
 
   Future<Test> saveInitialTest() async {
     Databases databases = Databases(client.client);
     test!.live = true;
+    test!.createdOn = DateTime.now();
     final result = await databases.createDocument(
       databaseId: AppConstants.appwriteDatabaseId,
       collectionId: AppConstants.testsCollectionId,
@@ -230,14 +243,27 @@ class _TestViewState extends State<TestView> {
     );
 
     test!.documentId = result.$id;
+    addOrgDetails();
     return test!;
   }
 
-  void runInterpretations() {
-    setState(() {
-      interpretations =
-          Interpretations2.withData(test!.bpmEntries!, test!.gAge ?? 183);
-    });
+  addOrgDetails() async {
+    Databases databases = Databases(client.client);
+    final result = await databases.listDocuments(
+        databaseId: AppConstants.appwriteDatabaseId,
+        collectionId: AppConstants.deviceCollectionId,
+        queries: [
+          Query.equal('deviceName', test!.deviceName),
+        ]);
+    if (result.total > 0) {
+      final doc = result.documents.first;
+      setState(() {
+        test!.organizationId = doc.data['organizationId'];
+        test!.organizationName = doc.data['hospitalName'];
+      });
+    } else {
+      debugPrint('No result found..');
+    }
   }
 
   String formatTime(int seconds) {
@@ -258,7 +284,6 @@ class _TestViewState extends State<TestView> {
     test = widget.test;
     route = widget.previousRoute;
     mother = widget.mother;
-    print("mother data is here ------> ${mother?.name}");
     setState(() {
       selectedValue =
           prefs.getString(AppConstants.defaultTestDurationKey) ?? '20 min';
@@ -269,11 +294,11 @@ class _TestViewState extends State<TestView> {
   bool _isAlertOnCooldown = false;
 
   Future<void> alert() async {
-    if (!isAlert || test?.bpmEntries?.isEmpty != false || _isAlertOnCooldown) {
+    if (!isAlert || test?.bpmEntries.isEmpty != false || _isAlertOnCooldown) {
       return;
     }
 
-    final int latestBpm = test!.bpmEntries!.last;
+    final int latestBpm = test!.bpmEntries.last;
 
     if (latestBpm >= 160 || latestBpm <= 110) {
       _isAlertOnCooldown = true;
@@ -350,9 +375,9 @@ class _TestViewState extends State<TestView> {
 
             var data = snapshot.data!;
             if (hasTestStarted) {
-              test?.bpmEntries?.add(data.fhr1);
-              test?.bpmEntries2?.add(data.fhr2);
-              test?.tocoEntries?.add(data.toco);
+              test?.bpmEntries.add(data.fhr1);
+              test?.bpmEntries2.add(data.fhr2);
+              test?.tocoEntries.add(data.toco);
               alert();
             }
             return Center(
@@ -371,7 +396,7 @@ class _TestViewState extends State<TestView> {
                       child: Container(
                         color: Colors.white,
                         child: CustomPaint(
-                          key: Key("length${test!.bpmEntries!.length}"),
+                          key: Key("length${test!.bpmEntries.length}"),
                           painter: GraphPainter(
                             test,
                             mOffset,
@@ -459,7 +484,7 @@ class _TestViewState extends State<TestView> {
                           children: [
                             Text(
                               hasTestStarted && test!.bpmEntries != []
-                                  ? '${test!.bpmEntries!.last}'
+                                  ? '${test!.bpmEntries.last}'
                                   : '0',
                               style: const TextStyle(
                                 color: Colors.black,
@@ -496,8 +521,8 @@ class _TestViewState extends State<TestView> {
                           children: [
                             Text(
                               hasTestStarted &&
-                                      test!.movementEntries!.isNotEmpty
-                                  ? '${test!.movementEntries!.last}'
+                                      test!.movementEntries.isNotEmpty
+                                  ? '${test!.movementEntries.last}'
                                   : '0',
                               style: const TextStyle(
                                 color: Colors.black,
@@ -533,7 +558,7 @@ class _TestViewState extends State<TestView> {
                           children: [
                             Text(
                               hasTestStarted
-                                  ? '${test!.tocoEntries?.last}'
+                                  ? '${test!.tocoEntries.last}'
                                   : '0',
                               style: const TextStyle(
                                 color: Colors.black,
@@ -742,8 +767,8 @@ class _TestViewState extends State<TestView> {
   int trap(int pos) {
     if (pos < 0) {
       return 0;
-    } else if (pos > test!.bpmEntries!.length) {
-      pos = test!.bpmEntries!.length - 10;
+    } else if (pos > test!.bpmEntries.length) {
+      pos = test!.bpmEntries.length - 10;
     }
     return pos;
   }

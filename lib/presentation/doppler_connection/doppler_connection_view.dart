@@ -39,7 +39,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
   void _initializeBluetooth() async {
     route = widget.previousRoute;
     bool bluetoothEnabled = await _bluetoothService.enableBluetooth();
-    if (!bluetoothEnabled) {
+    if (!bluetoothEnabled && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Bluetooth could not be enabled'),
@@ -52,7 +52,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
     setState(() {
       _pairedDevices = devices;
     });
-    print("devices--->> ${_pairedDevices[0].name}");
+    debugPrint("devices--->> ${_pairedDevices[0].name}");
     _connectToDevice(_pairedDevices[0]);
   }
 
@@ -66,9 +66,10 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
 
   void _connectToDevice(BluetoothDevice device) async {
     bool success = await _bluetoothService.connect(device);
-    if (success) {
+    if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          duration: const Duration(seconds: 2),
           content: Text('Connected to ${device.name}'),
         ),
       );
@@ -102,11 +103,13 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
         showLoader = false;
       });
       debugPrint("Failed to connect to  ${device.name}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to connect to ${device.name}'),
-        ),
-      );
+     if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to connect to ${device.name}'),
+          ),
+        );
+      }
     }
   }
 
@@ -216,7 +219,6 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
                                             ? const CircularProgressIndicator()
                                             : ElevatedButton(
                                                 onPressed: () {
-                                                  // _bluetoothService.dispose();
                                                   _initializeBluetooth();
                                                 },
                                                 style: const ButtonStyle(

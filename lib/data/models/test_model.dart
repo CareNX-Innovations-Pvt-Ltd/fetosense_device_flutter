@@ -29,14 +29,14 @@ class Test {
   bool? isImgSynced;
   bool? isAudioSynced;
 
-  List<int>? bpmEntries;
-  List<int>? bpmEntries2;
-  List<int>? mhrEntries;
-  List<int>? spo2Entries;
-  List<int>? baseLineEntries;
-  List<int>? movementEntries;
-  List<int>? autoFetalMovement;
-  List<int>? tocoEntries;
+  List<int> bpmEntries = [];
+  List<int> bpmEntries2 = [];
+  List<int> mhrEntries = [];
+  List<int> spo2Entries = [];
+  List<int> baseLineEntries = [];
+  List<int> movementEntries = [];
+  List<int> autoFetalMovement = [];
+  List<int> tocoEntries = [];
   int? lengthOfTest;
   int? averageFHR;
 
@@ -46,11 +46,11 @@ class Test {
   String? interpretationType;
   String? interpretationExtraComments;
 
- dynamic associations;
- dynamic autoInterpretations;
+  dynamic associations;
+  dynamic autoInterpretations;
 
   bool? delete = false;
-  DateTime? createdOn;
+  DateTime createdOn = DateTime.now();
   String? createdBy;
 
   /// Constructs a [Test] instance with the given data.
@@ -77,12 +77,12 @@ class Test {
     this.audioFirePath,
     this.isImgSynced,
     this.isAudioSynced,
-    this.bpmEntries,
-    this.bpmEntries2,
-    this.baseLineEntries,
-    this.movementEntries,
-    this.autoFetalMovement,
-    this.tocoEntries,
+    required this.bpmEntries,
+    required this.bpmEntries2,
+    required this.baseLineEntries,
+    required this.movementEntries,
+    required this.autoFetalMovement,
+    required this.tocoEntries,
     this.lengthOfTest,
     this.averageFHR,
     this.live,
@@ -93,7 +93,7 @@ class Test {
     this.associations,
     this.autoInterpretations,
     this.delete = false,
-    this.createdOn,
+    required this.createdOn,
     this.createdBy,
   });
 
@@ -201,14 +201,14 @@ class Test {
         interpretationType = snapshot['interpretationType'],
         interpretationExtraComments = snapshot['interpretationExtraComments'],
         associations = snapshot['association'] ?? <String, dynamic>{},
-        autoInterpretations = snapshot['autoInterpretations'] ?? <String, dynamic>{},
+        autoInterpretations =
+            snapshot['autoInterpretations'] ?? <String, dynamic>{},
         delete = snapshot['delete'],
         createdOn = snapshot['createdOn'],
         createdBy = snapshot['createdBy'];
 
   /// Default constructor for the [Test] class.
   Test();
-
 
   Map<String, Object?> toJson() {
     return {
@@ -246,7 +246,7 @@ class Test {
       'autoInterpretations': autoInterpretations.toString(),
       'type': "test",
       'delete': delete,
-      'createdOn': createdOn,
+      'createdOn': createdOn.toIso8601String(),
       'createdBy': createdBy,
     };
   }
@@ -298,5 +298,4 @@ class Test {
       print('Created By: $createdBy');
     }
   }
-
 }

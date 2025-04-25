@@ -1,7 +1,9 @@
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
+import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/all_mothers/all_mothers_cubit.dart';
+import 'package:fetosense_device_flutter/presentation/details/details_cubit.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:fetosense_device_flutter/presentation/login/login_cubit.dart';
 import 'package:fetosense_device_flutter/presentation/mother_details/mother_details_cubit.dart';
@@ -17,10 +19,10 @@ void main() {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]).then((_) async {
-   ServiceLocator.setupLocator();
-   ServiceLocator.sharedPrefsHelper;
-   PrefService.init();
-   runApp(const MyApp());
+    ServiceLocator.setupLocator();
+    ServiceLocator.sharedPrefsHelper;
+    PrefService.init();
+    runApp(const MyApp());
   });
 }
 
@@ -37,7 +39,8 @@ class MyApp extends StatelessWidget {
           create: (context) => LoginCubit(),
         ),
         BlocProvider(
-          create: (context) => BluetoothConnectionBloc(ServiceLocator.bluetoothServiceHelper),
+          create: (context) =>
+              BluetoothConnectionBloc(ServiceLocator.bluetoothServiceHelper),
         ),
         BlocProvider(
           create: (context) => AllMothersCubit(),
@@ -47,6 +50,9 @@ class MyApp extends StatelessWidget {
         ),
          BlocProvider(
           create: (context) => MotherDetailsCubit(),
+        ),
+         BlocProvider(
+          create: (context) => DetailsCubit(Test()),
         ),
 
       ],
