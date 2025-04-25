@@ -1,17 +1,9 @@
 import 'package:fetosense_device_flutter/data/models/user_model.dart';
 
 class Mother extends UserModel {
-  // String? name;
-  // int? age;
   DateTime? lmp;
   DateTime? edd;
-
-  // @override
-  // int? noOfTests = 0;
-  // String? deviceId;
-  // @override
-  // String? deviceName;
-  // String? type;
+  String? documentId;
 
   Mother();
 
@@ -24,6 +16,7 @@ class Mother extends UserModel {
     type = json['type'];
     noOfTests = json['noOfTests'];
     deviceName = json['deviceName'];
+    documentId = json['documentId'];
   }
 
   @override
@@ -31,6 +24,7 @@ class Mother extends UserModel {
     final data = super.toJson();
     data['lmp'] = lmp?.toIso8601String();
     data['edd'] = edd?.toIso8601String();
+    data['documentId'] = documentId;
     return data;
   }
 }

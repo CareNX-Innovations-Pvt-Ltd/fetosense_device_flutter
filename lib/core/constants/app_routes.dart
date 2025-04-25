@@ -106,7 +106,10 @@ final GoRouter appRouter = GoRouter(
       name: '/all-mothers-view',
       path: AppRoutes.allMothersView,
       builder: (context, state) {
-        return const AllMothersView();
+        final extra = state.extra as bool?;
+        return AllMothersView(
+          autoFocus: extra ?? false,
+        );
       },
     ),
     GoRoute(

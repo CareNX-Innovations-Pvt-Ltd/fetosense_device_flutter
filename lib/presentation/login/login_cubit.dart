@@ -95,6 +95,7 @@ class LoginCubit extends Cubit<LoginState> {
 
             safeData['email'] = email;
             safeData['type'] = "device";
+            safeData['organizationName'] = deviceDoc.data['hospitalName'];
 
             final user = UserModel.fromMap(safeData, deviceDoc.$id);
 

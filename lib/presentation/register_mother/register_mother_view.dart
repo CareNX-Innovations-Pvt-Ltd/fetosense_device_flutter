@@ -45,7 +45,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
     });
   }
 
-  navigate() {
+  navigate(dynamic state) {
     if (route == AppConstants.instantTest) {
       context.read<RegisterMotherCubit>().saveTest(
             nameController.text,
@@ -55,7 +55,9 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
             test,
             phoneNumberController.text,
           );
-      context.pushReplacement(AppRoutes.detailsView, extra: test);
+      if (state is RegisterMotherSuccess) {
+        context.pushReplacement(AppRoutes.detailsView, extra: state.test);
+      }
     } else {
       context
           .read<RegisterMotherCubit>()
@@ -69,8 +71,10 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
           )
           .then((onValue) {
         if (mounted) {
-          context.pushReplacement(AppRoutes.dopplerConnectionView,
-              extra: {'test': test, 'route': AppConstants.registeredMother});
+          if (state is RegisterMotherSuccess) {
+            context.pushReplacement(AppRoutes.dopplerConnectionView,
+                extra: {'test': test, 'route': AppConstants.registeredMother});
+          }
         }
       });
     }
@@ -78,152 +82,178 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = "Alice Wonderland";
+    nameController.text = "Jena McArthy";
     phoneNumberController.text = '1010441000';
-    ageController.text = '32';
+    ageController.text = '35';
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: ColorManager.white,
-        appBar: AppBar(
-          title: const Text('New Mother Registration'),
-          leading: IconButton(
-            onPressed: () {
-              context.pop();
-            },
-            icon: const Icon(Icons.arrow_back),
+    return BlocListener<RegisterMotherCubit, RegisterMotherState>(
+      listener: (context, state) {
+        if (state is RegisterMotherSuccess) {
+          if (route == AppConstants.instantTest) {
+            context.pushReplacement(AppRoutes.detailsView, extra: state.test);
+          } else {
+            context.pushReplacement(
+              AppRoutes.dopplerConnectionView,
+              extra: {
+                'test': state.test,
+                'route': AppConstants.registeredMother,
+                'mother': state.mother,
+              },
+            );
+          }
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: ColorManager.white,
+          appBar: AppBar(
+            title: const Text('New Mother Registration'),
+            leading: IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: const Icon(Icons.arrow_back),
+            ),
           ),
-        ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: SizedBox(
-              width: 500,
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextFormField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        hintText: "Name",
+          body: Center(
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: 500,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextFormField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          hintText: "Name",
+                        ),
+                        keyboardType: TextInputType.name,
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? "Name is required"
+                                : null,
                       ),
-                      keyboardType: TextInputType.name,
-                      validator: (value) =>
-                          value == null || value.trim().isEmpty
-                              ? "Name is required"
-                              : null,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      controller: phoneNumberController,
-                      decoration: const InputDecoration(
-                          hintText: "Phone Number", counterText: ''),
-                      maxLength: 10,
-                      keyboardType: TextInputType.phone,
-                      validator: (value) => value == null || value.length != 10
-                          ? "Enter valid phone number"
-                          : null,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      controller: ageController,
-                      decoration: const InputDecoration(
-                        hintText: "Age",
+                      const SizedBox(
+                        height: 20,
                       ),
-                      keyboardType: TextInputType.number,
-                      validator: (value) =>
-                          value == null || value.trim().isEmpty
-                              ? "Age is required"
-                              : null,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Visibility(
-                      visible: showPatientId,
-                      replacement: Container(),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: patientIdController,
-                            decoration: const InputDecoration(
-                              hintText: "Patient Id",
-                            ),
-                            keyboardType: TextInputType.text,
-                            validator: (value) =>
-                                value == null || value.trim().isEmpty
-                                    ? "Patient ID required"
-                                    : null,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
+                      TextFormField(
+                        controller: phoneNumberController,
+                        decoration: const InputDecoration(
+                            hintText: "Phone Number", counterText: ''),
+                        maxLength: 10,
+                        keyboardType: TextInputType.phone,
+                        validator: (value) =>
+                            value == null || value.length != 10
+                                ? "Enter valid phone number"
+                                : null,
                       ),
-                    ),
-                    DatePickerTextField(
-                      controller: lmpDateController,
-                      label: "LMP Date",
-                      onDateSelected: (DateTime date) {
-                        if (kDebugMode) {
-                          pickedDate = date;
-                          print(pickedDate);
-                        }
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    BlocBuilder<RegisterMotherCubit, RegisterMotherState>(
-                      builder: (context, state) {
-                        if (state is RegisterMotherLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (state is RegisterMotherFailure) {
-                          return Center(
-                            child: Text(state.failure),
-                          );
-                        }
-                        return SizedBox(
-                          height: 60,
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: const ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll<Color>(
-                                ColorManager.primaryButtonColor,
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: ageController,
+                        decoration: const InputDecoration(
+                          hintText: "Age",
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) =>
+                            value == null || value.trim().isEmpty
+                                ? "Age is required"
+                                : null,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Visibility(
+                        visible: showPatientId,
+                        replacement: Container(),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: patientIdController,
+                              decoration: const InputDecoration(
+                                hintText: "Patient Id",
                               ),
+                              keyboardType: TextInputType.text,
+                              validator: (value) =>
+                                  value == null || value.trim().isEmpty
+                                      ? "Patient ID required"
+                                      : null,
                             ),
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                if (pickedDate == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text("Please select LMP date")),
-                                  );
-                                  return;
-                                }
-                                navigate();
-                              }
-                            },
-
-                            child: const Text(
-                              'Register Mother',
-                              style: TextStyle(color: ColorManager.white),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                      DatePickerTextField(
+                        controller: lmpDateController,
+                        label: "LMP Date",
+                        onDateSelected: (DateTime date) {
+                          if (kDebugMode) {
+                            pickedDate = date;
+                            print(pickedDate);
+                          }
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        height: 60,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: const ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll<Color>(
+                              ColorManager.primaryButtonColor,
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ],
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              if (pickedDate == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Please select LMP date")),
+                                );
+                                return;
+                              }
+
+                              final cubit = context.read<RegisterMotherCubit>();
+
+                              if (route == AppConstants.instantTest) {
+                                cubit.saveTest(
+                                  nameController.text,
+                                  ageController.text,
+                                  patientIdController.text,
+                                  pickedDate,
+                                  test,
+                                  phoneNumberController.text,
+                                );
+                              } else {
+                                cubit.saveMother(
+                                  nameController.text,
+                                  ageController.text,
+                                  patientIdController.text,
+                                  pickedDate,
+                                  test,
+                                  phoneNumberController.text,
+                                );
+                              }
+                            }
+                          },
+                          child: const Text(
+                            'Register Mother',
+                            style: TextStyle(color: ColorManager.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

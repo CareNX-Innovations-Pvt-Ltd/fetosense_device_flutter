@@ -80,17 +80,9 @@ class _HomeViewState extends State<HomeView> {
                 PopupMenuItem(
                   value: "Option 1",
                   child: const Text("About"),
-                  onTap: (){
+                  onTap: () {
                     context.push(AppRoutes.aboutView);
                   },
-                ),
-                const PopupMenuItem(
-                  value: "Option 2",
-                  child: Text("AMC Details"),
-                ),
-                const PopupMenuItem(
-                  value: "Option 3",
-                  child: Text("Acoustic Stimulator"),
                 ),
                 PopupMenuItem(
                   value: "Option 3",
@@ -111,19 +103,27 @@ class _HomeViewState extends State<HomeView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextField(
-                  controller: textEditingController,
-                  decoration: InputDecoration(
-                    hintText: "Search for mother's name",
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
+                Hero(
+                  tag: 'search',
+                  child: Material(
+                    child: TextField(
+                      onTap: () {
+                        context.push(AppRoutes.allMothersView, extra: true);
+                      },
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                        hintText: "Search for mother's name",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Colors.grey,
                     ),
                   ),
                 ),

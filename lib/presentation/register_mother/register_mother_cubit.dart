@@ -21,6 +21,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
 
     Databases databases = Databases(client);
     try {
+      var id = ID.unique();
       Mother mother = Mother();
       mother.name = name;
       mother.age = int.parse(age);
@@ -30,11 +31,14 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       mother.type = 'mother';
       mother.noOfTests = 1;
       mother.mobileNo = int.parse(mobile);
+      mother.organizationId = test.organizationId;
+      mother.organizationName = test.organizationName;
+      mother.documentId = id;
 
       await databases.createDocument(
           databaseId: AppConstants.appwriteDatabaseId,
           collectionId: AppConstants.userCollectionId,
-          documentId: ID.unique(),
+          documentId: id,
           data: mother.toJson());
 
       debugPrint('Mother created successfully.');
@@ -45,14 +49,14 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.gAge = gestationalAge;
       test.patientId = patientId;
 
-      await databases.createDocument(
+      await databases.updateDocument(
         databaseId: AppConstants.appwriteDatabaseId,
         collectionId: AppConstants.testsCollectionId,
-        documentId: ID.unique(),
+        documentId: test.documentId!,
         data: test.toJson(),
       );
 
-      emit(RegisterMotherSuccess());
+      emit(RegisterMotherSuccess(test, mother));
     } catch (e, s) {
       if (kDebugMode) {
         print('Error saving test: $e');
@@ -66,6 +70,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       DateTime? pickedDate, Test? test, String mobile) async {
     Databases databases = Databases(client);
     try {
+      var id = ID.unique();
       int gestationalAge = Utilities.getGestationalAgeWeeks(pickedDate!);
       Mother mother = Mother();
       mother.name = name;
@@ -78,12 +83,15 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.age = int.parse(age);
       test.gAge = gestationalAge;
       test.patientId = patientId;
+      mother.documentId = id;
+
       await databases.createDocument(
         databaseId: AppConstants.appwriteDatabaseId,
         collectionId: AppConstants.userCollectionId,
-        documentId: ID.unique(),
+        documentId: id,
         data: mother.toJson(),
       );
+      emit(RegisterMotherSuccess(test , mother));
 
       debugPrint('Mother created successfully.');
       return true;
