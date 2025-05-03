@@ -76,10 +76,10 @@ class FhrPdfView {
 
   /// Generates the NST (Non-Stress Test) graph and returns a list of file paths to the generated images.
   /// [data] contains the test data.
-  /// [_interpretation] is the interpretation data.
+  /// [interpretation] is the interpretation data.
   /// Returns a [Future] that completes with a list of file paths to the generated images.
   Future<List<String>?> getNSTGraph(
-      Test? data, Interpretations2? _interpretation) async {
+      Test? data, Interpretations2? interpretation) async {
     mData = data;
     if (mData!.lengthOfTest! > 3600) {
       auto = false;
@@ -87,13 +87,13 @@ class FhrPdfView {
       timeScaleFactor = 6;
     }
 
-    interpretation = _interpretation;
+    interpretation = interpretation;
 
     pointsPerPage = (10 * timeScaleFactor * XDIV);
     pointsPerDiv = timeScaleFactor * 10;
-    int pages = (mData!.bpmEntries!.length / pointsPerPage).truncate();
+    int pages = (mData!.bpmEntries.length / pointsPerPage).truncate();
     //pages += 1;
-    if (mData!.bpmEntries!.length % pointsPerPage > 20) pages++;
+    if (mData!.bpmEntries.length % pointsPerPage > 20) pages++;
     //pages++;
     //bitmaps = new Bitmap[pages];
     recorder = <ui.PictureRecorder>[];
@@ -120,11 +120,11 @@ class FhrPdfView {
 
     if (interpretation != null && auto && highlight) {
       drawInterpretationAreas(
-          interpretation!.getAccelerationsList(), pages, graphSafeZone);
+          interpretation.getAccelerationsList(), pages, graphSafeZone);
       drawInterpretationAreas(
-          interpretation!.getDecelerationsList(), pages, graphUnSafeZone);
+          interpretation.getDecelerationsList(), pages, graphUnSafeZone);
       drawInterpretationAreas(
-          interpretation!.getNoiseAreaList(), pages, graphNoiseZone);
+          interpretation.getNoiseAreaList(), pages, graphNoiseZone);
     }
 
     for (int i = 0; i < pages; i++) {
@@ -146,7 +146,7 @@ class FhrPdfView {
     String path = directory.path;
     print(path);
     await io.Directory('$path/$directoryName').create(recursive: true);
-    var file = io.File('$path/$directoryName/temp${i}.png');
+    var file = io.File('$path/$directoryName/temp$i.png');
     file.writeAsBytesSync(pngBytes.buffer.asInt8List());
     print(file.path);
     return file.path;
@@ -462,8 +462,8 @@ class FhrPdfView {
   void displayInformation(int pageNumber) {
     int rows = 3;
 
-    String date = DateFormat('dd MMM yyyy').format(mData!.createdOn!);
-    String time = DateFormat('hh:mm a').format(mData!.createdOn!);
+    String date = DateFormat('dd MMM yyyy').format(mData!.createdOn);
+    String time = DateFormat('hh:mm a').format(mData!.createdOn);
 
     //String.format("%s  %s %s", now.substring(11, 16), now.substring(8, 10),now.substring(4, 10), now.substring(now.lastIndexOf(" ")+3));
 
@@ -584,7 +584,7 @@ class FhrPdfView {
 
     canvas[pageNumber].drawParagraph(
         getParagraphInfo(
-            "FM : ${mData!.movementEntries!.length.toString() ?? "--"} man/ ${mData!.autoFetalMovement!.length.toString() ?? "--"} auto "),
+            "FM : ${mData!.movementEntries.length.toString() ?? "--"} man/ ${mData!.autoFetalMovement.length.toString() ?? "--"} auto "),
         Offset(0, rowPos));
 
     rowPos += rowHeight;
@@ -632,18 +632,19 @@ class FhrPdfView {
         getParagraphInfo("Y-Axis : 20 BPM/DIV"), Offset(0, rowPos));
     rowPos += rowHeight * 1.5;
 
-    if (mData!.interpretationType != null && comments)
+    if (mData!.interpretationType != null && comments) {
       canvas[pageNumber].drawParagraph(
           getParagraphLong(
-              "Doctor\'s comments : ${mData!.interpretationType} - ${mData!.interpretationExtraComments ?? ''}",
+              "Doctor's comments : ${mData!.interpretationType} - ${mData!.interpretationExtraComments ?? ''}",
               2500),
           Offset(0, rowPos));
+    }
 
     //if(auto) {
-    String _disclaimer =
+    String disclaimer =
         "Disclaimer : NST auto interpretation does not provide medical advice it is intended for informational purposes only. It is not a substitute for professional medical advice, diagnosis or treatment.";
     canvas[pageNumber].drawParagraph(
-        getParagraphLong(_disclaimer, 2500, fontsize: 18),
+        getParagraphLong(disclaimer, 2500, fontsize: 18),
         Offset(0, screenHeight - (pixelsPerOneMM! * 2)));
   }
 
@@ -711,10 +712,6 @@ class FhrPdfView {
   /// [tocoEntries] is the list of TOCO entries.
   /// [pages] is the number of pages to draw the TOCO line on.
   void drawTocoLine(List<int>? tocoEntries, int pages) {
-    if (mData!.tocoEntries == null) {
-      return;
-    }
-
     for (int pageNumber = 0; pageNumber < pages; pageNumber++) {
       double startX, startY, stopX = 0, stopY = 0;
       int startData, stopData = 0;
@@ -862,9 +859,9 @@ class FhrPdfView {
   double getYValueFromBPM(int bpm) {
     double adjustedBPM = (bpm - scaleOrigin).toDouble();
     adjustedBPM = adjustedBPM / 2; //scaled down version for mobile phone
-    double y_value = yOrigin - (adjustedBPM * pixelsPerOneMM!);
+    double yValue = yOrigin - (adjustedBPM * pixelsPerOneMM!);
     //Log.i("bpmvalue",bpm+" "+adjustedBPM+" "+y_value);
-    return y_value;
+    return yValue;
   }
 
   /// Returns the Y-coordinate on the screen for the given TOCO value.
@@ -882,13 +879,13 @@ class FhrPdfView {
   /// \[text\] is the text to create the paragraph for.
   /// Returns a \[ui.Paragraph\] object.
   ui.Paragraph getParagraph(String text) {
-    if (text.length == 1) text = "0${text}";
+    if (text.length == 1) text = "0$text";
     ui.ParagraphBuilder builder = ui.ParagraphBuilder(
         ui.ParagraphStyle(fontSize: 30.0, textAlign: TextAlign.right))
       ..pushStyle(ui.TextStyle(color: Colors.black))
       ..addText(text);
     final ui.Paragraph paragraph = builder.build()
-      ..layout(ui.ParagraphConstraints(width: 80));
+      ..layout(const ui.ParagraphConstraints(width: 80));
     return paragraph;
   }
 
@@ -897,7 +894,7 @@ class FhrPdfView {
   /// \[fontsize\] is the font size to use for the paragraph.
   /// Returns a \[ui.Paragraph\] object.
   ui.Paragraph getParagraphInfo(String text, {double fontsize = 30}) {
-    if (text.length == 1) text = "0${text}";
+    if (text.length == 1) text = "0$text";
     ui.ParagraphBuilder builder = ui.ParagraphBuilder(
         ui.ParagraphStyle(fontSize: fontsize, textAlign: TextAlign.left))
       ..pushStyle(ui.TextStyle(color: Colors.black))
@@ -915,7 +912,7 @@ class FhrPdfView {
   /// Returns a \[ui.Paragraph\] object.
   ui.Paragraph getParagraphLong(String text, double width,
       {double fontsize = 30, TextAlign align = TextAlign.left}) {
-    if (text.length == 1) text = "0${text}";
+    if (text.length == 1) text = "0$text";
     ui.ParagraphBuilder builder = ui.ParagraphBuilder(
         ui.ParagraphStyle(fontSize: fontsize, textAlign: align))
       ..pushStyle(ui.TextStyle(color: Colors.black))

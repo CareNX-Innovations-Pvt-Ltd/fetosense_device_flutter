@@ -99,15 +99,6 @@ class _AllMothersViewState extends State<AllMothersView> {
                 if (mothers.isEmpty) {
                   return const Center(child: Text("No mothers found."));
                 }
-
-                // final rows = mothers.map((mother) {
-                //   return {
-                //     "All mothers": mother.name ?? "Unknown",
-                //     "AGE": mother.age ?? "-",
-                //     "GEST": Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now()),
-                //   };
-                // }).toList();
-
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

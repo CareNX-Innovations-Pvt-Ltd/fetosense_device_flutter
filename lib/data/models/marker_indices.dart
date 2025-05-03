@@ -1,5 +1,5 @@
 class MarkerIndices {
-  MarkerIndices() {}
+  MarkerIndices();
   MarkerIndices.fromData(int from, int to) {
     this.from = from;
     this.to = to;

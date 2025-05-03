@@ -1,7 +1,9 @@
 import 'package:fetosense_device_flutter/data/models/user_model.dart';
 
 class Doctor extends UserModel {
+  @override
   int? noOfMother = 0;
+  @override
   int? noOfTests = 0;
 
   Doctor();

@@ -32,6 +32,7 @@ class SwitchPreference extends StatefulWidget {
     this.switchActiveColor,
   });
 
+  @override
   _SwitchPreferenceState createState() => _SwitchPreferenceState();
 }
 

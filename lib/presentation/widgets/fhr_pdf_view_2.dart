@@ -97,9 +97,9 @@ class FhrPdfView2 {
 
     pointsPerPage = (10 * timeScaleFactor * XDIV);
     pointsPerDiv = timeScaleFactor * 10;
-    int pages = (mData!.bpmEntries!.length / pointsPerPage).truncate();
+    int pages = (mData!.bpmEntries.length / pointsPerPage).truncate();
     //pages += 1;
-    if (mData!.bpmEntries!.length % pointsPerPage > 20) pages++;
+    if (mData!.bpmEntries.length % pointsPerPage > 20) pages++;
     //pages++;
     //bitmaps = new Bitmap[pages];
     recorder = <ui.PictureRecorder>[];
@@ -482,8 +482,8 @@ class FhrPdfView2 {
   void displayInformation(int pageNumber) {
     int rows = 3;
 
-    String date = DateFormat('dd MMM yyyy').format(mData!.createdOn!);
-    String time = DateFormat('hh:mm a').format(mData!.createdOn!);
+    String date = DateFormat('dd MMM yyyy').format(mData!.createdOn);
+    String time = DateFormat('hh:mm a').format(mData!.createdOn);
 
     //String.format("%s  %s %s", now.substring(11, 16), now.substring(8, 10),now.substring(4, 10), now.substring(now.lastIndexOf(" ")+3));
 
@@ -602,7 +602,7 @@ class FhrPdfView2 {
 
     canvas[pageNumber].drawParagraph(
         getParagraphInfo(
-            "FM : ${mData!.movementEntries!.length ?? "--"} man/ ${mData!.autoFetalMovement!.length ?? "--"} auto "),
+            "FM : ${mData!.movementEntries.length ?? "--"} man/ ${mData!.autoFetalMovement.length ?? "--"} auto "),
         Offset(0, rowPos));
 
     rowPos += rowHeight;
@@ -702,10 +702,6 @@ class FhrPdfView2 {
 
   /// Draws the Toco line on the graph for the given pages.
   void drawTocoLine(List<int>? tocoEntries, int pages, Paint? lineStyle) {
-    if (mData!.tocoEntries == null) {
-      return;
-    }
-
     for (int pageNumber = 0; pageNumber < pages; pageNumber++) {
       double startX, startY, stopX = 0, stopY = 0;
       int startData, stopData = 0;
@@ -747,7 +743,7 @@ class FhrPdfView2 {
   /// Draws the movements on the graph for the given pages.
   void drawMovements(List<int>? movementList, int pages) {
     for (int pageNumber = 0; pageNumber < pages; pageNumber++) {
-      if (movementList == null || movementList.length == 0) return;
+      if (movementList == null || movementList.isEmpty) return;
 
       double increment = (pixelsPerOneMM! / timeScaleFactor);
       for (int i = 0; i < movementList.length; i++) {
@@ -787,7 +783,7 @@ class FhrPdfView2 {
   /// Draws the automatic movements on the graph for the given pages.
   void drawAutoMovements(List<int>? movementList, int pages) {
     for (int pageNumber = 0; pageNumber < pages; pageNumber++) {
-      if (movementList == null || movementList.length == 0) return;
+      if (movementList == null || movementList.isEmpty) return;
 
       double increment = (pixelsPerOneMM! / timeScaleFactor);
       for (int i = 0; i < movementList.length; i++) {

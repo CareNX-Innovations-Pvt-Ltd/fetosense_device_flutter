@@ -107,7 +107,7 @@ class PfdBasePage extends pw.StatelessWidget {
                                 ),
                                 pw.TextSpan(
                                   text:
-                                      "\n: ${(data.movementEntries?.length)} manual / ${(data.autoFetalMovement?.length)} auto",
+                                      "\n: ${(data.movementEntries.length)} manual / ${(data.autoFetalMovement.length)} auto",
                                 ),
                                 pw.TextSpan(
                                   text:
@@ -333,9 +333,9 @@ class Header extends pw.StatelessWidget {
                     content: data.organizationName ?? ""),
                 HeaderData(
                     title: "Doctor Name", content: data.doctorName ?? ""),
-                HeaderData(title: "DATE", content: data.createdOn!.format()),
+                HeaderData(title: "DATE", content: data.createdOn.format()),
                 HeaderData(
-                    title: "TIME", content: data.createdOn!.format('hh:mm a')),
+                    title: "TIME", content: data.createdOn.format('hh:mm a')),
               ]),
           pw.Column(
               mainAxisAlignment: pw.MainAxisAlignment.start,

@@ -204,7 +204,9 @@ class Test {
         autoInterpretations =
             snapshot['autoInterpretations'] ?? <String, dynamic>{},
         delete = snapshot['delete'],
-        createdOn = snapshot['createdOn'],
+        createdOn = snapshot['createdOn'] != null
+            ? DateTime.parse(snapshot['createdOn'])
+            : DateTime.now(),
         createdBy = snapshot['createdBy'];
 
   /// Default constructor for the [Test] class.

@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +20,7 @@ class PrefService {
   }
 
   static void setDefaultValues(Map<String, dynamic> values) {
-    for (String key in values.keys) {
+    for (var key in values.keys) {
       if (sharedPreferences!.containsKey(prefix + key)) continue;
       var val = values[key];
       if (val is bool) {
@@ -136,7 +135,7 @@ class PrefService {
     }
   }
 
-  static get(String key, {bool ignoreCache = false}) {
+  static dynamic get(String key, {bool ignoreCache = false}) {
     checkInit();
     if (_justCache && !ignoreCache) {
       return cache['$prefix$key'];
@@ -191,7 +190,7 @@ class PrefService {
   static void rebuildCache() {
     cache = {};
 
-    for (String key in sharedPreferences!.getKeys()) {
+    for (var key in sharedPreferences!.getKeys()) {
       cache[key] = sharedPreferences!.get(key);
     }
   }
@@ -206,7 +205,7 @@ class PrefService {
 
   static void applyCache() {
     disableCaching();
-    for (String key in cache.keys) {
+    for (var key in cache.keys) {
       var val = cache[key];
       if (val is bool) {
         sharedPreferences!.setBool(key, val);

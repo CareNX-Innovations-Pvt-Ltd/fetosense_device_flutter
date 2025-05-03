@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:fetosense_device_flutter/core/utils/fhr_byte_data_buffer.dart';
 import 'package:ffi/ffi.dart';
-import 'package:flutter/material.dart';
 
 /// Native function type definitions
 typedef DecodeAdpcmNative = Int32 Function(

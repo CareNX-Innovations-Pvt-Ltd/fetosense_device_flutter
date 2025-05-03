@@ -534,7 +534,7 @@ class GraphPainter extends CustomPainter {
   void drawMovements(Canvas canvas) {
     //List<int> movementList = [2, 12, 24,60, 120, 240, 300, 420, 600,690,1000,1100,1140, 1220, 1240, 1300, 1420, 1600];
     List<int>? movementList = test!.movementEntries;
-    if (movementList == null || movementList.isEmpty) return;
+    if (movementList.isEmpty) return;
     /*if (movementList == null && movementList.size() > 0)
             return;*/
 
@@ -581,7 +581,7 @@ class GraphPainter extends CustomPainter {
   void drawAutoMovements(Canvas canvas) {
     //List<int> movementList = [2, 12, 24,60, 120, 240, 300, 420, 600,690,1000,1100,1140, 1220, 1240, 1300, 1420, 1600];
     List<int>? movementList = test!.autoFetalMovement;
-    if (movementList == null || movementList.isEmpty) return;
+    if (movementList.isEmpty) return;
     /*if (movementList == null && movementList.size() > 0)
             return;*/
 
@@ -640,7 +640,7 @@ class GraphPainter extends CustomPainter {
   /// Draws data points and connecting lines for TOCO measurements
   /// [canvas] is the canvas to draw on.
   void drawTocoLine(Canvas canvas) {
-    if (test!.tocoEntries == null || test!.tocoEntries!.isEmpty) {
+    if (test!.tocoEntries.isEmpty) {
       return;
     }
 
@@ -649,18 +649,18 @@ class GraphPainter extends CustomPainter {
 
     int i = mOffset;
     stopX = getScreenXToco(i);
-    stopY = getYValueFromToco(test!.tocoEntries![i]);
+    stopY = getYValueFromToco(test!.tocoEntries[i]);
     for (;
-    i < test!.tocoEntries!.length - 1 && i < (mOffset + pointsPerPage);
+    i < test!.tocoEntries.length - 1 && i < (mOffset + pointsPerPage);
     i++) {
       startData = stopData;
-      stopData = test!.tocoEntries![i];
+      stopData = test!.tocoEntries[i];
 
       startX = stopX;
       startY = stopY;
 
       stopX = getScreenXToco(i);
-      stopY = getYValueFromToco(test!.tocoEntries![i]); // getScreenY(stopData);
+      stopY = getYValueFromToco(test!.tocoEntries[i]); // getScreenY(stopData);
 
       if (i < 1) continue;
       /*if (Math.abs(startData - stopData) > 150) {
@@ -785,7 +785,7 @@ class GraphPainter extends CustomPainter {
   /// Returns clamped offset between 0 and maximum data points.
   int trap(int pos) {
     if (pos < 0) return 0;
-    int max = test!.bpmEntries!.length + pointsPerDiv - pointsPerPage;
+    int max = test!.bpmEntries.length + pointsPerDiv - pointsPerPage;
     if (max < 0) max = 0;
 
     if (pos > max) pos = max;

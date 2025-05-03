@@ -25,6 +25,7 @@ class DropdownPreference<T> extends StatefulWidget {
     this.disabled = false,
   });
 
+  @override
   _DropdownPreferenceState<T> createState() => _DropdownPreferenceState<T>();
 }
 
@@ -79,13 +80,13 @@ In release mode, the default value ($value) will silently be used.
 
   onChange(T? val) {
     if (val is String) {
-      this.setState(() => PrefService.setString(widget.localKey, val));
+      setState(() => PrefService.setString(widget.localKey, val));
     } else if (val is int) {
-      this.setState(() => PrefService.setInt(widget.localKey, val));
+      setState(() => PrefService.setInt(widget.localKey, val));
     } else if (val is double) {
-      this.setState(() => PrefService.setDouble(widget.localKey, val));
+      setState(() => PrefService.setDouble(widget.localKey, val));
     } else if (val is bool) {
-      this.setState(() => PrefService.setBool(widget.localKey, val));
+      setState(() => PrefService.setBool(widget.localKey, val));
     }
     if (widget.onChange != null) widget.onChange!(val);
   }

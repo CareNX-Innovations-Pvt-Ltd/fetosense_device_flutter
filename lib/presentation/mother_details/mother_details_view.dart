@@ -1,5 +1,3 @@
-import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
-import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/utils/utilities.dart';
 import 'package:fetosense_device_flutter/data/models/mother_model.dart';

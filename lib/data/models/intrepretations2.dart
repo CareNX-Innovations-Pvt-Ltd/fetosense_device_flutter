@@ -658,15 +658,15 @@ class Interpretations2 {
   }
 
   /*convert epoch to bpm*/
-  List<int> convertBaselineArrayToBpmList(List<int?> _baselineArray) {
-    List<int> _baselineBpmList = [];
-    for (int i = 0; i < _baselineArray.length - 1; i++) {
+  List<int> convertBaselineArrayToBpmList(List<int?> baselineArray) {
+    List<int> baselineBpmList = [];
+    for (int i = 0; i < baselineArray.length - 1; i++) {
       for (int j = (i * FACTOR); j < ((i + 1) * FACTOR); j++) {
-        if (_baselineArray[i] == 0) {
-          _baselineBpmList.add(0);
+        if (baselineArray[i] == 0) {
+          baselineBpmList.add(0);
         } else {
-          _baselineBpmList
-              .add((SIXTY_THOUSAND_MS / _baselineArray[i]!).truncate());
+          baselineBpmList
+              .add((SIXTY_THOUSAND_MS / baselineArray[i]!).truncate());
         }
       }
     }
@@ -677,7 +677,7 @@ class Interpretations2 {
             _baselineBpmList.set(i, getWindowAvreage(_baselineBpmList, i, window));
         }*/
 
-    return _baselineBpmList;
+    return baselineBpmList;
   }
 
   /*convert epoch to bpm*/
@@ -936,9 +936,8 @@ class Interpretations2 {
     maxExcursion = 0;
 
     */
-  /** second criteria **//*
+  /// second criteria */*
 
-    */
 /*for (int i = 0; i < size; i++) {
       int difference = baselineEpochBpm[i]! - millisecondsEpochBpm[i]!;
 
@@ -1176,7 +1175,7 @@ class Interpretations2 {
     // todo: consider low variations
 
     int sum = 0;
-    int _basalHeartRate = 0;
+    int basalHeartRate = 0;
     int errorCount = 0;
     try {
       for (int i = 0; i < list.length; i++) {
@@ -1187,20 +1186,20 @@ class Interpretations2 {
         sum += list[i]!;
         //Log.i("clean bpm",cleanBaselineEpochBpm[i]+"");
       }
-      _basalHeartRate = (sum / (list.length - errorCount)).truncate();
+      basalHeartRate = (sum / (list.length - errorCount)).truncate();
 
       // rounding of to nearest multiple of 5
-      if (_basalHeartRate % 5 >= 3) {
-        _basalHeartRate = _basalHeartRate - (_basalHeartRate % 5);
-        _basalHeartRate += 5;
+      if (basalHeartRate % 5 >= 3) {
+        basalHeartRate = basalHeartRate - (basalHeartRate % 5);
+        basalHeartRate += 5;
       } else {
-        _basalHeartRate = _basalHeartRate - (_basalHeartRate % 5);
+        basalHeartRate = basalHeartRate - (basalHeartRate % 5);
       }
       // rounding off ends
-    } catch (ex, trace) {
+    } catch (ex) {
       print(ex.toString());
     }
-    return _basalHeartRate;
+    return basalHeartRate;
   }
 
   void calculateShortTermVariability() {

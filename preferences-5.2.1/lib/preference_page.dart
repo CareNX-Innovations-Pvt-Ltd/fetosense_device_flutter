@@ -6,6 +6,7 @@ class PreferencePage extends StatefulWidget {
   final List<Widget> preferences;
   PreferencePage(this.preferences);
 
+  @override
   PreferencePageState createState() => PreferencePageState();
 }
 
