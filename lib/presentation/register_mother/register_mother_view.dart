@@ -2,6 +2,7 @@ import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/utils/preferences.dart';
+import 'package:fetosense_device_flutter/data/models/doctor_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/register_mother/register_mother_cubit.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/date_picker_widget.dart';
@@ -32,6 +33,9 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
   DateTime? pickedDate;
   bool showPatientId = false;
   final _formKey = GlobalKey<FormState>();
+  Doctor? selectedDoctor;
+
+  List<Doctor> doctorList = [];
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
           GetIt.I<PreferenceHelper>().getBool(AppConstants.patientIdKey) ??
               false;
     });
+    context.read<RegisterMotherCubit>().loadDoctors();
   }
 
   navigate(dynamic state) {
@@ -54,6 +59,8 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
             pickedDate,
             test,
             phoneNumberController.text,
+            selectedDoctor!.uid ?? '',
+            selectedDoctor!.name ?? '',
           );
       if (state is RegisterMotherSuccess) {
         context.pushReplacement(AppRoutes.detailsView, extra: state.test);
@@ -68,6 +75,8 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
             pickedDate,
             test,
             phoneNumberController.text,
+            selectedDoctor!.uid ?? '',
+            selectedDoctor!.name ?? '',
           )
           .then((onValue) {
         if (mounted) {
@@ -82,9 +91,9 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = "Jena McArthy";
-    phoneNumberController.text = '1010441000';
-    ageController.text = '35';
+    nameController.text = "Jen";
+    phoneNumberController.text = '1010441110';
+    ageController.text = '30';
 
     return BlocListener<RegisterMotherCubit, RegisterMotherState>(
       listener: (context, state) {
@@ -126,18 +135,14 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                     children: [
                       TextFormField(
                         controller: nameController,
-                        decoration: const InputDecoration(
-                          hintText: "Name",
-                        ),
+                        decoration: const InputDecoration(hintText: "Name"),
                         keyboardType: TextInputType.name,
                         validator: (value) =>
                             value == null || value.trim().isEmpty
                                 ? "Name is required"
                                 : null,
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: phoneNumberController,
                         decoration: const InputDecoration(
@@ -149,23 +154,17 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                 ? "Enter valid phone number"
                                 : null,
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: ageController,
-                        decoration: const InputDecoration(
-                          hintText: "Age",
-                        ),
+                        decoration: const InputDecoration(hintText: "Age"),
                         keyboardType: TextInputType.number,
                         validator: (value) =>
                             value == null || value.trim().isEmpty
                                 ? "Age is required"
                                 : null,
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       Visibility(
                         visible: showPatientId,
                         replacement: Container(),
@@ -173,18 +172,15 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                           children: [
                             TextFormField(
                               controller: patientIdController,
-                              decoration: const InputDecoration(
-                                hintText: "Patient Id",
-                              ),
+                              decoration:
+                                  const InputDecoration(hintText: "Patient Id"),
                               keyboardType: TextInputType.text,
                               validator: (value) =>
                                   value == null || value.trim().isEmpty
                                       ? "Patient ID required"
                                       : null,
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
+                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -192,26 +188,49 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                         controller: lmpDateController,
                         label: "LMP Date",
                         onDateSelected: (DateTime date) {
-                          if (kDebugMode) {
-                            pickedDate = date;
-                            print(pickedDate);
-                          }
+                          pickedDate = date;
+                          if (kDebugMode) print(pickedDate);
                         },
                       ),
-                      const SizedBox(
-                        height: 20,
+                      const SizedBox(height: 20),
+
+                      /// NEW: Doctor Dropdown
+                      BlocBuilder<RegisterMotherCubit, RegisterMotherState>(
+                        builder: (context, state) {
+                          if (state is RegisterMotherDoctorLoaded) {
+                            return DropdownButtonFormField<Doctor>(
+                              value: selectedDoctor,
+                              decoration: const InputDecoration(
+                                  hintText: "Select Doctor"),
+                              items: state.doctors.map((doctor) {
+                                return DropdownMenuItem<Doctor>(
+                                  value: doctor,
+                                  child: Text(doctor.name ?? ''),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                print('id : ${value?.uid}');
+                                print('id : ${value?.name}');
+                                setState(() {
+                                  selectedDoctor = value;
+                                });
+                              },
+                            );
+                          } else if (state is RegisterMotherLoading) {
+                            return const CircularProgressIndicator();
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+
+                      const SizedBox(height: 40),
                       SizedBox(
                         height: 60,
                         width: double.infinity,
                         child: ElevatedButton(
                           style: const ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll<Color>(
-                              ColorManager.primaryButtonColor,
-                            ),
+                            backgroundColor: WidgetStatePropertyAll(
+                                ColorManager.primaryButtonColor),
                           ),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -233,6 +252,8 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                   pickedDate,
                                   test,
                                   phoneNumberController.text,
+                                  selectedDoctor!.uid ?? '',
+                                  selectedDoctor!.name ?? '',
                                 );
                               } else {
                                 cubit.saveMother(
@@ -242,6 +263,8 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                   pickedDate,
                                   test,
                                   phoneNumberController.text,
+                                  selectedDoctor!.uid ?? '',
+                                  selectedDoctor!.name ?? '',
                                 );
                               }
                             }

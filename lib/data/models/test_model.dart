@@ -50,7 +50,7 @@ class Test {
   dynamic autoInterpretations;
 
   bool? delete = false;
-  DateTime createdOn = DateTime.now();
+  dynamic createdOn = DateTime.now();
   String? createdBy;
 
   /// Constructs a [Test] instance with the given data.

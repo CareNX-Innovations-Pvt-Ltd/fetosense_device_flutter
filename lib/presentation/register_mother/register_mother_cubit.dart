@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
 import 'package:fetosense_device_flutter/core/utils/utilities.dart';
+import 'package:fetosense_device_flutter/data/models/doctor_model.dart';
 import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:flutter/foundation.dart';
@@ -14,9 +15,19 @@ part 'register_mother_state.dart';
 class RegisterMotherCubit extends Cubit<RegisterMotherState> {
   RegisterMotherCubit() : super(RegisterMotherInitial());
   final client = GetIt.I<AppwriteService>().client;
+  String? selectedDoctorId;
+  List<Doctor> doctors = [];
 
-  Future<void> saveTest(String name, String age, String patientId,
-      DateTime? pickedDate, Test? test, String mobile) async {
+  Future<void> saveTest(
+    String name,
+    String age,
+    String patientId,
+    DateTime? pickedDate,
+    Test? test,
+    String mobile,
+    String doctorId,
+    String doctorName,
+  ) async {
     emit(RegisterMotherLoading());
 
     Databases databases = Databases(client);
@@ -34,6 +45,10 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       mother.organizationId = test.organizationId;
       mother.organizationName = test.organizationName;
       mother.documentId = id;
+      mother.doctorId = doctorId;
+      test.doctorId = doctorId;
+      test.doctorName = doctorName;
+      mother.doctorName = doctorName;
 
       await databases.createDocument(
           databaseId: AppConstants.appwriteDatabaseId,
@@ -66,8 +81,30 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
     }
   }
 
-  Future<bool?> saveMother(String name, String age, String patientId,
-      DateTime? pickedDate, Test? test, String mobile) async {
+  Future<void> loadDoctors() async {
+    Databases databases = Databases(client);
+    final doctorDocs = await databases.listDocuments(
+      databaseId: AppConstants.appwriteDatabaseId,
+      collectionId: AppConstants.userCollectionId,
+      queries: [Query.equal('type', 'doctor')],
+    );
+
+    doctors = doctorDocs.documents
+        .map((doc) => Doctor.fromMap(doc.data, doc.$id))
+        .toList();
+    emit(RegisterMotherDoctorLoaded(doctors));
+  }
+
+  Future<bool?> saveMother(
+    String name,
+    String age,
+    String patientId,
+    DateTime? pickedDate,
+    Test? test,
+    String mobile,
+    String doctorId,
+    String doctorName,
+  ) async {
     Databases databases = Databases(client);
     try {
       var id = ID.unique();
@@ -84,6 +121,10 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.gAge = gestationalAge;
       test.patientId = patientId;
       mother.documentId = id;
+      mother.doctorId = doctorId;
+      test.doctorId = doctorId;
+      test.doctorName = doctorName;
+      mother.doctorName = doctorName;
 
       await databases.createDocument(
         databaseId: AppConstants.appwriteDatabaseId,
@@ -91,7 +132,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
         documentId: id,
         data: mother.toJson(),
       );
-      emit(RegisterMotherSuccess(test , mother));
+      emit(RegisterMotherSuccess(test, mother));
 
       debugPrint('Mother created successfully.');
       return true;

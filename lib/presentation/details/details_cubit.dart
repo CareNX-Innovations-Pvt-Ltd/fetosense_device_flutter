@@ -49,7 +49,7 @@ class DetailsCubit extends Cubit<DetailsState> {
     String movementsStr = movements < 10 ? "0$movements" : '$movements';
 
     if (test.live!) {
-      int timDiff = DateTime.now().millisecondsSinceEpoch - test.createdOn.millisecondsSinceEpoch;
+      num timDiff = DateTime.now().millisecondsSinceEpoch - test.createdOn.millisecondsSinceEpoch;
       timDiff = (timDiff / 1000).truncate();
     }
 

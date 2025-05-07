@@ -4,6 +4,7 @@ class Mother extends UserModel {
   DateTime? lmp;
   DateTime? edd;
   String? documentId;
+  String? doctorName;
 
   Mother();
 
@@ -17,6 +18,7 @@ class Mother extends UserModel {
     noOfTests = json['noOfTests'];
     deviceName = json['deviceName'];
     documentId = json['documentId'];
+    doctorName = json['doctorName'];
   }
 
   @override
@@ -25,6 +27,7 @@ class Mother extends UserModel {
     data['lmp'] = lmp?.toIso8601String();
     data['edd'] = edd?.toIso8601String();
     data['documentId'] = documentId;
+    data['doctorName'] = doctorName;
     return data;
   }
 }

@@ -129,6 +129,8 @@ class TestViewState extends State<TestView> {
   }
 
   saveTest() async {
+    test!.doctorName = mother!.doctorName;
+    test!.doctorId = mother!.doctorId;
     Databases databases = Databases(client.client);
     try {
       Document result = await databases.updateDocument(
@@ -221,10 +223,10 @@ class TestViewState extends State<TestView> {
     // 30-second update timer
     _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
       if (isTestRunning) {
-        print('🟡 Auto-updating test...');
+        debugPrint('🟡 Auto-updating test...');
         _updateTest();
       } else {
-        print('🛑 Stopping update timer');
+        debugPrint('🛑 Stopping update timer');
         _updateTimer?.cancel();
       }
     });
