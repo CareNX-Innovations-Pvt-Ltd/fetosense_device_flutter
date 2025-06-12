@@ -1,5 +1,20 @@
 // import 'package:url_launcher/url_launcher.dart';
 
+/// A utility class providing helper methods for common app functionalities.
+///
+/// This class includes static methods for:
+/// - Launching phone dialer and email apps (currently commented out)
+/// - Calculating gestational age in weeks from the last menstrual period
+/// - Estimating the last menstrual period from gestational age in weeks
+/// - Initializing screen size configuration using [ScreenUtil]
+///
+/// Example usage:
+/// ```dart
+/// int weeks = Utilities.getGestationalAgeWeeks(lmpDate);
+/// DateTime lmp = Utilities.getLmpFromGestationalAgeWeeks(gestationalWeeks);
+/// Utilities().setScreenUtil(context, width: 360, height: 690);
+/// ```
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
  class Utilities {

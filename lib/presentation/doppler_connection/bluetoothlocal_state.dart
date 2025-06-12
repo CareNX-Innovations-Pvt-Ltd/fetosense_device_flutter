@@ -1,5 +1,19 @@
 part of 'bluetoothlocal_bloc.dart';
 
+/// Represents the state of the Bluetooth connection for local Doppler devices.
+///
+/// `BluetoothConnectionStateLocal` holds all relevant data for managing and displaying
+/// Bluetooth connection status, including the list of paired devices, the currently
+/// connected device, received data, scanning/connecting flags, and error messages.
+/// This state is used by [BluetoothConnectionBloc] to emit updates to the UI.
+///
+/// Use [copyWith] to create updated copies of the state with modified fields.
+///
+/// Example usage:
+/// ```dart
+/// final newState = state.copyWith(isScanning: true);
+/// ```
+
 class BluetoothConnectionStateLocal extends Equatable {
   final List<BluetoothDevice> pairedDevices;
   final BluetoothDevice? connectedDevice;

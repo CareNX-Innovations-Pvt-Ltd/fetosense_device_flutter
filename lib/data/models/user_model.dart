@@ -1,5 +1,19 @@
 import 'dart:convert';
 
+/// Represents a user in the system, encapsulating common user attributes.
+///
+/// The `UserModel` class provides a flexible data structure for storing user-related
+/// information such as personal details, organization, device, account status, and
+/// various metadata. It supports initialization with named parameters, from a map,
+/// and from JSON, and provides serialization to JSON.
+///
+/// Example usage:
+/// ```dart
+/// final user = UserModel.withData(name: 'Alice', email: 'alice@example.com');
+/// Map<String, Object?> json = user.toJson();
+/// final userFromMap = UserModel.fromMap(snapshot, id);
+/// ```
+
 class UserModel {
   String? name;
   String? email;

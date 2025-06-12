@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// A reusable text field widget that displays a date picker dialog on tap.
+///
+/// `DatePickerTextField` shows a read-only text field with a calendar icon.
+/// When tapped, it opens a date picker dialog, allowing the user to select a date.
+/// The selected date is formatted as `dd-MM-yyyy` and displayed in the text field.
+/// An optional callback [onDateSelected] is triggered when a date is picked.
+///
+/// Example usage:
+/// ```dart
+/// DatePickerTextField(
+///   controller: myController,
+///   label: "Birth Date",
+///   onDateSelected: (date) => print(date),
+/// )
+/// ```
+
 class DatePickerTextField extends StatefulWidget {
   final TextEditingController controller;
   final String label;

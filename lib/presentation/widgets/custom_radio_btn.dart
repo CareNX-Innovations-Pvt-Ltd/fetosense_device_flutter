@@ -1,5 +1,27 @@
 import 'package:flutter/material.dart';
 
+/// A customizable radio button group widget supporting horizontal and vertical layouts.
+///
+/// `CustomRadioBtn` displays a group of selectable buttons with custom labels, values,
+/// colors, shapes, and elevation. It allows for both row and column arrangements,
+/// and notifies the parent widget of selection changes via a callback. The widget
+/// supports enabling/disabling all buttons and customizing the selected and unselected
+/// button appearance.
+///
+/// Example usage:
+/// ```dart
+/// CustomRadioBtn(
+///   buttonLables: ['Option 1', 'Option 2'],
+///   buttonValues: [1, 2],
+///   radioButtonValue: (value) => print(value),
+///   buttonColor: Colors.grey,
+///   selectedColor: Colors.blue,
+///   defaultValue: 'Option 1',
+///   horizontal: false,
+///   enableAll: true,
+/// )
+/// ```
+
 class CustomRadioBtn extends StatefulWidget {
   CustomRadioBtn(
       {super.key, this.buttonLables,

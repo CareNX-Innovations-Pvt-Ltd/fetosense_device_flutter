@@ -9,6 +9,19 @@ import 'package:get_it/get_it.dart';
 
 part 'mother_details_state.dart';
 
+/// Cubit that manages the state and logic for fetching test data related to a mother.
+///
+/// `MotherDetailsCubit` interacts with the Appwrite database to retrieve a list of tests
+/// associated with a given mother name. It emits loading, success, or failure states
+/// based on the outcome of the fetch operation. The cubit is used to update the UI
+/// with the relevant test data or error messages.
+///
+/// Example usage:
+/// ```dart
+/// final cubit = MotherDetailsCubit();
+/// cubit.fetchTests('Jane Doe');
+/// ```
+
 class MotherDetailsCubit extends Cubit<MotherDetailsState> {
   MotherDetailsCubit() : super(MotherDetailsInitial());
 

@@ -1,5 +1,20 @@
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 
+/// Singleton class for managing 16-bit PCM audio playback using FlutterPcmSound.
+///
+/// `MyAudioTrack16Bit` handles the setup, feeding, and release of audio resources
+/// for real-time PCM audio playback. It initializes the audio engine with a sample
+/// rate of 4000 Hz and a single channel, and provides methods to play PCM data
+/// and release resources. The class maintains internal buffers and state for
+/// audio data management.
+///
+/// Example usage:
+/// ```dart
+/// final audioTrack = MyAudioTrack16Bit();
+/// await audioTrack.playPCM(pcmData);
+/// await audioTrack.releaseAudioTrack();
+/// ```
+
 class MyAudioTrack16Bit {
   static final MyAudioTrack16Bit _instance = MyAudioTrack16Bit._internal();
 

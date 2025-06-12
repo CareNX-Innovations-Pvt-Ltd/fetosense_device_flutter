@@ -11,6 +11,19 @@ import 'package:get_it/get_it.dart';
 
 part 'login_state.dart';
 
+/// Cubit that manages the login process and authentication state.
+///
+/// The `LoginCubit` handles user authentication by querying the Appwrite database
+/// for user or device credentials. It emits loading, success, or failure states
+/// based on the login outcome. The cubit also manages user preferences and
+/// auto-login settings upon successful authentication.
+///
+/// Example usage:
+/// ```dart
+/// final cubit = LoginCubit();
+/// cubit.login(email, password);
+/// ```
+
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginInitial());
 

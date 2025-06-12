@@ -15,6 +15,17 @@ import 'package:fetosense_device_flutter/presentation/splash/splash_screen.dart'
 import 'package:fetosense_device_flutter/presentation/test/test_view.dart';
 import 'package:go_router/go_router.dart';
 
+/// Defines all the named route paths used in the application.
+///
+/// This class provides static constants for each route, ensuring
+/// consistency and reducing the risk of typos when navigating between
+/// screens. The routes are used with the `GoRouter` configuration
+/// to manage navigation throughout the app.
+///
+/// Example usage:
+/// ```dart
+/// context.go(AppRoutes.home);
+///
 abstract class AppRoutes {
   static const splash = '/';
   static const login = '/login';

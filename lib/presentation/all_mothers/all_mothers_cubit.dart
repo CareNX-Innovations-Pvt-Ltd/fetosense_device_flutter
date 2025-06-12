@@ -11,6 +11,19 @@ import '../../core/utils/preferences.dart';
 
 part 'all_mothers_state.dart';
 
+/// A Cubit that manages the state of the mothers list in the application.
+///
+/// The `AllMothersCubit` is responsible for fetching, storing, and filtering
+/// a list of `Mother` objects from the Appwrite database. It emits different
+/// states based on the loading, success, or failure of data operations.
+///
+/// Example usage:
+/// ```dart
+/// final cubit = AllMothersCubit();
+/// cubit.getMothersList();
+/// cubit.filterMothers('search query');
+/// ```
+
 class AllMothersCubit extends Cubit<AllMothersState> {
   AllMothersCubit() : super(AllMothersInitial());
   List<Mother> allMothers = [];

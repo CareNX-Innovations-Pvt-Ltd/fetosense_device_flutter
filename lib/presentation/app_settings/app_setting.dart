@@ -8,6 +8,19 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:preferences/preferences.dart';
 
+/// A stateful widget that displays the application settings page.
+///
+/// The `AppSetting` widget provides a user interface for configuring various
+/// preferences such as test duration, FHR alerts, patient ID, Fisher Score,
+/// printing options, and more. It uses preference dialogs and switches to
+/// allow users to customize the app's behavior and appearance. Changes are
+/// persisted using the `PreferenceHelper`.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(builder: (_) => const AppSetting()));
+/// ```
+
 class AppSetting extends StatefulWidget {
   const AppSetting({super.key});
 

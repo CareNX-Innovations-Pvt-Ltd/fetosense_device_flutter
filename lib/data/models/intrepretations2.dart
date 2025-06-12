@@ -3,6 +3,22 @@ import 'dart:core';
 import 'package:fetosense_device_flutter/data/models/marker_indices.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 
+/// Provides algorithms and data structures for analyzing fetal heart rate (FHR) test data.
+///
+/// The `Interpretations2` class processes FHR data to extract clinical metrics such as
+/// accelerations, decelerations, baseline heart rate, short- and long-term variability,
+/// and episodes of high/low variation. It supports initialization from raw BPM data,
+/// test models, or empty state, and exposes methods for cleaning, smoothing, and
+/// segmenting the data for further interpretation.
+///
+/// Example usage:
+/// ```dart
+/// final interp = Interpretations2.withData(bpmList, gestationalAge);
+/// int accels = interp.getnAccelerations();
+/// int decels = interp.getnDecelerations();
+/// double stv = interp.getShortTermVariationBpm();
+/// ```
+
 class Interpretations2 {
   static const SIXTY_THOUSAND_MS = 60000;
   static const int NO_OF_SAMPLES_PER_MINUTE =
