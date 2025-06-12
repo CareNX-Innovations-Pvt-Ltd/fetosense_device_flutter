@@ -87,6 +87,12 @@ lib/
 You can find the complete developer documentation [here](https://carenx-innovations-pvt-ltd.github.io/fetosense_device_flutter/).
 
 
+## System Architecture Diagram
+![img.png](assets/diagram.jpeg)
+
+## Project Charter
+You can find the project charter [here](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter/blob/code-documentation/Fetosense%20Project%20Charter%20-%20UNICEF.pdf)
+
 ## About CareNX Innovations
 
 CareNX Innovations is a healthcare technology company focused on developing innovative solutions for maternal and fetal healthcare. The Fetosense device and companion applications are designed to improve access to quality healthcare for expectant mothers, especially in remote and underserved areas.
