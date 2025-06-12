@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the UserModel.fromMap constructor from Class UserModel from the user_model library, for the Dart programming language.">
+  <title>UserModel.fromMap constructor - UserModel - user_model library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_user_model/data_models_user_model-library.html">data&#47;models&#47;user_model.dart</a></li>
+    <li><a href="../../data_models_user_model/UserModel-class.html">UserModel</a></li>
+    <li class="self-crumb">UserModel.fromMap constructor</li>
+  </ol>
+  <div class="self-name">UserModel.fromMap</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="data_models_user_model&#47;UserModel-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">UserModel.fromMap</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">UserModel.fromMap</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="fromMap-param-snapshot"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a></span> <span class="parameter-name">snapshot</span>, </span></li>
+<li><span class="parameter" id="fromMap-param-id"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">id</span></span></li>
+</ol>)
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">UserModel.fromMap(Map snapshot, String id)
+    : type = snapshot[&#39;type&#39;],
+      organizationId = snapshot[&#39;organizationId&#39;],
+      organizationName = snapshot[&#39;organizationName&#39;],
+      name = snapshot[&#39;name&#39;],
+      email = snapshot[&#39;email&#39;],
+      mobileNo = snapshot[&#39;mobileNo&#39;],
+      uid = snapshot[&#39;uid&#39;],
+      notificationToken = snapshot[&#39;notificationToken&#39;],
+      delete = snapshot[&#39;delete&#39;] ?? false,
+      createdOn =
+          snapshot[&#39;createdOn&#39;] is DateTime ? snapshot[&#39;createdOn&#39;] : null,
+      createdBy = snapshot[&#39;createdBy&#39;],
+      associations = snapshot[&#39;associations&#39;] is String
+          ? jsonDecode(snapshot[&#39;associations&#39;])
+          : snapshot[&#39;associations&#39;],
+      bulletin = snapshot[&#39;bulletin&#39;] is String
+          ? jsonDecode(snapshot[&#39;bulletin&#39;])
+          : snapshot[&#39;bulletin&#39;],
+      age = snapshot[&#39;age&#39;],
+      autoModifiedTimeStamp = snapshot[&#39;autoModifiedTimeStamp&#39;],
+      deviceId = snapshot[&#39;deviceId&#39;],
+      deviceName = snapshot[&#39;deviceName&#39;],
+      doctorId = snapshot[&#39;doctorId&#39;],
+      amcLog = snapshot[&#39;amcLog&#39;],
+      amcPayment = snapshot[&#39;amcPayment&#39;],
+      amcStartDate = snapshot[&#39;amcStartDate&#39;],
+      amcValidity = snapshot[&#39;amcValidity&#39;],
+      appVersion = snapshot[&#39;appVersion&#39;],
+      deviceCode = snapshot[&#39;deviceCode&#39;],
+      isActive = snapshot[&#39;isActive&#39;],
+      lastSeenTime = snapshot[&#39;lastSeenTime&#39;],
+      modifiedAt = snapshot[&#39;modifiedAt&#39;],
+      modifiedTimeStamp = snapshot[&#39;modifiedTimeStamp&#39;],
+      noOfMother = snapshot[&#39;noOfMother&#39;],
+      noOfTests = snapshot[&#39;noOfTests&#39;],
+      sync = snapshot[&#39;sync&#39;],
+      testAccount = snapshot[&#39;testAccount&#39;],
+      weight = snapshot[&#39;weight&#39;],
+      patientId = snapshot[&#39;patientId&#39;],
+      platformId = snapshot[&#39;platformId&#39;],
+      platformRegAt = snapshot[&#39;platformRegAt&#39;];</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_user_model/data_models_user_model-library.html">user_model</a></li>
+    <li><a href="../../data_models_user_model/UserModel-class.html">UserModel</a></li>
+    <li class="self-crumb">UserModel.fromMap constructor</li>
+</ol>
+
+    <h5>UserModel class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fetosense_device_flutter
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Interpretations2.withData constructor from Class Interpretations2 from the intrepretations2 library, for the Dart programming language.">
+  <title>Interpretations2.withData constructor - Interpretations2 - intrepretations2 library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_intrepretations2/data_models_intrepretations2-library.html">data&#47;models&#47;intrepretations2.dart</a></li>
+    <li><a href="../../data_models_intrepretations2/Interpretations2-class.html">Interpretations2</a></li>
+    <li class="self-crumb">Interpretations2.withData constructor</li>
+  </ol>
+  <div class="self-name">Interpretations2.withData</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="data_models_intrepretations2&#47;Interpretations2-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">Interpretations2.withData</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">Interpretations2.withData</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="withData-param-bpm"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">bpm</span>, </span></li>
+<li><span class="parameter" id="withData-param-gAge"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">gAge</span></span></li>
+</ol>)
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Interpretations2.withData(List&lt;int&gt; bpm, int gAge) {
+  print(&quot;Interpretations2 :: withData ${bpm.length} &amp;&amp; age $gAge&quot;);
+  gestAge = gAge &gt; 41 ? 41 : gAge;
+  bpmList = List.from(bpm); &#47;&#47;[]..addAll(bpm);&#47;&#47;bpm.clone();
+  bpmCorrectedIndices = getNoiseAreas(List.from(bpm));
+  cleanBpmList();
+  beatsInMilliseconds = convertBpmToMilli(bpmList!);
+  millisecondsEpoch = convertMilliToEpoch(beatsInMilliseconds);
+  millisecondsEpochBpm = calculateEpochBpm();
+
+  bpmListSmooth = List.from(
+      bpmList!); &#47;&#47;[]..addAll(bpmList);&#47;&#47;(List&lt;int&gt;) bpmList.clone();
+  smoothBpm();
+  beatsInMillisecondsSmooth = convertBpmToMilli(bpmListSmooth!);
+  millisecondsEpochSmooth =
+      convertMilliToEpoch(beatsInMillisecondsSmooth);
+
+  baselineEpoch = calculateBaseLine(millisecondsEpochSmooth);
+
+  baselineEpochBpm = convertBaselineArrayToBpmEpoch(baselineEpoch);
+  baselineBpmList = convertBaselineArrayToBpmList(baselineEpoch);
+
+  &#47;&#47;re-correct bpm list noise to baseline
+  if (correctionCount! &gt; 0) {
+    removeNoiseMinutes();
+    beatsInMilliseconds = convertBpmToMilli(bpmList!);
+    millisecondsEpoch = convertMilliToEpoch(beatsInMilliseconds);
+    millisecondsEpochBpm = calculateEpochBpm();
+  }
+
+  cleanMillisecondsEpoch = List.from(
+      millisecondsEpoch); &#47;&#47;[]..addAll(millisecondsEpoch);&#47;&#47;millisecondsEpoch.clone();
+  cleanMillisecondsEpochBpm = List.from(
+      millisecondsEpochBpm); &#47;&#47;[]..addAll(millisecondsEpochBpm);&#47;&#47;millisecondsEpochBpm.clone();
+  cleanBaselineEpoch = List.from(
+      baselineEpoch); &#47;&#47;[]..addAll(baselineEpoch);&#47;&#47;baselineEpoch.clone();
+  cleanBaselineEpochBpm = List.from(
+      baselineEpochBpm); &#47;&#47;[]..addAll(baselineEpochBpm);&#47;&#47;baselineEpochBpm.clone();
+
+  nAccelerations = calculateAccelerations();
+  nDecelerations = calculateDecelerations();
+
+  if (nDecelerations! &gt; 0) {
+    &#47;&#47; todo: remove them
+    removeDecelerationMinutes();
+  }
+
+  calculateEpisodesOfLowAndHighVariation();
+  basalHeartRate = calculateBasalHeartRate(cleanBaselineEpochBpm);
+  calculateShortTermVariability();
+
+  &#47;*Log.i(&quot;interpretations2   &quot;,
+  String.format(Locale.ENGLISH,
+  &quot;\nAccelerations : %d&quot; +
+  &quot;\nDecelerations : %d&quot; +
+  &quot;\nBasal HR : %d&quot; +
+  &quot;\nSTV : %f&quot; +
+  &quot;\nLTV : %d&quot;,
+  nAccelerations,
+  nDecelerations,
+  basalHeartRate,
+  shortTermVariationBpm,
+  longTermVariation));*&#47;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_intrepretations2/data_models_intrepretations2-library.html">intrepretations2</a></li>
+    <li><a href="../../data_models_intrepretations2/Interpretations2-class.html">Interpretations2</a></li>
+    <li class="self-crumb">Interpretations2.withData constructor</li>
+</ol>
+
+    <h5>Interpretations2 class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fetosense_device_flutter
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

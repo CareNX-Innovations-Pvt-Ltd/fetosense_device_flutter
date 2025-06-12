@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Test.fromMap constructor from Class Test from the test_model library, for the Dart programming language.">
+  <title>Test.fromMap constructor - Test - test_model library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_test_model/data_models_test_model-library.html">data&#47;models&#47;test_model.dart</a></li>
+    <li><a href="../../data_models_test_model/Test-class.html">Test</a></li>
+    <li class="self-crumb">Test.fromMap constructor</li>
+  </ol>
+  <div class="self-name">Test.fromMap</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="data_models_test_model&#47;Test-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">Test.fromMap</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">Test.fromMap</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="fromMap-param-snapshot"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a></span> <span class="parameter-name">snapshot</span>, </span></li>
+<li><span class="parameter" id="fromMap-param-id"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">id</span></span></li>
+</ol>)
+    </section>
+    
+<section class="desc markdown">
+  <p>Constructs a <a href="../../data_models_test_model/Test-class.html">Test</a> instance from a map.</p>
+<p><code>snapshot</code> is a map containing the test data.
+<code>id</code> is the unique identifier of the test.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Test.fromMap(Map snapshot, String id)
+    : id = snapshot[&#39;id&#39;],
+      documentId = snapshot[&#39;documentId&#39;] ?? &#39;&#39;,
+      motherId = snapshot[&#39;motherId&#39;],
+      deviceId = snapshot[&#39;deviceId&#39;],
+      doctorId = snapshot[&#39;doctorId&#39;],
+      weight = snapshot[&#39;weight&#39;],
+      gAge = snapshot[&#39;gAge&#39;],
+      age = snapshot[&#39;age&#39;],
+      fisherScore = snapshot[&#39;fisherScore&#39;],
+      fisherScore2 = snapshot[&#39;fisherScore2&#39;],
+      motherName = snapshot[&#39;motherName&#39;],
+      deviceName = snapshot[&#39;deviceName&#39;],
+      doctorName = snapshot[&#39;doctorName&#39;],
+      patientId = snapshot[&#39;patientId&#39;],
+      organizationId = snapshot[&#39;organizationId&#39;],
+      organizationName = snapshot[&#39;organizationName&#39;],
+      imageLocalPath = snapshot[&#39;imageLocalPath&#39;],
+      imageFirePath = snapshot[&#39;imageFirePath&#39;],
+      audioLocalPath = snapshot[&#39;audioLocalPath&#39;],
+      audioFirePath = snapshot[&#39;audioFirePath&#39;],
+      isImgSynced = snapshot[&#39;isImgSynced&#39;],
+      isAudioSynced = snapshot[&#39;isAudioSynced&#39;],
+      bpmEntries = snapshot[&#39;bpmEntries&#39;] != null
+          ? snapshot[&#39;bpmEntries&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      bpmEntries2 = snapshot[&#39;bpmEntries2&#39;] != null
+          ? snapshot[&#39;bpmEntries2&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      mhrEntries = snapshot[&#39;mhrEntries&#39;] != null
+          ? snapshot[&#39;mhrEntries&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      spo2Entries = snapshot[&#39;spo2Entries&#39;] != null
+          ? snapshot[&#39;spo2Entries&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      baseLineEntries = snapshot[&#39;baseLineEntries&#39;] != null
+          ? snapshot[&#39;baseLineEntries&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      movementEntries = snapshot[&#39;movementEntries&#39;] != null
+          ? snapshot[&#39;movementEntries&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      autoFetalMovement = snapshot[&#39;autoFetalMovement&#39;] != null
+          ? snapshot[&#39;autoFetalMovement&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      tocoEntries = snapshot[&#39;tocoEntries&#39;] != null
+          ? snapshot[&#39;tocoEntries&#39;].cast&lt;int&gt;()
+          : &lt;int&gt;[],
+      lengthOfTest = snapshot[&#39;lengthOfTest&#39;],
+      averageFHR = snapshot[&#39;averageFHR&#39;],
+      live = snapshot[&#39;live&#39;] ?? false,
+      testByMother = snapshot[&#39;testByMother&#39;],
+      testById = snapshot[&#39;testById&#39;],
+      interpretationType = snapshot[&#39;interpretationType&#39;],
+      interpretationExtraComments = snapshot[&#39;interpretationExtraComments&#39;],
+      associations = snapshot[&#39;association&#39;] ?? &lt;String, dynamic&gt;{},
+      autoInterpretations =
+          snapshot[&#39;autoInterpretations&#39;] ?? &lt;String, dynamic&gt;{},
+      delete = snapshot[&#39;delete&#39;],
+      createdOn = snapshot[&#39;createdOn&#39;],
+      createdBy = snapshot[&#39;createdBy&#39;];</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_test_model/data_models_test_model-library.html">test_model</a></li>
+    <li><a href="../../data_models_test_model/Test-class.html">Test</a></li>
+    <li class="self-crumb">Test.fromMap constructor</li>
+</ol>
+
+    <h5>Test class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fetosense_device_flutter
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

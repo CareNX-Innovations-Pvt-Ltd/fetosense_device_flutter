@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the displayInformation method from the FhrPdfView2 class, for the Dart programming language.">
+  <title>displayInformation method - FhrPdfView2 class - fhr_pdf_view_2 library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../presentation_widgets_fhr_pdf_view_2/presentation_widgets_fhr_pdf_view_2-library.html">presentation&#47;widgets&#47;fhr_pdf_view_2.dart</a></li>
+    <li><a href="../../presentation_widgets_fhr_pdf_view_2/FhrPdfView2-class.html">FhrPdfView2</a></li>
+    <li class="self-crumb">displayInformation method</li>
+  </ol>
+  <div class="self-name">displayInformation</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="presentation_widgets_fhr_pdf_view_2&#47;FhrPdfView2-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">displayInformation</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">void</span>
+<span class="name ">displayInformation</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="displayInformation-param-pageNumber"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">pageNumber</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Displays information on the graph for the given page number.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">void displayInformation(int pageNumber) {
+  int rows = 3;
+
+  String date = DateFormat(&#39;dd MMM yyyy&#39;).format(mData!.createdOn!);
+  String time = DateFormat(&#39;hh:mm a&#39;).format(mData!.createdOn!);
+
+  &#47;&#47;String.format(&quot;%s  %s %s&quot;, now.substring(11, 16), now.substring(8, 10),now.substring(4, 10), now.substring(now.lastIndexOf(&quot; &quot;)+3));
+
+  double rowHeight = pixelsPerOneCM! * 0.7;
+  double rowPos = rowHeight * 0.5;
+
+  &#47;&#47;mData.setOrganizationName(&quot;hospital i Morey MD FICOG and so on&quot;);
+  if (mData!.organizationName != null &amp;&amp;
+      mData!.organizationName!.length &gt;= 30) {
+    String s1 = mData!.organizationName!.substring(0, 30);
+    s1 = mData!.organizationName!.substring(0, s1.lastIndexOf(&quot; &quot;) + 1);
+    String s2 =
+        mData!.organizationName!.replaceAll(s1, &quot;&quot;); &#47;&#47;.replace(s1,&quot;&quot;);
+    canvas[pageNumber].drawParagraph(getParagraphInfo(s1), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(s2),
+        Offset(
+          0,
+          rowPos - pixelsPerOneMM!,
+        ));
+    rowPos += rowHeight;
+  } else {
+    canvas[pageNumber]
+        .drawParagraph(getParagraphInfo(&quot;Hospital :&quot;), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(mData!.organizationName ?? &quot;&quot;),
+        Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  }
+  &#47;&#47;mData.setDoctorName(&quot;Dr Bharati Morey MD FICOG and so on&quot;);
+  if (mData!.doctorName != null &amp;&amp; mData!.doctorName!.length &gt;= 30) {
+    String s1 = mData!.doctorName!.substring(0, 30);
+    s1 = mData!.doctorName!.substring(0, s1.lastIndexOf(&quot; &quot;) + 1);
+    String s2 = mData!.doctorName ?? &quot;&quot;;
+
+    canvas[pageNumber].drawParagraph(getParagraphInfo(s1), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(s2), Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  } else {
+    canvas[pageNumber]
+        .drawParagraph(getParagraphInfo(&quot;Doctor :&quot;), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(mData!.doctorName ?? &quot;&quot;),
+        Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  }
+
+  &#47;&#47;mData.setpatientId(&quot;sds&quot;);
+  if (mData!.patientId != null &amp;&amp; mData!.patientId!.length &gt;= 30) {
+    String s1 = mData!.patientId!.substring(0, 30);
+    s1 = mData!.patientId!.substring(0, s1.lastIndexOf(&quot; &quot;) + 1);
+    String s2 = mData!.patientId!.replaceAll(s1, &quot;&quot;);
+
+    canvas[pageNumber].drawParagraph(getParagraphInfo(s1), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(s2), Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  } else {
+    canvas[pageNumber]
+        .drawParagraph(getParagraphInfo(&quot;Patient Id :&quot;), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(getParagraphInfo(mData!.patientId ?? &quot;&quot;),
+        Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  }
+
+  &#47;&#47;mData.setMotherName(&quot;Dr Bharati Morey MD FICOG and so on asdsa&quot;);
+  if (mData!.motherName != null &amp;&amp; mData!.motherName!.length &gt;= 30) {
+    String s1 = mData!.motherName!.substring(0, 30);
+    s1 = mData!.motherName!.substring(0, s1.lastIndexOf(&quot; &quot;) + 1);
+    String s2 = mData!.motherName!.replaceAll(s1, &quot;&quot;);
+
+    canvas[pageNumber].drawParagraph(getParagraphInfo(s1), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(s2), Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  } else {
+    canvas[pageNumber]
+        .drawParagraph(getParagraphInfo(&quot;Mother :&quot;), Offset(0, rowPos));
+    rowPos += rowHeight * 0.8;
+    canvas[pageNumber].drawParagraph(
+        getParagraphInfo(mData!.motherName ?? &quot;&quot;),
+        Offset(0, rowPos - pixelsPerOneMM!));
+    rowPos += rowHeight;
+  }
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          (&quot;Duration :  ${(mData!.lengthOfTest! &#47; 60).truncate()} min&quot;)),
+      Offset(0, rowPos));
+  rowPos += rowHeight;
+
+  canvas[pageNumber]
+      .drawParagraph(getParagraphInfo(&quot;Time : $time&quot;), Offset(0, rowPos));
+  rowPos += rowHeight;
+  canvas[pageNumber]
+      .drawParagraph(getParagraphInfo(&quot;Date : $date&quot;), Offset(0, rowPos));
+  rowPos += rowHeight;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(&quot;Gest. Week : ${mData!.gAge}&quot;), Offset(0, rowPos));
+  rowPos += rowHeight;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          &quot;Basal HR : ${auto ? _interpretations!.getBasalHeartRateStr() : &#39; _______&#39;}&quot;),
+      Offset(0, rowPos));
+  rowPos += rowHeight;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          &quot;FM : ${mData!.movementEntries!.length ?? &quot;--&quot;} man&#47; ${mData!.autoFetalMovement!.length ?? &quot;--&quot;} auto &quot;),
+      Offset(0, rowPos));
+
+  rowPos += rowHeight;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          &quot;Accelerations : ${auto ? _interpretations!.getnAccelerationsStr() : &#39; _______&#39;}&quot;), &#47;&#47;+mData.getWeight(),
+      Offset(0, rowPos));
+  rowPos += rowHeight;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          &quot;Decelerations : ${auto ? _interpretations!.getnDecelerationsStr() : &#39; _______&#39;}&quot;),
+      Offset(0, rowPos));
+  rowPos += rowHeight;
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          &quot;STV : ${auto ? &#39;${_interpretations!.getShortTermVariationBpmStr()} bpm &#47; ${_interpretations!.getShortTermVariationMilliStr() ?? &quot;--&quot;} milli&#39; : &#39; _______&#39;}&quot;),
+      Offset(0, rowPos));
+  rowPos += rowHeight;
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(
+          &quot;LTV : ${auto ? &#39;${_interpretations!.getLongTermVariationStr()} bpm&#39; : &#39; _______&#39;}&quot;),
+      Offset(0, rowPos));
+  rowPos += rowHeight;
+
+  canvas[pageNumber]
+      .drawParagraph(getParagraphInfo(&quot;Conclusion :&quot;), Offset(0, rowPos));
+  rowPos += pixelsPerOneMM! * 3;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(&quot;(Reactive, Non-Reactive, Inconclusive)&quot;,
+          fontsize: 20),
+      Offset(0, rowPos));
+
+  rowPos = yTocoOrigin + rowHeight;
+  rowPos -= rowHeight * 0.5;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(&#39;X-Axis : ${timeScaleFactor * 10} SEC&#47;DIV&#39;),
+      Offset(0, rowPos));
+  rowPos += rowHeight * 0.6;
+
+  canvas[pageNumber].drawParagraph(
+      getParagraphInfo(&quot;Y-Axis : 20 BPM&#47;DIV&quot;), Offset(0, rowPos));
+  rowPos += rowHeight * 1.5;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../presentation_widgets_fhr_pdf_view_2/presentation_widgets_fhr_pdf_view_2-library.html">fhr_pdf_view_2</a></li>
+    <li><a href="../../presentation_widgets_fhr_pdf_view_2/FhrPdfView2-class.html">FhrPdfView2</a></li>
+    <li class="self-crumb">displayInformation method</li>
+</ol>
+
+    <h5>FhrPdfView2 class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fetosense_device_flutter
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

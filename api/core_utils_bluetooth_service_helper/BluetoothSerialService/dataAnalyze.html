@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the dataAnalyze method from the BluetoothSerialService class, for the Dart programming language.">
+  <title>dataAnalyze method - BluetoothSerialService class - bluetooth_service_helper library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../core_utils_bluetooth_service_helper/core_utils_bluetooth_service_helper-library.html">core&#47;utils&#47;bluetooth_service_helper.dart</a></li>
+    <li><a href="../../core_utils_bluetooth_service_helper/BluetoothSerialService-class.html">BluetoothSerialService</a></li>
+    <li class="self-crumb">dataAnalyze method</li>
+  </ol>
+  <div class="self-name">dataAnalyze</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="core_utils_bluetooth_service_helper&#47;BluetoothSerialService-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">dataAnalyze</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">dynamic</span>
+<span class="name ">dataAnalyze</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="dataAnalyze-param-data"><span class="type-annotation"><a href="../../core_utils_fhr_byte_data_buffer/BluetoothData-class.html">BluetoothData</a></span> <span class="parameter-name">data</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">dynamic dataAnalyze(BluetoothData data) {
+  MyFhrData? fhr;
+
+  switch (data.dataType) {
+    case 1:
+      decodeData(ADPCM().decodeAdpcm(data));
+      &#47;&#47;decodeData(data.mValue.sublist(3, 103));
+      break;
+
+    case 2:
+      fhr = MyFhrData();
+      fhr.fhr1 = data.mValue[3] &amp; 0xFF;
+      fhr.fhr2 = data.mValue[4] &amp; 0xFF;
+      fhr.toco = data.mValue[5];
+      fhr.afm = data.mValue[6];
+      fhr.fhrSignal = (data.mValue[7] &amp; 3);
+      fhr.afmFlag = ((data.mValue[7] &amp; 4) != 0 ? 1 : 0);
+      fhr.devicePower = (data.mValue[8] &amp; 15);
+      fhr.isHaveFhr1 = ((data.mValue[8] &amp; 16) != 0 ? 1 : 0);
+      fhr.isHaveFhr2 = ((data.mValue[8] &amp; 32) != 0 ? 1 : 0);
+      fhr.isHaveToco = ((data.mValue[8] &amp; 64) != 0 ? 1 : 0);
+      fhr.isHaveAfm = ((data.mValue[8] &amp; 128) != 0 ? 1 : 0);
+      return fhr;
+
+    case 3:
+      int checkSum = 0;
+
+      for (int index = 0; index &lt; 11; ++index) {
+        checkSum += data.mValue[index];
+      }
+
+      checkSum = checkSum &amp; 0xFF;
+
+      if (checkSum == data.mValue[11]) {
+        int index = (0xFF &amp; data.mValue[3]) + ((data.mValue[4] &amp; 0xFF) &lt;&lt; 8);
+
+        &#47;&#47; if (!monState) {
+        &#47;&#47;   reSendStartOrStopCmd(false);
+        &#47;&#47; } else {
+        &#47;&#47;   rePlyAckMonIndex(index);
+        &#47;&#47; }
+
+        &#47;&#47; if (monCount != index) {
+        &#47;&#47; monCount = index + 1;
+        &#47;&#47; } else {
+        &#47;&#47; monCount = index + 1;
+        fhr = MyFhrData();
+        fhr.fhr1 = data.mValue[5] &amp; 0xFF;
+        fhr.fhr2 = data.mValue[6] &amp; 0xFF;
+        fhr.toco = data.mValue[7];
+        fhr.afm = data.mValue[8];
+        fhr.fhrSignal = (data.mValue[9] &amp; 3);
+        fhr.afmFlag = ((data.mValue[9] &amp; 4) != 0 ? 1 : 0);
+        fhr.devicePower = (data.mValue[10] &amp; 15);
+        fhr.isHaveFhr1 = ((data.mValue[10] &amp; 16) != 0 ? 1 : 0);
+        fhr.isHaveFhr2 = ((data.mValue[10] &amp; 32) != 0 ? 1 : 0);
+        fhr.isHaveToco = ((data.mValue[10] &amp; 64) != 0 ? 1 : 0);
+        fhr.isHaveAfm = ((data.mValue[10] &amp; 128) != 0 ? 1 : 0);
+
+        _dataStreamController.add(fhr);
+
+        &#47;&#47; if (getFM()) {
+        &#47;&#47;   fhr.fmFlag = 1;
+        &#47;&#47; }
+        &#47;&#47;
+        &#47;&#47; if (getToco()) {
+        &#47;&#47;   fhr.tocoFlag = 1;
+        &#47;&#47; }
+        &#47;&#47;
+        &#47;&#47; if (getDocMark()) {
+        &#47;&#47;   fhr.docFlag = 1;
+        &#47;&#47; }
+        &#47;&#47;
+        &#47;&#47; if (mLMTPDecoderListener != null) {
+        &#47;&#47;   mLMTPDecoderListener.fhrDataChanged(fhr);
+        &#47;&#47; }
+        &#47;&#47; }
+      }
+      break;
+
+    case 4:
+      Int16List value = Int16List(200);
+      ADPCM().decodeAdpcmFor10Or12BitAnd100ms(value, 0, data.mValue, 3, 100,
+          data.mValue[104], data.mValue[105], data.mValue[106], 10);
+      decodeData(value);
+      &#47;&#47; if (mLMTPDecoderListener != null) {
+      &#47;&#47;   mLMTPDecoderListener.fhrAudioChanged(value);
+      &#47;&#47; }
+      break;
+
+    case 5:
+    &#47;&#47; clearStartOrStopCmd();
+    &#47;&#47; needLoopTranslate = true;
+    &#47;&#47; monCount = 0;
+      break;
+
+    case 6:
+      print(&quot;case 6&quot;);
+      &#47;&#47; clearStartOrStopCmd();
+      &#47;&#47; needLoopTranslate = false;
+      &#47;&#47; monCount = 0;
+      break;
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../core_utils_bluetooth_service_helper/core_utils_bluetooth_service_helper-library.html">bluetooth_service_helper</a></li>
+    <li><a href="../../core_utils_bluetooth_service_helper/BluetoothSerialService-class.html">BluetoothSerialService</a></li>
+    <li class="self-crumb">dataAnalyze method</li>
+</ol>
+
+    <h5>BluetoothSerialService class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fetosense_device_flutter
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

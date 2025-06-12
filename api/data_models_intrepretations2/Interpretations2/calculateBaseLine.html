@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the calculateBaseLine method from the Interpretations2 class, for the Dart programming language.">
+  <title>calculateBaseLine method - Interpretations2 class - intrepretations2 library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_intrepretations2/data_models_intrepretations2-library.html">data&#47;models&#47;intrepretations2.dart</a></li>
+    <li><a href="../../data_models_intrepretations2/Interpretations2-class.html">Interpretations2</a></li>
+    <li class="self-crumb">calculateBaseLine method</li>
+  </ol>
+  <div class="self-name">calculateBaseLine</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="data_models_intrepretations2&#47;Interpretations2-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">calculateBaseLine</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span>&gt;</span></span>
+<span class="name ">calculateBaseLine</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="calculateBaseLine-param-millisecondsEpoch"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span>&gt;</span></span> <span class="parameter-name">millisecondsEpoch</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">List&lt;int?&gt; calculateBaseLine(List&lt;int?&gt; millisecondsEpoch) {
+  int size = millisecondsEpoch.length;
+  List&lt;int?&gt; baselineArray = List.filled(size, null, growable: false);
+
+  int buckets = 1001, modeIndex = 0;
+  List&lt;int?&gt; freq = List.filled(buckets, null, growable: false);
+  int? modeValue = 0,
+      sumOfValues = 0,
+      selectedPeak = 0; &#47;&#47; 60-220 bpm = 1000-272 ms
+
+  &#47;** calculate frequency distribution of intervals**&#47;
+  for (int i = 0; i &lt; buckets; i++) {
+    freq[i] = 0;
+  }
+
+  for (int j = 0; j &lt; millisecondsEpoch.length; j++) {
+    int? epoch = millisecondsEpoch[j];
+    if (epoch == 0 || epoch! &gt;= buckets) {
+      freq[0] = freq[0]! + 1;
+      continue;
+    }
+    freq[epoch] = freq[epoch]! + 1;
+  }
+
+  &#47;** calculate peak frequency or mode **&#47;
+  for (int i = 1; i &lt; buckets - 1; i++) {
+    if (freq[i]! &gt; modeValue!) {
+      modeValue = freq[i];
+      modeIndex = i;
+    }
+  }
+
+  int peak = 0;
+  &#47;** calculate limiting parameter **&#47;
+  for (int i = buckets - 1; i &gt;= 5; i--) {
+    if (sumOfValues! &gt; (0.125 * (size - freq[0]!))) {
+      if (freq[i]! &gt;= freq[i - 5]! &amp;&amp;
+          freq[i]! &gt;= freq[i - 4]! &amp;&amp;
+          freq[i]! &gt;= freq[i - 3]! &amp;&amp;
+          freq[i]! &gt;= freq[i - 2]! &amp;&amp;
+          freq[i]! &gt;= freq[i - 1]!) {
+        if (freq[i]! &gt; 0.005 * (size - freq[0]!) ||
+            (modeIndex - i).abs() &lt;= 30) {
+          selectedPeak = i;
+          peak = i;
+          break;
+        }
+      }
+    }
+    sumOfValues += freq[i]!;
+  }
+
+  &#47;*if the peak is selected; other- wise, the mode is used*&#47;
+  if (selectedPeak == 0) selectedPeak = modeIndex;
+
+  &#47;** apply band filter with the use of limiting value
+   *  low-pass filter are then set to 60 milliseconds below and above the selected peak or mode
+   * **&#47;
+  baselineArray[0] = millisecondsEpoch[0];
+  for (int i = 0; i &lt; size - 1; i++) {
+    &#47;&#47; change i from 1 to 0
+    if (millisecondsEpoch[i] == 0) {
+      baselineArray[i] =
+      millisecondsEpoch[i]; &#47;&#47;avgLastMin(baselineFHRDR, i - 1);;
+    } else {
+      if (millisecondsEpoch[i]! &gt;= (selectedPeak! + 100)) {
+        baselineArray[i] =
+        (selectedPeak + 100); &#47;&#47; 60 is given in the literature
+      }
+
+      if (millisecondsEpoch[i]! &lt;= (selectedPeak - 100)) {
+        baselineArray[i] = (selectedPeak - 100);
+      } else {
+        baselineArray[i] = millisecondsEpoch[i];
+      }
+    }
+    &#47;&#47;if (Double.isNaN(_baselineArray[i]))
+    &#47;&#47;_baselineArray[i] = _baselineArray[i - 1];
+  }
+  &#47;&#47;_baselineArray[0] = _millisecondsEpoch[0];
+  for (int i = 1; i &lt; size - 1; i++) {
+    if (baselineArray[i] == 0) {
+      baselineArray[i] =
+      baselineArray[i - 1]; &#47;&#47;avgLastMin(baselineFHRDR, i - 1);;
+    } else {
+      if (baselineArray[i]! &gt;= (selectedPeak! - 50) &amp;&amp;
+          baselineArray[i]! &lt;=
+              (selectedPeak + 50)) {
+        &#47;&#47; 60 is given in the literature
+        baselineArray[i] = baselineArray[i];
+      } else {
+        baselineArray[i] = baselineArray[i -
+            1]; &#47;&#47;avgLastMin(baselineFHRDR, i - 1); &#47;&#47;interpolate over previous values
+      }
+    }
+    &#47;&#47;if (Double.isNaN(_baselineArray[i]))
+    &#47;&#47;_baselineArray[i] = _baselineArray[i - 1];
+  }
+  baselineArray[size - 1] =
+  baselineArray[size - 2]; &#47;&#47;avgLastMin(baselineFHRDR, size - 2);
+
+  double aTiny = 0.75;
+  for (int i = 0; i &lt; baselineArray.length - 1; i++) {
+    baselineArray[i + 1] =
+        (aTiny * baselineArray[i + 1]! + (1.0 - aTiny) * selectedPeak!)
+            .toInt();
+  }
+
+  int window = 2;
+  for (int i = window; i &lt; baselineArray.length - window - 1; i++) {
+    baselineArray[i] =
+        getBaselineWindowSmoothAverage(baselineArray, i, window);
+  }
+
+  int avgHR;
+
+  avgHR = calculateAvgHeartRate(baselineArray);
+
+  &#47;&#47; smoothing last min
+  double tiny = 0.3;
+  int start = baselineArray.length - window * 2;
+  for (int i = 0; i &lt; baselineArray.length - 1; i++) {
+    baselineArray[i + 1] =
+        (tiny * avgHR + (1.0 - tiny) * baselineArray[i + 1]!).truncate();
+  }
+
+  start = 0;
+  for (int i = start; i &lt; (window * 2) - 1; i++) {
+    baselineArray[i] =
+        (tiny * avgHR + (1.0 - tiny) * baselineArray[i + 1]!).truncate();
+  }
+
+  &#47;&#47;int index = 1 * NO_OF_SAMPLES_PER_MINUTE;
+  &#47;&#47;window = index;
+
+  avgHR = calculateLowVariationAvg(baselineArray, avgHR);
+
+  &#47;*avgHR = calculateLowVariationAvg(_baselineArray,avgHR);
+      Log.i(&quot;avgHR&quot;,avgHR+&quot;&quot;);
+      if(avgHR &lt;=300 || avgHR &gt; 700)
+          avgHR = calculateBasalHeartRate(_baselineArray);
+      Log.i(&quot;avgHR&quot;,avgHR+&quot;&quot;);*&#47;
+
+  tiny = 0.25;
+  for (int i = start; i &lt; baselineArray.length - 1; i++) {
+    baselineArray[i] =
+        (tiny * avgHR + (1.0 - tiny) * baselineArray[i + 1]!).truncate();
+  }
+
+  return baselineArray;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">fetosense_device_flutter</a></li>
+    <li><a href="../../data_models_intrepretations2/data_models_intrepretations2-library.html">intrepretations2</a></li>
+    <li><a href="../../data_models_intrepretations2/Interpretations2-class.html">Interpretations2</a></li>
+    <li class="self-crumb">calculateBaseLine method</li>
+</ol>
+
+    <h5>Interpretations2 class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fetosense_device_flutter
+      1.0.0+1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
