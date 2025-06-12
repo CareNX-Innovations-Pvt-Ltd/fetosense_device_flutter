@@ -9,6 +9,19 @@ part 'bluetoothlocal_event.dart';
 
 part 'bluetoothlocal_state.dart';
 
+/// Bloc that manages Bluetooth connection state and events for local Doppler devices.
+///
+/// The `BluetoothConnectionBloc` handles scanning for paired Bluetooth devices,
+/// connecting and disconnecting to a selected device, and receiving data from the device.
+/// It listens for data updates from the `BluetoothSerialService` and emits state changes
+/// to update the UI accordingly. Errors and connection statuses are managed through state updates.
+///
+/// Example usage:
+/// ```dart
+/// final bloc = BluetoothConnectionBloc(bluetoothService);
+/// bloc.add(StartBluetoothScan());
+/// ```
+
 class BluetoothConnectionBloc
     extends Bloc<BluetoothConnectionEventLocal, BluetoothConnectionStateLocal> {
   final BluetoothSerialService _bluetoothService;

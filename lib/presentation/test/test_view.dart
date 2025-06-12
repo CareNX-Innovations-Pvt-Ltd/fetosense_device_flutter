@@ -22,6 +22,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateful widget that manages and displays the fetal heart rate (FHR) test interface.
+///
+/// `TestView` handles the lifecycle of a test, including starting, running, and ending the test.
+/// It streams real-time FHR, movement, and TOCO data, visualizes it using a custom graph,
+/// and provides controls for test duration, zoom, and alerts. The class also manages saving
+/// test data to the backend and updating related mother and organization records.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => TestView(test: test, previousRoute: route, mother: mother),
+/// ));
+/// ```
+
 class TestView extends StatefulWidget {
   final Test? test;
   final String? previousRoute;

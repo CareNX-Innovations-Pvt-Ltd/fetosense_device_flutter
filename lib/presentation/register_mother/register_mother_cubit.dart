@@ -11,6 +11,19 @@ import 'package:get_it/get_it.dart';
 
 part 'register_mother_state.dart';
 
+/// Cubit responsible for handling the registration and saving of mother and test data.
+///
+/// `RegisterMotherCubit` manages the state for registering a new mother and associating
+/// her with a test. It interacts with the Appwrite database to create and update documents,
+/// emitting loading, success, or failure states as appropriate. This cubit is used to
+/// coordinate the registration flow and update the UI based on the outcome.
+///
+/// Example usage:
+/// ```dart
+/// final cubit = RegisterMotherCubit();
+/// cubit.saveMother(name, age, patientId, pickedDate, test, mobile);
+/// ```
+
 class RegisterMotherCubit extends Cubit<RegisterMotherState> {
   RegisterMotherCubit() : super(RegisterMotherInitial());
   final client = GetIt.I<AppwriteService>().client;

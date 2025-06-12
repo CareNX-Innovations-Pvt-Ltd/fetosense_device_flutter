@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fetosense_device_flutter/data/models/intrepretations2.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 
+/// The status of the print process.
 enum PrintStatus {
   preProcessing,
   generateFile,
@@ -9,8 +10,23 @@ enum PrintStatus {
   fileReady,
 }
 
+/// The action to be performed when printing or sharing the test details.
 enum PrintAction { print, share }
 
+
+/// Represents the state for the test details view managed by [DetailsCubit].
+///
+/// `DetailsState` holds all relevant data for rendering and interacting with
+/// the test details screen, including the test model, interpretations, print/share
+/// status, UI controls (such as grid zoom and offset), and user selections.
+/// It supports value comparison via [Equatable] for efficient state updates.
+///
+/// Use [copyWith] to create updated copies of the state with modified fields.
+///
+/// Example usage:
+/// ```dart
+/// final newState = state.copyWith(isLoadingPrint: true);
+/// ```
 class DetailsState extends Equatable {
   final Test test;
   final Interpretations2? interpretations;

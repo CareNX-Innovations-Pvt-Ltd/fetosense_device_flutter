@@ -1,5 +1,22 @@
 import 'dart:typed_data';
 
+/// A circular buffer for managing and extracting Bluetooth FHR (Fetal Heart Rate) data packets.
+///
+/// This class stores incoming byte data in a fixed-size buffer and provides methods
+/// to add data, extract complete packets, and manage buffer state. It validates packet
+/// start sequences, handles buffer wrap-around, and supports multiple packet types.
+///
+/// Example usage:
+/// ```dart
+/// final buffer = FhrByteDataBuffer();
+/// buffer.addDatas(incomingBytes, 0, incomingBytes.length);
+/// final packet = buffer.getBag();
+/// if (packet != null) {
+///   // Process BluetoothData
+/// }
+///
+/// ```
+
 class FhrByteDataBuffer {
   static const int bufferLength = 4096;
   final Uint8List _buffer = Uint8List(bufferLength);

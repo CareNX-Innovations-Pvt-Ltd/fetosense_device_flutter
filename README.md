@@ -27,8 +27,77 @@ cd fetosense_device_flutter
 flutter pub get
 flutter run
 ```
-### 📄 License
-This project is licensed under the MIT License. See the LICENSE file for details.
 
-### 👤 Author
-CareNX Innovations Pvt. Ltd. – www.carenx.com
+### Project Structure
+```
+lib/
+├── core/                               # API integration services
+    ├──adpcm/                           # ADPCM codec for audio processing
+    ├──constants/                       # All string, api and app route constants used in the app
+    ├──network/                         # appwrite configuration and dependency injection
+    └──utils/                           # Utility functions and helpers
+├── data/                               # Business logic components
+     ├──models/                         # Data models
+     └──repository_implementation       # Repository implementation for data access
+├── domain/                             # Business logic components
+    └──repository                       # Use cases for business logic
+├── screens/                            # UI screens
+├── presentation/                       # Views
+    ├──pages/                           # Individual pages of the app
+        ├──page_view                    # View for displaying page content
+        ├──page_cubit                   # Cubit for page state management
+        └──page_state                   # State management for pages
+    ├──widgets/                         # Reusable widgets
+    └──blocs/                           # State management using BLoC pattern
+└── main.dart                           # Application entry point
+```
+## Deployment
+
+### Android
+
+1. Generate a keystore file:
+   ```
+   keytool -genkey -v -keystore fetosense.keystore -alias fetosense -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+2. Build the APK:
+   ```
+   flutter build apk --release
+   ```
+
+### iOS
+
+1. Set up your iOS signing certificate in Xcode
+2. Build the app:
+   ```
+   flutter build ios --release
+   ```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+
+## Developer Documentation
+
+You can find the complete developer documentation [here](https://carenx-innovations-pvt-ltd.github.io/fetosense_device_flutter/).
+
+
+## About CareNX Innovations
+
+CareNX Innovations is a healthcare technology company focused on developing innovative solutions for maternal and fetal healthcare. The Fetosense device and companion applications are designed to improve access to quality healthcare for expectant mothers, especially in remote and underserved areas.
+
+## Contact
+
+CareNX Innovations Pvt. Ltd.
+- Website: [https://www.carenx.com](https://www.carenx.com)
+- Email: support@carenx.com
+
+## Acknowledgments
+
+- Thanks to all healthcare providers and mothers who provided feedback during development
+- Flutter and Dart communities for excellent documentation and support

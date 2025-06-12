@@ -3,6 +3,20 @@ import 'dart:convert';
 import 'package:fetosense_device_flutter/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// A singleton helper class for managing app preferences using [SharedPreferences].
+///
+/// This class provides methods to store and retrieve user settings, login state,
+/// user data, app open time, update flags, and other key-value pairs persistently.
+/// It must be initialized by calling [PreferenceHelper.init()] before use.
+///
+/// Example usage:
+/// ```dart
+/// await PreferenceHelper.init();
+/// final prefs = PreferenceHelper();
+/// prefs.setAutoLogin(true);
+/// UserModel? user = prefs.getUser();
+/// ```
+
 class PreferenceHelper {
   static final PreferenceHelper _instance = PreferenceHelper._internal();
   static SharedPreferences? _prefs;

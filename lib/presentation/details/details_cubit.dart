@@ -16,6 +16,19 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pdf;
 import 'package:printing/printing.dart';
 
+/// A Cubit that manages the state and business logic for the test details view.
+///
+/// The `DetailsCubit` handles initialization, user interactions, and print/share
+/// actions for a test's details. It processes test data, manages interpretations,
+/// handles zoom and drag gestures for the test graph, and coordinates PDF generation
+/// and printing/sharing via platform channels. State updates are emitted to reflect
+/// UI changes and asynchronous operations.
+///
+/// Example usage:
+/// ```dart
+/// final cubit = DetailsCubit(test);
+/// ```
+
 class DetailsCubit extends Cubit<DetailsState> {
   final PreferenceHelper prefs = GetIt.I<PreferenceHelper>();
   static const MethodChannel printChannel = MethodChannel('com.carenx.fetosense/print');

@@ -1,5 +1,16 @@
 import 'package:flutter/material.dart';
 
+/// Provides a centralized set of color constants for consistent theming across the app.
+///
+/// This abstract class defines static color values used for UI elements such as
+/// backgrounds, buttons, waveforms, indicators, and notifications. Using these
+/// constants ensures a unified color scheme and simplifies color management.
+///
+/// Example usage:
+/// ```dart
+/// Container(color: ColorManager.primaryColor)
+/// ```
+
 abstract class ColorManager {
   static const white = Color(0xffffffff);
   static const black = Color(0xff000000);

@@ -6,6 +6,26 @@ import 'package:fetosense_device_flutter/data/models/my_fhr_data.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:typed_data';
 
+/// A singleton service for managing Bluetooth serial communication and FHR data processing.
+///
+/// This class handles:
+/// - Connecting and disconnecting to Bluetooth devices
+/// - Receiving and parsing Bluetooth data packets
+/// - Buffering and analyzing FHR (Fetal Heart Rate) data
+/// - Streaming parsed FHR data to listeners
+/// - Audio playback of decoded data using [MyAudioTrack16Bit]
+/// - Enabling Bluetooth and retrieving paired devices
+///
+/// The service uses a broadcast [Stream] to provide real-time FHR data updates.
+/// It supports multiple data packet types and decodes them accordingly.
+///
+/// Example usage:
+/// ```dart
+/// final bluetoothService = BluetoothSerialService();
+/// await bluetoothService.connect(device);
+/// bluetoothService.dataStream.listen((fhrData) { ... });
+/// ```
+
 class BluetoothSerialService {
   static final BluetoothSerialService _instance =
   BluetoothSerialService._internal();

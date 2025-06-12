@@ -13,6 +13,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:preferences/preference_service.dart';
 
+/// The root widget of the Fetosense Device Flutter application.
+///
+/// `MyApp` sets up the application's theme, routing, and dependency injection.
+/// It uses `MultiBlocProvider` to provide all required BLoC/Cubit instances
+/// throughout the widget tree, enabling state management for authentication,
+/// Bluetooth connection, mother registration, details, and test data.
+///
+/// Example usage:
+/// ```dart
+/// void main() {
+///   runApp(const MyApp());
+/// }
+/// ```
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([

@@ -10,6 +10,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+/// A stateful widget that displays detailed information about a mother and her test history.
+///
+/// `MotherDetailsPage` shows the mother's profile, demographic details, and a list of tests
+/// fetched using [MotherDetailsCubit]. It provides a user interface for viewing test history
+/// and relevant mother information, such as age, gestational age, LMP, device details, and more.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => MotherDetailsPage(mother: mother),
+/// ));
+/// ```
+
 class MotherDetailsPage extends StatefulWidget {
   final Mother mother;
 

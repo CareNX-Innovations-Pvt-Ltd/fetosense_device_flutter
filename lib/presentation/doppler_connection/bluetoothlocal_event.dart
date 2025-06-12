@@ -1,5 +1,13 @@
 part of 'bluetoothlocal_bloc.dart';
 
+/// Abstract base class for all Bluetooth connection events in the local Doppler context.
+///
+/// `BluetoothConnectionEventLocal` defines the contract for events handled by
+/// [BluetoothConnectionBloc], such as starting a scan, connecting/disconnecting
+/// devices, and receiving data. Extend this class to implement specific event types.
+///
+/// All subclasses must implement [Equatable] for value comparison.
+
 abstract class BluetoothConnectionEventLocal extends Equatable {
   const BluetoothConnectionEventLocal();
 

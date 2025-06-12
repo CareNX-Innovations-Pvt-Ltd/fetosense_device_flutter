@@ -5,6 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateful widget that displays the splash screen and handles initial navigation.
+///
+/// `SplashScreen` shows a splash image for 3 seconds, then checks the user's auto-login
+/// preference using [PreferenceHelper]. Based on this, it navigates to either the home
+/// screen or the login screen using [GoRouter].
+///
+/// Example usage:
+/// ```dart
+/// MaterialApp(
+///   home: SplashScreen(),
+/// );
+/// ```
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
