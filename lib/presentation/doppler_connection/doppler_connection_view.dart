@@ -4,12 +4,14 @@ import 'package:fetosense_device_flutter/core/constants/app_routes.dart';
 import 'package:fetosense_device_flutter/core/utils/bluetooth_service_helper.dart';
 import 'package:fetosense_device_flutter/core/utils/color_manager.dart';
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
+import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -50,7 +52,6 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
   List<BluetoothDevice> _pairedDevices = [];
   bool showLoader = true;
   String? route;
-
   void _initializeBluetooth() async {
     route = widget.previousRoute;
     bool bluetoothEnabled = await _bluetoothService.enableBluetooth();
@@ -80,6 +81,9 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
   }
 
   void _connectToDevice(BluetoothDevice device) async {
+    final prefs = GetIt.I<PreferenceHelper>();
+    final user = prefs.getUser();
+    debugPrint('user -> ${user?.toJson()}');
     bool success = await _bluetoothService.connect(device);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +106,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
       test?.spo2Entries = [];
       test?.documentId = '';
       test?.motherId = '';
-      test?.deviceName = device.name;
+      test?.deviceName = user?.deviceName;
       test?.associations = <String, dynamic>{};
       test?.organizationName = '';
       test?.doctorName = '';

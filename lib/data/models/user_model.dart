@@ -28,6 +28,7 @@ class UserModel {
   String? deviceId;
   String? deviceName;
   String? doctorId;
+  String? doctorName;
   List<dynamic>? amcLog;
   dynamic amcPayment;
   String? amcStartDate;
@@ -42,7 +43,6 @@ class UserModel {
   String? modifiedTimeStamp;
   int? noOfMother;
   int? noOfTests;
-  String? notificationToken;
   int? sync;
   bool? testAccount;
   String? type;
@@ -66,6 +66,7 @@ class UserModel {
     this.deviceId,
     this.deviceName,
     this.doctorId,
+    this.doctorName,
     this.amcLog = const [],
     this.amcPayment,
     this.amcStartDate,
@@ -80,7 +81,6 @@ class UserModel {
     this.modifiedTimeStamp,
     this.noOfMother = 0,
     this.noOfTests = 0,
-    this.notificationToken,
     this.sync,
     this.testAccount,
     this.type,
@@ -101,7 +101,6 @@ class UserModel {
         email = snapshot['email'],
         mobileNo = snapshot['mobileNo'],
         uid = snapshot['uid'],
-        notificationToken = snapshot['notificationToken'],
         delete = snapshot['delete'] ?? false,
         createdOn =
             snapshot['createdOn'] is DateTime ? snapshot['createdOn'] : null,
@@ -117,6 +116,7 @@ class UserModel {
         deviceId = snapshot['deviceId'],
         deviceName = snapshot['deviceName'],
         doctorId = snapshot['doctorId'],
+        doctorName = snapshot['doctorName'],
         amcLog = snapshot['amcLog'],
         amcPayment = snapshot['amcPayment'],
         amcStartDate = snapshot['amcStartDate'],
@@ -145,7 +145,6 @@ class UserModel {
       'email': email,
       'mobileNo': mobileNo,
       'uid': uid,
-      'notificationToken': notificationToken,
       'delete': delete,
       'createdOn': createdOn?.toIso8601String(),
       'createdBy': createdBy,
@@ -156,6 +155,7 @@ class UserModel {
       'deviceId': deviceId,
       'deviceName': deviceName,
       'doctorId': doctorId,
+      'doctorName': doctorName,
       'amcLog': amcLog,
       'amcPayment': amcPayment,
       'amcStartDate': amcStartDate,
@@ -186,7 +186,6 @@ class UserModel {
       email: doc['email'],
       mobileNo: doc['mobileNo'],
       uid: doc['uid'],
-      notificationToken: doc['notificationToken'],
       delete: doc['delete'],
       createdOn: doc['createdOn'],
       createdBy: doc['createdBy'],
@@ -201,6 +200,7 @@ class UserModel {
       deviceId: doc['deviceId'],
       deviceName: doc['deviceName'],
       doctorId: doc['doctorId'],
+      doctorName: doc['doctorName'],
       amcLog: doc['amcLog'],
       amcPayment: doc['amcPayment'],
       amcStartDate: doc['amcStartDate'],

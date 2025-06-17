@@ -6,10 +6,12 @@ abstract class AppConstants {
   static const String motherDetailsRoute = 'mother-detail-route';
 
   ///appwrite credentials
-  static const String appwriteDatabaseId = '67ece4a7002a0a732dfd';
-  static const String userCollectionId = '67f36a7e002c46ea05f0';
-  static const String deviceCollectionId = '67f36766002068046589';
-  static const String testsCollectionId = '67f3790a0024f8f61684';
+  static const String appwriteProjectId = "684c18890002a74fff23";
+  static const String appwriteEndpoint = "http://20.6.93.31/v1";
+  static const String appwriteDatabaseId = '684c19ee00122a8eec2a';
+  static const String userCollectionId = '684c19fa00162a9cbc57';
+  static const String deviceCollectionId = '684c1a0200383bd0527c';
+  static const String testsCollectionId = '684c1a13001f5e7a17c5';
 
   ///app settings keys
   ///test section
