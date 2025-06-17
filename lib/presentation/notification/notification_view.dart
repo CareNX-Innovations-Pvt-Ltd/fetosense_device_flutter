@@ -3,6 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateful widget that displays the notifications screen.
+///
+/// `NotificationView` shows a placeholder UI when there are no notifications,
+/// including an icon and informational text. It uses [ScreenUtil] for responsive
+/// text sizing and provides a back button to return to the previous screen.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => const NotificationView(),
+/// ));
+/// ```
+
 class NotificationView extends StatefulWidget {
   const NotificationView({super.key});
 

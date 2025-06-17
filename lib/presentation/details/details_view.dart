@@ -13,6 +13,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+/// A stateful widget that displays detailed information and analysis for a specific test.
+///
+/// The `DetailsView` widget presents a comprehensive view of a test, including
+/// patient details, test statistics, interactive graph visualization, and controls
+/// for interpretation, printing, and sharing. It uses Bloc for state management
+/// and supports user interactions such as zooming, dragging, and selecting interpretations.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => DetailsView(test: test),
+/// ));
+/// ```
+
 class DetailsView extends StatefulWidget {
   final Test test;
 

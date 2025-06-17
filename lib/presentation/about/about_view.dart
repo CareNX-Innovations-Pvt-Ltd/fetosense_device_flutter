@@ -3,6 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateless widget that displays the About page of the application.
+///
+/// The `AboutView` widget presents information about the app, including a logo image
+/// and quick links such as Privacy Policy, Terms & Conditions, Website, and Contact Us.
+/// It uses a responsive layout with `ScreenUtil` for scaling and provides a back button
+/// in the app bar to return to the previous screen.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutView()));
+/// ```
+
 class AboutView extends StatelessWidget {
   const AboutView({super.key});
 

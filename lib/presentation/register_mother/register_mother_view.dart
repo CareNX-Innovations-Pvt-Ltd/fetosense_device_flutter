@@ -11,6 +11,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateful widget that provides a form for registering a new mother and associating her with a test.
+///
+/// `RegisterMotherView` displays input fields for the mother's name, phone number, age, patient ID (optional),
+/// and LMP date. It validates user input and interacts with [RegisterMotherCubit] to save the mother and test data.
+/// Navigation is handled based on the registration flow, either proceeding to test details or device connection screens.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => RegisterMotherView(test: test, previousRoute: route),
+/// ));
+/// ```
+
 class RegisterMotherView extends StatefulWidget {
   final Test? test;
   final String? previousRoute;

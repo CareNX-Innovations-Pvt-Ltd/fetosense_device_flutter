@@ -8,6 +8,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateful widget that displays a searchable and filterable list of mothers.
+///
+/// The `AllMothersView` widget presents a dashboard with statistics (total registered mothers,
+/// tests performed) and a data table listing all mothers, their ages, and gestational ages.
+/// It features a search bar for filtering mothers by name or ID, and uses Bloc for state management.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(builder: (_) => const AllMothersView()));
+/// ```
+
 class AllMothersView extends StatefulWidget {
   final bool autoFocus;
    const AllMothersView({super.key, this.autoFocus = false});

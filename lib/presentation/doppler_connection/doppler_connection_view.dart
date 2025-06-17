@@ -15,6 +15,21 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+/// A stateful widget that manages and displays the Doppler device connection flow.
+///
+/// The `DopplerConnectionView` handles Bluetooth initialization, device scanning,
+/// and connection logic for Doppler devices. It provides user feedback during
+/// connection attempts, displays instructions, and navigates to the test view
+/// upon successful connection. The widget uses a [BluetoothSerialService] for
+/// Bluetooth operations and interacts with test and mother models.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => DopplerConnectionView(test: test, mother: mother),
+/// ));
+/// ```
+
 class DopplerConnectionView extends StatefulWidget {
   final String? previousRoute;
   final Test? test;

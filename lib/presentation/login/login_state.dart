@@ -1,5 +1,13 @@
 part of 'login_cubit.dart';
 
+/// Abstract base class representing the state of the login process.
+///
+/// `LoginState` is used by [LoginCubit] to emit different authentication states,
+/// such as initial, loading, success, or failure. Subclasses provide specific
+/// information for each state, allowing the UI to react accordingly.
+///
+/// All subclasses must implement [Equatable] for value comparison.
+
 sealed class LoginState extends Equatable {
   const LoginState();
 

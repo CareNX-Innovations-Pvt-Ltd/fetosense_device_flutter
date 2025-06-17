@@ -1,3 +1,18 @@
+
+/// A data model representing fetal heart rate (FHR) and related monitoring values.
+///
+/// The `MyFhrData` class stores real-time readings from a fetal monitoring device,
+/// including FHR channels, uterine contraction (toco), fetal movement (afm, fm),
+/// signal quality flags, and device status indicators.
+///
+/// Example usage:
+/// ```dart
+/// final data = MyFhrData();
+/// data.fhr1 = 140;
+/// data.toco = 20;
+/// print(data.fhrSignal);
+/// ```
+
 class MyFhrData {
   int fhr1 = 0;
   int fhr2 = 0;

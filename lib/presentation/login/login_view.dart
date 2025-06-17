@@ -6,6 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+/// A stateful widget that provides the user interface for logging into the app.
+///
+/// `LoginView` displays input fields for email and password, handles user
+/// authentication via [LoginCubit], and shows feedback for login success or failure.
+/// It also provides contact information for user support.
+///
+/// Example usage:
+/// ```dart
+/// Navigator.push(context, MaterialPageRoute(
+///   builder: (_) => const LoginView(),
+/// ));
+/// ```
+
 class LoginView extends StatefulWidget {
 
   const LoginView({super.key});

@@ -2,6 +2,28 @@ import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/custom_radio_btn.dart';
 import 'package:flutter/material.dart';
 
+/// A dialog widget for updating test interpretation and extra comments.
+///
+/// `InterpretationDialog` displays a modal dialog allowing users to select an interpretation
+/// (Normal, Abnormal, Atypical) and enter additional comments for a given [Test].
+/// The dialog uses a custom radio button group and a multi-line text field for input.
+/// On submission or cancellation, it invokes the optional [callback] with the selected
+/// interpretation, comments, and a boolean indicating if the update was confirmed.
+///
+/// Example usage:
+/// ```dart
+/// showDialog(
+///   context: context,
+///   builder: (context) => InterpretationDialog(
+///     test: test,
+///     value: test.interpretation,
+///     callback: (interpretation, comments, updated) {
+///       // Handle result
+///     },
+///   ),
+/// );
+/// ```
+
 class InterpretationDialog extends StatefulWidget {
   final Test? test;
 

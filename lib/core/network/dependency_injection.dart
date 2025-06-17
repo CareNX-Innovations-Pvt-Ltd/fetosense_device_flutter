@@ -5,6 +5,24 @@ import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+/// A service locator for dependency injection using the [GetIt] package.
+///
+/// This class registers and provides singleton and factory instances of
+/// commonly used services and BLoCs throughout the application, such as:
+/// - [BluetoothSerialService] for Bluetooth communication
+/// - [PreferenceHelper] for shared preferences management
+/// - [BluetoothConnectionBloc] for managing Bluetooth connection state
+/// - [MyAudioTrack16Bit] for audio playback
+/// - [AppwriteService] for Appwrite backend communication
+///
+/// Call [setupLocator] at app startup to register all dependencies.
+/// Use the provided getters to access registered instances.
+///
+/// Example usage:
+/// ```dart
+/// ServiceLocator.setupLocator();
+/// final bluetoothService = ServiceLocator.bluetoothServiceHelper;
+/// ```
 
 class ServiceLocator {
   static final GetIt _getIt = GetIt.instance;
