@@ -38,46 +38,12 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
     super.initState();
     test = widget.test;
     route = widget.previousRoute;
+    context.read<RegisterMotherCubit>().loadDoctors();
     setState(() {
       showPatientId =
           GetIt.I<PreferenceHelper>().getBool(AppConstants.patientIdKey) ??
               false;
     });
-  }
-
-  navigate(dynamic state) {
-    if (route == AppConstants.instantTest) {
-      context.read<RegisterMotherCubit>().saveTest(
-            nameController.text,
-            ageController.text,
-            patientIdController.text,
-            pickedDate,
-            test,
-            phoneNumberController.text,
-          );
-      if (state is RegisterMotherSuccess) {
-        context.pushReplacement(AppRoutes.detailsView, extra: state.test);
-      }
-    } else {
-      context
-          .read<RegisterMotherCubit>()
-          .saveMother(
-            nameController.text,
-            ageController.text,
-            patientIdController.text,
-            pickedDate,
-            test,
-            phoneNumberController.text,
-          )
-          .then((onValue) {
-        if (mounted) {
-          if (state is RegisterMotherSuccess) {
-            context.pushReplacement(AppRoutes.dopplerConnectionView,
-                extra: {'test': test, 'route': AppConstants.registeredMother});
-          }
-        }
-      });
-    }
   }
 
   @override
@@ -166,6 +132,43 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                       const SizedBox(
                         height: 20,
                       ),
+
+                      /// Doctor Dropdown
+                      BlocBuilder<RegisterMotherCubit, RegisterMotherState>(
+                        builder: (context, state) {
+                          final cubit = context.read<RegisterMotherCubit>();
+                          final doctors = cubit.doctors;
+
+                          if (doctors.isEmpty) {
+                            return const SizedBox(); // or CircularProgressIndicator
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 20.0),
+                            child: DropdownButtonFormField<String>(
+                              decoration: const InputDecoration(
+                                labelText: 'Select Doctor',
+                                border: UnderlineInputBorder(),
+                              ),
+                              value: cubit.selectedDoctorId,
+                              items: doctors.map((doctor) {
+                                final name = doctor['name'] ?? 'Unnamed';
+                                final id = doctor['id']!;
+                                return DropdownMenuItem<String>(
+                                  value: id,
+                                  child: Text(name), // 👈 Show only name
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                context
+                                    .read<RegisterMotherCubit>()
+                                    .selectDoctor(value);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+
                       Visibility(
                         visible: showPatientId,
                         replacement: Container(),
@@ -233,6 +236,8 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                   pickedDate,
                                   test,
                                   phoneNumberController.text,
+                                  cubit.selectedDoctorName,
+                                  cubit.selectedDoctorId,
                                 );
                               } else {
                                 cubit.saveMother(
@@ -242,6 +247,8 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                   pickedDate,
                                   test,
                                   phoneNumberController.text,
+                                  cubit.selectedDoctorName,
+                                  cubit.selectedDoctorId,
                                 );
                               }
                             }

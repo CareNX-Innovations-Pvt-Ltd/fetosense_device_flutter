@@ -22,13 +22,6 @@ class Test {
   String? organizationId;
   String? organizationName;
 
-  String? imageLocalPath;
-  String? imageFirePath;
-  String? audioLocalPath;
-  String? audioFirePath;
-  bool? isImgSynced;
-  bool? isAudioSynced;
-
   List<int> bpmEntries = [];
   List<int> bpmEntries2 = [];
   List<int> mhrEntries = [];
@@ -71,12 +64,6 @@ class Test {
     this.patientId,
     this.organizationId,
     this.organizationName,
-    this.imageLocalPath,
-    this.imageFirePath,
-    this.audioLocalPath,
-    this.audioFirePath,
-    this.isImgSynced,
-    this.isAudioSynced,
     required this.bpmEntries,
     required this.bpmEntries2,
     required this.baseLineEntries,
@@ -114,12 +101,6 @@ class Test {
     this.patientId,
     this.organizationId,
     this.organizationName,
-    this.imageLocalPath,
-    this.imageFirePath,
-    this.audioLocalPath,
-    this.audioFirePath,
-    this.isImgSynced,
-    this.isAudioSynced,
     this.bpmEntries,
     this.bpmEntries2,
     this.mhrEntries,
@@ -163,12 +144,6 @@ class Test {
         patientId = snapshot['patientId'],
         organizationId = snapshot['organizationId'],
         organizationName = snapshot['organizationName'],
-        imageLocalPath = snapshot['imageLocalPath'],
-        imageFirePath = snapshot['imageFirePath'],
-        audioLocalPath = snapshot['audioLocalPath'],
-        audioFirePath = snapshot['audioFirePath'],
-        isImgSynced = snapshot['isImgSynced'],
-        isAudioSynced = snapshot['isAudioSynced'],
         bpmEntries = snapshot['bpmEntries'] != null
             ? snapshot['bpmEntries'].cast<int>()
             : <int>[],
@@ -226,7 +201,6 @@ class Test {
       'patientId': patientId,
       'organizationId': organizationId,
       'organizationName': organizationName,
-      'audioLocalPath': audioLocalPath,
       'bpmEntries': bpmEntries,
       'bpmEntries2': bpmEntries2,
       'mhrEntries': mhrEntries,
@@ -244,7 +218,6 @@ class Test {
       'interpretationExtraComments': interpretationExtraComments,
       'association': associations.toString(),
       'autoInterpretations': autoInterpretations.toString(),
-      'type': "test",
       'delete': delete,
       'createdOn': createdOn.toIso8601String(),
       'createdBy': createdBy,
@@ -270,12 +243,6 @@ class Test {
       print('Patient ID: $patientId');
       print('Organization ID: $organizationId');
       print('Organization Name: $organizationName');
-      print('Image Local Path: $imageLocalPath');
-      print('Image Fire Path: $imageFirePath');
-      print('Audio Local Path: $audioLocalPath');
-      print('Audio Fire Path: $audioFirePath');
-      print('Is Image Synced: $isImgSynced');
-      print('Is Audio Synced: $isAudioSynced');
       print('BPM Entries: $bpmEntries');
       print('BPM Entries 2: $bpmEntries2');
       print('MHR Entries: $mhrEntries');

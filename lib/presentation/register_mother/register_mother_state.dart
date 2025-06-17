@@ -23,3 +23,12 @@ final class RegisterMotherFailure extends RegisterMotherState {
 
   const RegisterMotherFailure(this.failure);
 }
+
+class DoctorsLoaded extends RegisterMotherState {
+  final List<Map<String, String>> doctors;
+
+  const DoctorsLoaded(this.doctors);
+}
+
+class DoctorSelected extends RegisterMotherState {}
+

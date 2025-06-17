@@ -28,7 +28,6 @@ class UserModel {
   String? modifiedTimeStamp;
   int? noOfMother;
   int? noOfTests;
-  String? notificationToken;
   int? sync;
   bool? testAccount;
   String? type;
@@ -66,7 +65,6 @@ class UserModel {
     this.modifiedTimeStamp,
     this.noOfMother = 0,
     this.noOfTests = 0,
-    this.notificationToken,
     this.sync,
     this.testAccount,
     this.type,
@@ -87,7 +85,6 @@ class UserModel {
         email = snapshot['email'],
         mobileNo = snapshot['mobileNo'],
         uid = snapshot['uid'],
-        notificationToken = snapshot['notificationToken'],
         delete = snapshot['delete'] ?? false,
         createdOn =
             snapshot['createdOn'] is DateTime ? snapshot['createdOn'] : null,
@@ -131,7 +128,6 @@ class UserModel {
       'email': email,
       'mobileNo': mobileNo,
       'uid': uid,
-      'notificationToken': notificationToken,
       'delete': delete,
       'createdOn': createdOn?.toIso8601String(),
       'createdBy': createdBy,
@@ -172,7 +168,6 @@ class UserModel {
       email: doc['email'],
       mobileNo: doc['mobileNo'],
       uid: doc['uid'],
-      notificationToken: doc['notificationToken'],
       delete: doc['delete'],
       createdOn: doc['createdOn'],
       createdBy: doc['createdBy'],
