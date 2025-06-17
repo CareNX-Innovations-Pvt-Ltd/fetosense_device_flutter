@@ -14,6 +14,7 @@ class UserModel {
   String? deviceId;
   String? deviceName;
   String? doctorId;
+  String? doctorName;
   List<dynamic>? amcLog;
   dynamic amcPayment;
   String? amcStartDate;
@@ -51,6 +52,7 @@ class UserModel {
     this.deviceId,
     this.deviceName,
     this.doctorId,
+    this.doctorName,
     this.amcLog = const [],
     this.amcPayment,
     this.amcStartDate,
@@ -100,6 +102,7 @@ class UserModel {
         deviceId = snapshot['deviceId'],
         deviceName = snapshot['deviceName'],
         doctorId = snapshot['doctorId'],
+        doctorName = snapshot['doctorName'],
         amcLog = snapshot['amcLog'],
         amcPayment = snapshot['amcPayment'],
         amcStartDate = snapshot['amcStartDate'],
@@ -138,6 +141,7 @@ class UserModel {
       'deviceId': deviceId,
       'deviceName': deviceName,
       'doctorId': doctorId,
+      'doctorName': doctorName,
       'amcLog': amcLog,
       'amcPayment': amcPayment,
       'amcStartDate': amcStartDate,
@@ -182,6 +186,7 @@ class UserModel {
       deviceId: doc['deviceId'],
       deviceName: doc['deviceName'],
       doctorId: doc['doctorId'],
+      doctorName: doc['doctorName'],
       amcLog: doc['amcLog'],
       amcPayment: doc['amcPayment'],
       amcStartDate: doc['amcStartDate'],

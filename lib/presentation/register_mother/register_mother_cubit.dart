@@ -44,6 +44,8 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       mother.organizationId = test.organizationId;
       mother.organizationName = test.organizationName;
       mother.documentId = id;
+      mother.doctorId = doctorId;
+      mother.doctorName = doctorName;
 
       await databases.createDocument(
           databaseId: AppConstants.appwriteDatabaseId,
@@ -101,6 +103,8 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.gAge = gestationalAge;
       test.patientId = patientId;
       mother.documentId = id;
+      test.doctorId = doctorId;
+      test.doctorName = doctorName;
 
       await databases.createDocument(
         databaseId: AppConstants.appwriteDatabaseId,
