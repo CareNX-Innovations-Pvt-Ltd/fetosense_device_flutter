@@ -66,11 +66,13 @@ class DetailsCubit extends Cubit<DetailsState> {
       timDiff = (timDiff / 1000).truncate();
     }
 
+    final interpretation = classifyFromInterpretations(interpretations);
+
     emit(state.copyWith(
       test: test,
       interpretations: interpretations,
       interpretations2: interpretations2,
-      radioValue: test.interpretationType,
+      radioValue: interpretation,
       movements: movementsStr,
     ));
   }
@@ -251,6 +253,28 @@ class DetailsCubit extends Cubit<DetailsState> {
       );
     }
     return pdf1;
+  }
+
+  String classifyFromInterpretations(Interpretations2 interp) {
+    final int fhr = interp.getBasalHeartRate();
+    final int acc = interp.getnAccelerations() ?? 0;
+    final int dec = interp.getnDecelerations() ?? 0;
+    final double stv = interp.getShortTermVariationBpm();
+    final int ltv = interp.getLongTermVariation();
+
+    // Abnormal cases
+    if (fhr < 110 || fhr > 160) return 'Abnormal';
+    if (dec >= 2) return 'Abnormal';
+    if (stv < 2.0) return 'Abnormal';
+    if (ltv < 6) return 'Abnormal';
+
+    // Atypical cases
+    if ((stv >= 2.0 && stv <= 4.5) || (ltv >= 6 && ltv <= 10) || acc == 0) {
+      return 'Atypical';
+    }
+
+    // Normal case
+    return 'Normal';
   }
 
   @override
