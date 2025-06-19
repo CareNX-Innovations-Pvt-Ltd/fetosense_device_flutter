@@ -35,6 +35,7 @@ class PfdBasePage extends pw.StatelessWidget {
 
   @override
   pw.Widget build(dynamic context) {
+    final doctorsComment = splitTextIntoLines(data.interpretationExtraComments??"",2, 8 * PdfPageFormat.cm, 4);
     return pw.Column(
       children: [
         Header(data: data),
@@ -216,35 +217,38 @@ class PfdBasePage extends pw.StatelessWidget {
                         ],
                       ),
                       pw.SizedBox(height: PdfPageFormat.mm * 4),
-                      pw.Text("NOTES",
+                      pw.Text( data.interpretationType?.isNotEmpty ?? false ? "NOTES: ${data.interpretationType}" : "NOTES",
                           style: pw.TextStyle(
                               color: PdfColors.teal,
                               fontSize: 12,
                               fontWeight: pw.FontWeight.bold,
                               letterSpacing: 1.0),
-                          textAlign: pw.TextAlign.left),
-                      pw.SizedBox(height: PdfPageFormat.mm * 2),
-                      pw.RichText(
-                        text: pw.TextSpan(
-                          text: "______________________________________",
-                          children: const [
-                            pw.TextSpan(
-                              text: "\n______________________________________",
-                            ),
-                            pw.TextSpan(
-                              text: "\n______________________________________",
-                            ),
-                            pw.TextSpan(
-                              text: "\n______________________________________",
-                            ),
-                          ],
-                          style: pw.TextStyle(
-                              fontSize: 10,
-                              lineSpacing: PdfPageFormat.mm * 1.5,
-                              fontWeight: pw.FontWeight.bold),
-                        ),
-                        textAlign: pw.TextAlign.left,
+                          textAlign: pw.TextAlign.left
                       ),
+                      // pw.SizedBox(height: PdfPageFormat.mm * 2),
+                      ...List.generate(2, (index) {
+                        return pw.Container(
+                          width: PdfPageFormat.cm * 8,
+                          height: PdfPageFormat.cm * 0.6, // Space between lines
+                          decoration: const pw.BoxDecoration(
+                            border: pw.Border(
+                              bottom: pw.BorderSide(color: PdfColors.grey, width: 1),
+                            ),
+                          ),
+                          child: pw.Align(
+                            alignment: pw.Alignment.bottomLeft,
+                            child: pw.Text(
+                              doctorsComment[index],
+                              style: pw.TextStyle(
+                                  color: PdfColors.teal,
+                                  fontSize: 8,
+                                  fontWeight: pw.FontWeight.normal,
+                                  letterSpacing: 1),
+                              textAlign: pw.TextAlign.left,
+                            ),
+                          ),
+                        );
+                      }),
                       pw.SizedBox(height: PdfPageFormat.mm * 5),
                       pw.TableHelper.fromTextArray(
                         border: pw.TableBorder.all(color: PdfColors.grey),
@@ -494,4 +498,42 @@ class HeaderData extends pw.StatelessWidget {
       ),
     );
   }
+}
+
+List<String> splitTextIntoLines(String text, int maxLines, double maxWidthPerLine, double charWidth) {
+  List<String> words = text.split(' '); // Split text into words
+  List<String> lines = [];
+  String currentLine = "";
+  double currentWidth = 0;
+
+  for (String word in words) {
+    double wordWidth = word.length * charWidth; // Approximate width of the word
+
+    // Check if adding the word exceeds the max width of the line
+    if ((currentWidth + wordWidth) > maxWidthPerLine) {
+      // Save the current line and start a new one
+      lines.add(currentLine.trim());
+      currentLine = word;
+      currentWidth = wordWidth;
+
+      // Stop if we have reached the max number of lines
+      if (lines.length >= maxLines) {
+        break;
+      }
+    } else {
+      // Add word to the current line
+      currentLine += (currentLine.isEmpty ? "" : " ") + word;
+      currentWidth += wordWidth;
+    }
+  }
+
+  // Add the last line if it’s not empty
+  if (currentLine.isNotEmpty && lines.length < maxLines) {
+    lines.add(currentLine.trim());
+  }
+  for(int i= lines.length-1;i<maxLines;i++){
+    lines.add("");
+  }
+
+  return lines;
 }

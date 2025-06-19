@@ -100,16 +100,16 @@ class Interpretations2 {
 
   Interpretations2.fromMap(Test test){
     accelerationsList = (test.autoInterpretations?["accelerationsList"]??[]).map<MarkerIndices>((e) => MarkerIndices.fromData(e["from"], e["to"])).toList();
-    decelerationsList = (test.autoInterpretations?["accelerationsList"]??[] as List<Map<String,int>>).map<MarkerIndices>((e) => MarkerIndices.fromData(e["from"], e["to"])).toList();
-    noiseList = (test.autoInterpretations?["accelerationsList"]??[] as List<Map<String,int>>).map<MarkerIndices>((e) => MarkerIndices.fromData(e["from"], e["to"])).toList();
+    decelerationsList = (test.autoInterpretations?["accelerationsList"]??[]).map<MarkerIndices>((e) => MarkerIndices.fromData(e["from"], e["to"])).toList();
+    noiseList = (test.autoInterpretations?["accelerationsList"]??[]).map<MarkerIndices>((e) => MarkerIndices.fromData(e["from"], e["to"])).toList();
     fisherScore = test.fisherScore??0;
     fisherScore2 = test.fisherScore2??0;
-    basalHeartRate = int.tryParse(test.autoInterpretations?["basalHeartRate"])??0;
-    nAccelerations = int.tryParse(test.autoInterpretations?["nAccelerations"])??0;
-    nDecelerations = int.tryParse(test.autoInterpretations?["nDecelerations"])??0;
-    longTermVariation = int.tryParse(test.autoInterpretations?["longTermVariation"])??0;
-    shortTermVariationBpm = double.tryParse(test.autoInterpretations?["shortTermVariationBpm"])??0;
-    shortTermVariationMilli = int.tryParse(test.autoInterpretations?["shortTermVariationMilli"])??0;
+    basalHeartRate = int.tryParse(test.autoInterpretations["basalHeartRate"] ?? '0')??0;
+    nAccelerations = int.tryParse(test.autoInterpretations["nAccelerations"]?? '0')??0;
+    nDecelerations = int.tryParse(test.autoInterpretations["nDecelerations"]?? '0')??0;
+    longTermVariation = int.tryParse(test.autoInterpretations["longTermVariation"]?? '0')??0;
+    shortTermVariationBpm = double.tryParse(test.autoInterpretations["shortTermVariationBpm"]?? '0')??0;
+    shortTermVariationMilli = int.tryParse(test.autoInterpretations["shortTermVariationMilli"]?? '0')??0;
   }
 
   Interpretations2.withData(List<int> bpm, int gAge) {

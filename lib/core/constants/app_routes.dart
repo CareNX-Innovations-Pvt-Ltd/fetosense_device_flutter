@@ -107,9 +107,13 @@ final GoRouter appRouter = GoRouter(
       name: '/details_view',
       path: AppRoutes.detailsView,
       builder: (context, state) {
-        var test = state.extra as Test;
+        final data = state.extra as Map<String, dynamic>;
+        final Test test = data['test'];
+        final String? fromRoute = data['from'];
+
         return DetailsView(
           test: test,
+          fromRoute: fromRoute,
         );
       },
     ),

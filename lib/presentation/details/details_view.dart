@@ -29,8 +29,9 @@ import 'package:intl/intl.dart';
 
 class DetailsView extends StatefulWidget {
   final Test test;
+ final String? fromRoute;
 
-  const DetailsView({super.key, required this.test});
+  const DetailsView({super.key, required this.test, this.fromRoute});
 
   @override
   DetailsViewState createState() => DetailsViewState();
@@ -64,14 +65,18 @@ class DetailsViewState extends State<DetailsView>
         builder: (context, state) {
           return PopScope(
             onPopInvokedWithResult: (pop, result) {
-              context.go(AppRoutes.home);
+              if(widget.fromRoute?.isNotEmpty == true && widget.fromRoute == "motherDetails") {
+                context.pop();
+              } else {
+                context.go(AppRoutes.home);
+              }
             },
             child: Scaffold(
               body: SafeArea(
                 child: Column(
                   children: <Widget>[
                     _buildHeader(context, state),
-                    _buildRadioButtons(context, state),
+                    // _buildRadioButtons(context, state),
                     Expanded(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,10 +110,38 @@ class DetailsViewState extends State<DetailsView>
           icon: const Icon(Icons.arrow_back, size: 30, color: Colors.teal),
           onPressed: () => context.go(AppRoutes.home),
         ),
-        subtitle: Text(
-          DateFormat('dd MMM yy - hh:mm a').format(state.test.createdOn),
-          style: const TextStyle(
-              fontWeight: FontWeight.w500, fontSize: 18, color: Colors.black87),
+        subtitle: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+            children: [
+              Text(
+                DateFormat('dd MMM yy - hh:mm a').format(state.test.createdOn),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500, fontSize: 18, color: Colors.black87),
+              ),
+
+            ],
+          ),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
+                decoration: BoxDecoration(
+                  color: state.radioValue == 'normal'
+                      ? Colors.green.withOpacity(0.4)
+                      : Colors.red.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(8.w),
+                ),
+
+                child: Text(
+                  "${state.radioValue}",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+                ),
+              ),
+            ),
+          ]
         ),
         title: Text(
           "${state.test.motherName}",
@@ -183,7 +216,7 @@ class DetailsViewState extends State<DetailsView>
           width: MediaQuery.of(context).size.width,
           child: CustomPaint(
             painter: GraphPainter(state.test, state.mOffset, state.gridPreMin,
-                state.interpretations),
+                state.interpretations, true),
           ),
         ),
       ),

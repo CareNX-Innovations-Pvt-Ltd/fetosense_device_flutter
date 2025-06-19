@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 /// A model class representing a test.
@@ -175,11 +177,15 @@ class Test {
         testById = snapshot['testById'],
         interpretationType = snapshot['interpretationType'],
         interpretationExtraComments = snapshot['interpretationExtraComments'],
-        associations = snapshot['association'] ?? <String, dynamic>{},
+        associations = snapshot['association'] is String
+            ? jsonDecode(snapshot['association'])
+            : snapshot['association'],
         autoInterpretations =
-            snapshot['autoInterpretations'] ?? <String, dynamic>{},
+            snapshot['autoInterpretations'] is String
+                ? jsonDecode(snapshot['autoInterpretations'])
+                : snapshot['autoInterpretations'],
         delete = snapshot['delete'],
-        createdOn = snapshot['createdOn'],
+        createdOn = DateTime.parse(snapshot['createdOn']),
         createdBy = snapshot['createdBy'];
 
   /// Default constructor for the [Test] class.
@@ -216,8 +222,8 @@ class Test {
       'testById': testById,
       'interpretationType': interpretationType,
       'interpretationExtraComments': interpretationExtraComments,
-      'association': associations.toString(),
-      'autoInterpretations': autoInterpretations.toString(),
+      'association': jsonEncode(associations ?? {}),
+      'autoInterpretations': jsonEncode(autoInterpretations ?? {}),
       'delete': delete,
       'createdOn': createdOn.toIso8601String(),
       'createdBy': createdBy,

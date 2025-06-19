@@ -164,28 +164,37 @@ class _MotherDetailsPageState extends State<MotherDetailsPage> {
                       itemCount: tests.length,
                       itemBuilder: (context, index) {
                         final test = tests[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            title: Text("Test #${index + 1}",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 8),
-                                Text("Gestational Age: ${test.gAge} weeks"),
-                                test.patientId!.isNotEmpty
-                                    ? Text(
-                                        "Patient ID: ${test.patientId ?? '-'}")
-                                    : Container(),
-                                Text("Device: ${test.deviceName ?? '-'}"),
-                                Text("Date: ${test.createdOn}"),
-                              ],
+                        return InkWell(
+                          onTap: () {
+                            context.push(
+                              AppRoutes.detailsView,
+                              extra: {'test': test, 'from': 'motherDetails'},
+                            );
+                          },
+                          child: Card(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(16),
+                              title: Text("Test #${index + 1}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 8),
+                                  Text("Gestational Age: ${test.gAge} weeks"),
+                                  test.patientId!.isNotEmpty
+                                      ? Text(
+                                          "Patient ID: ${test.patientId ?? '-'}")
+                                      : Container(),
+                                  Text("Device: ${test.deviceName ?? '-'}"),
+                                  Text(
+                                      "Date: ${DateFormat('dd MMM yy - hh:mm a').format(test.createdOn)}"),
+                                ],
+                              ),
                             ),
                           ),
                         );

@@ -31,7 +31,8 @@ import 'package:printing/printing.dart';
 
 class DetailsCubit extends Cubit<DetailsState> {
   final PreferenceHelper prefs = GetIt.I<PreferenceHelper>();
-  static const MethodChannel printChannel = MethodChannel('com.carenx.fetosense/print');
+  static const MethodChannel printChannel =
+      MethodChannel('com.carenx.fetosense/print');
   late AnimationController animationController;
   double mTouchStart = 0;
   late pdf.Document pdfDoc;
@@ -62,11 +63,14 @@ class DetailsCubit extends Cubit<DetailsState> {
     String movementsStr = movements < 10 ? "0$movements" : '$movements';
 
     if (test.live!) {
-      int timDiff = DateTime.now().millisecondsSinceEpoch - test.createdOn.millisecondsSinceEpoch;
+      num timDiff = DateTime.now().millisecondsSinceEpoch -
+          test.createdOn.millisecondsSinceEpoch;
       timDiff = (timDiff / 1000).truncate();
     }
 
-    final interpretation = classifyFromInterpretations(interpretations);
+    final interpretation = test.interpretationType?.isNotEmpty ?? false
+        ? test.interpretationType
+        : classifyFromInterpretations(interpretations);
 
     emit(state.copyWith(
       test: test,
@@ -85,7 +89,8 @@ class DetailsCubit extends Cubit<DetailsState> {
     showInterpretationDialog(value, context, test);
   }
 
-  void showInterpretationDialog(String value, BuildContext context, Test? test) {
+  void showInterpretationDialog(
+      String value, BuildContext context, Test? test) {
     showDialog(
       context: context,
       builder: (context) {
@@ -135,7 +140,8 @@ class DetailsCubit extends Cubit<DetailsState> {
     var local = getBox.globalToLocal(update.globalPosition);
     double newChange = (mTouchStart - local.dx);
 
-    int newOffset = trap(state.mOffset + (newChange / (state.gridPreMin * 5)).truncate());
+    int newOffset =
+        trap(state.mOffset + (newChange / (state.gridPreMin * 5)).truncate());
     emit(state.copyWith(mOffset: newOffset));
   }
 
@@ -166,15 +172,13 @@ class DetailsCubit extends Cubit<DetailsState> {
 
     try {
       final String? result = await printChannel.invokeMethod(
-          state.action == PrintAction.print ? 'printTest' : "shareTest",
-          {
-            "test": state.test.toJson(),
-            "scale": '$scale',
-            "comments": comments,
-            "interpretations": interpretations,
-            "highlight": highlight
-          }
-      );
+          state.action == PrintAction.print ? 'printTest' : "shareTest", {
+        "test": state.test.toJson(),
+        "scale": '$scale',
+        "comments": comments,
+        "interpretations": interpretations,
+        "highlight": highlight
+      });
       debugPrint("result : '$result'.");
       emit(state.copyWith(isLoadingPrint: false, isLoadingShare: false));
     } on PlatformException catch (e) {
@@ -191,11 +195,11 @@ class DetailsCubit extends Cubit<DetailsState> {
         if (state.action == PrintAction.print) {
           await Printing.layoutPdf(
               format: PdfPageFormat.a4.landscape,
-              onLayout: (PdfPageFormat format) async => pdfDoc.save()
-          );
+              onLayout: (PdfPageFormat format) async => pdfDoc.save());
           emit(state.copyWith(isLoadingPrint: false));
         } else {
-          await Printing.sharePdf(bytes: await pdfDoc.save(), filename: 'Test.pdf');
+          await Printing.sharePdf(
+              bytes: await pdfDoc.save(), filename: 'Test.pdf');
           emit(state.copyWith(isLoadingShare: false));
         }
         break;
@@ -230,7 +234,9 @@ class DetailsCubit extends Cubit<DetailsState> {
         ? Interpretations2.withData(test.bpmEntries2, test.gAge ?? 32)
         : null;
 
-    FhrPdfView2 fhrPdfView = FhrPdfView2(test.lengthOfTest!);
+    FhrPdfView2 fhrPdfView = FhrPdfView2(
+      test.lengthOfTest!,
+    );
     final paths = await fhrPdfView.getNSTGraph(test, interpretations);
 
     for (int i = 0; i < paths!.length; i++) {
