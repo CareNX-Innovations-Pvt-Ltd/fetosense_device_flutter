@@ -2,7 +2,9 @@
 
 A Flutter-based mobile application for interfacing with the Fetosense NST/CTG device—a portable, wireless fetal monitoring system developed by CareNX Innovations.
 
-## 🚀 Features
+> 🛠️ This app is to be used with **[Fetosense Web Flutter](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense-web-flutter) and [Fetosense Remote App](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_remote_flutter)**.
+
+## 🚀 Features 
 
 - Real-time monitoring of fetal heart rate and uterine contractions  
 - Seamless Bluetooth connectivity with the Fetosense device  

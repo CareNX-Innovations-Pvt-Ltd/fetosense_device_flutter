@@ -69,7 +69,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
       listener: (context, state) {
         if (state is RegisterMotherSuccess) {
           if (route == AppConstants.instantTest) {
-            context.pushReplacement(AppRoutes.detailsView, extra: state.test);
+            context.pushReplacement(AppRoutes.detailsView, extra: {'test': state.test});
           } else {
             context.pushReplacement(
               AppRoutes.dopplerConnectionView,

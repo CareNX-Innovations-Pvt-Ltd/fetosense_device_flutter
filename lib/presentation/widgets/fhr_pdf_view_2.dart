@@ -135,6 +135,7 @@ class FhrPdfView2 {
     drawAutoMovements(mData!.autoFetalMovement, pages);
     //return bitmaps;
     debugPrint("highlight : $highlight $auto");
+    debugPrint("highlight : $_interpretations");
 
     if (_interpretations != null && auto && highlight) {
       debugPrint("highlight in : $highlight $auto");
@@ -176,9 +177,9 @@ class FhrPdfView2 {
   void initialize(int lengthOfTest) {
     scale = prefs.getInt('scale') ?? 1;
     fhr2Offset = prefs.getInt('fhr2Offset') ?? 0;
-    comments = prefs.getBool('comments') ?? false;
-    auto = prefs.getBool('interpretations') ?? false;
-    highlight = prefs.getBool('highlight') ?? false;
+    comments = prefs.getBool('comments') ?? true;
+    auto = true;
+    highlight = prefs.getBool('highlight') ?? true;
     debugPrint("highlight : $highlight $lengthOfTest");
     if (lengthOfTest < 180 || lengthOfTest > 3600) {
       auto = false;

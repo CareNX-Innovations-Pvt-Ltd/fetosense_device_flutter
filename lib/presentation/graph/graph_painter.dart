@@ -108,7 +108,10 @@ class GraphPainter extends CustomPainter {
   /// Graph interpretation results
   Interpretations2? interpretations;
 
-  GraphPainter(this.test, this.mOffset, this.gridPerMin, this.interpretations);
+  ///details view only gets the highlighted interpretations
+  bool isDetailsView = false;
+
+  GraphPainter(this.test, this.mOffset, this.gridPerMin, this.interpretations, this.isDetailsView);
 
   /// Screen height
   late double screenHeight;
@@ -259,12 +262,14 @@ class GraphPainter extends CustomPainter {
     drawAutoMovements(canvas);
     drawTocoLine(canvas);
 
-    // drawInterpretationAreas(
-    //     canvas, interpretations!.getAccelerationsList(), graphSafeZone);
-    // drawInterpretationAreas(
-    //     canvas, interpretations!.getDecelerationsList(), graphUnSafeZone);
-    // drawInterpretationAreas(
-    //     canvas, interpretations!.getNoiseAreaList(), graphNoiseZone);
+    if(isDetailsView){
+      drawInterpretationAreas(
+          canvas, interpretations!.getAccelerationsList(), graphSafeZone);
+      drawInterpretationAreas(
+          canvas, interpretations!.getDecelerationsList(), graphUnSafeZone);
+      drawInterpretationAreas(
+          canvas, interpretations!.getNoiseAreaList(), graphNoiseZone);
+    }
 
     // canvas.drawLine(
     //     new Offset(xOrigin + 20,
