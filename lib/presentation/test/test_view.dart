@@ -167,7 +167,7 @@ class TestViewState extends State<TestView> {
             'organizationName': test!.organizationName,
           },
         );
-        context.pushReplacement(AppRoutes.detailsView, extra: test);
+        context.pushReplacement(AppRoutes.detailsView, extra: {'test': test});
       }
     } catch (e, s) {
       if (kDebugMode) {
@@ -416,6 +416,7 @@ class TestViewState extends State<TestView> {
                             mOffset,
                             gridPreMin,
                             interpretations,
+                            false
                           ),
                         ),
                       ),
