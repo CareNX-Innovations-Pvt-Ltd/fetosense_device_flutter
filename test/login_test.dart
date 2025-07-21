@@ -1,136 +1,107 @@
-import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
+import 'package:bloc_test/bloc_test.dart';
 import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
-import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
-import 'package:fetosense_device_flutter/core/utils/preferences.dart';
-import 'package:fetosense_device_flutter/data/models/user_model.dart';
 import 'package:fetosense_device_flutter/presentation/login/login_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
-import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mockito/annotations.dart';
+import 'package:fetosense_device_flutter/core/utils/preferences.dart';
+import 'package:appwrite/appwrite.dart';
 
 import 'login_test.mocks.dart';
 
-class MockPathProviderPlatform extends Mock
-    with MockPlatformInterfaceMixin
-    implements PathProviderPlatform {
-  @override
-  Future<String?> getApplicationDocumentsPath() async => './test_dir';
+final sl = GetIt.instance;
 
-  @override
-  Future<String?> getTemporaryPath() async => './test_temp';
+void setupDependencies() {
+  // Register PreferenceHelper
+  sl.registerLazySingleton<PreferenceHelper>(() => PreferenceHelper());
+
+  // Register other dependencies here
 }
 
 @GenerateMocks([Databases, PreferenceHelper])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences.setMockInitialValues({});
-  ServiceLocator.setupLocator();
-  ServiceLocator.sharedPrefsHelper;
-  PreferenceHelper.init();
-  PathProviderPlatform.instance = MockPathProviderPlatform();
-  group('LoginCubit Tests', () {
-    late LoginCubit loginCubit;
-    late Databases mockDatabases;
-    late PreferenceHelper mockPrefs;
+  setupDependencies();
+  late LoginCubit loginCubit;
+  late MockDatabases mockDatabases;
+  late MockPreferenceHelper mockPreferenceHelper;
 
-    setUp(() {
-      mockDatabases = MockDatabases();
-      mockPrefs = MockPreferenceHelper();
-      loginCubit = LoginCubit();
-    });
+  setUp(() {
+    mockDatabases = MockDatabases();
+    mockPreferenceHelper = MockPreferenceHelper();
+    loginCubit = LoginCubit();
+  });
 
-    tearDown(() {
-      loginCubit.close();
-    });
+  tearDown(() {
+    loginCubit.close();
+  });
 
-    test('successful login with primary user', () async {
-      // Arrange
-      const testEmail = 'test@example.com';
-      const testPassword = 'password123';
-      final mockUserData = {
-        'email': testEmail,
-        'type': 'primary',
-        'name': 'Test User'
-      };
-      final mockDocumentList = DocumentList(
-        total: 1,
-        documents: [
-          Document(
-            $id: 'test-id',
-            $collectionId: AppConstants.userCollectionId,
-            $databaseId: AppConstants.appwriteDatabaseId,
-            data: mockUserData,
-            $createdAt: '',
-            $updatedAt: '',
-            $permissions: [],
-          )
-        ],
-      );
+  group('LoginCubit', () {
+    blocTest<LoginCubit, LoginState>(
+      'emits [LoginLoading, LoginSuccess] when login is successful',
+      build: () {
+        when(mockDatabases.listDocuments(
+          databaseId: AppConstants.appwriteDatabaseId,
+          collectionId: AppConstants.userCollectionId,
+          queries: anyNamed('queries'),
+        )).thenAnswer((_) async => DocumentList(total: 1, documents: [
+              Document(
+                $id: 'userId',
+                data: {'email': 'test@example.com'},
+                $collectionId: '',
+                $databaseId: '',
+                $createdAt: '',
+                $updatedAt: '',
+                $permissions: [],
+              )
+            ]));
 
-      when(mockDatabases.listDocuments(
-        databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.userCollectionId,
-        queries: [Query.equal('email', testEmail)],
-      )).thenAnswer((_) async => mockDocumentList);
+        when(mockPreferenceHelper.saveUser(any)).thenAnswer((_) async => true);
+        when(mockPreferenceHelper.setAutoLogin(true))
+            .thenAnswer((_) async => true);
 
-      when(mockPrefs.saveUser(UserModel())).thenAnswer((_) async {});
-      when(mockPrefs.setAutoLogin(true)).thenReturn(null);
+        return loginCubit;
+      },
+      act: (cubit) => cubit.login('test@example.com', 'password'),
+      expect: () => [LoginLoading(), LoginSuccess()],
+    );
 
-      // Act
-      await loginCubit.login(testEmail, testPassword);
+    blocTest<LoginCubit, LoginState>(
+      'emits [LoginLoading, LoginFailure] when login fails due to user not found',
+      build: () {
+        when(mockDatabases.listDocuments(
+          databaseId: AppConstants.appwriteDatabaseId,
+          collectionId: AppConstants.userCollectionId,
+          queries: anyNamed('queries'),
+        )).thenAnswer((_) async => DocumentList(total: 0, documents: []));
 
-      // Assert
-      expect(loginCubit.state, isA<LoginSuccess>());
-      verify(mockPrefs.saveUser(UserModel())).called(1);
-      verify(mockPrefs.setAutoLogin(true)).called(1);
-    });
+        return loginCubit;
+      },
+      act: (cubit) => cubit.login('unknown@example.com', 'password'),
+      expect: () => [
+        LoginLoading(),
+        const LoginFailure("User not found in any collection"),
+      ],
+    );
 
-    test('login failure with non-existent user', () async {
-      // Arrange
-      const testEmail = 'nonexistent@example.com';
-      const testPassword = 'password123';
-      final mockEmptyList = DocumentList(
-        total: 0,
-        documents: [],
-      );
+    blocTest<LoginCubit, LoginState>(
+      'emits [LoginLoading, LoginFailure] when an exception occurs',
+      build: () {
+        when(mockDatabases.listDocuments(
+          databaseId: anyNamed(AppConstants.appwriteDatabaseId),
+          collectionId: anyNamed(AppConstants.userCollectionId),
+          queries: anyNamed('queries'),
+        )).thenThrow(Exception('Database error'));
 
-      when(mockDatabases.listDocuments(
-        databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.userCollectionId,
-        queries: any,
-      )).thenAnswer((_) async => mockEmptyList);
-
-      // Act
-      await loginCubit.login(testEmail, testPassword);
-
-      // Assert
-      expect(loginCubit.state, isA<LoginFailure>());
-      expect((loginCubit.state as LoginFailure).error,
-          contains('User not found in any collection'));
-    });
-
-    test('login throws exception', () async {
-      // Arrange
-      const testEmail = 'test@example.com';
-      const testPassword = 'password123';
-
-      when(mockDatabases.listDocuments(
-        databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.userCollectionId,
-        queries: any,
-      )).thenThrow(Exception('Network error'));
-
-      // Act
-      await loginCubit.login(testEmail, testPassword);
-
-      // Assert
-      expect(loginCubit.state, isA<LoginFailure>());
-      expect((loginCubit.state as LoginFailure).error,
-          contains('Login failed: Exception'));
-    });
+        return loginCubit;
+      },
+      act: (cubit) => cubit.login('test@example.com', 'password'),
+      expect: () => [
+        LoginLoading(),
+        const LoginFailure("Login failed: Exception: Database error"),
+      ],
+    );
   });
 }

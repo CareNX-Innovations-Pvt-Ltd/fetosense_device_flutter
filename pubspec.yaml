@@ -44,6 +44,10 @@ dev_dependencies:
   build_runner: ^2.3.0
   path_provider_platform_interface: ^2.0.0
   plugin_platform_interface: ^2.0.0
+  shared_preferences: ^2.0.0
+  mocktail:
+  bloc_test:
+  path_provider:
 
 flutter:
 

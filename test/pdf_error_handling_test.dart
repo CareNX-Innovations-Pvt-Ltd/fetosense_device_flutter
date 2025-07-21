@@ -1,6 +1,7 @@
 import 'package:fetosense_device_flutter/core/network/dependency_injection.dart';
 import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
+import 'package:fetosense_device_flutter/presentation/details/details_cubit.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/fhr_pdf_view_2.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -20,13 +21,12 @@ void main() {
   test('Handles errors during PDF generation', () async {
     // Arrange
     final mockFhrPdfView = MockFhrPdfView();
-    final state = DetailsViewState();
 
     when(mockFhrPdfView.getNSTGraph(any, any))
         .thenThrow(Exception('PDF generation failed'));
 
     // Act
-    final pdfDoc = await state.generatePdf(PdfPageFormat.a4, Test());
+    final pdfDoc = await DetailsCubit(Test()).generatePdf(PdfPageFormat.a4, Test());
 
     // Assert
     expect(pdfDoc.document.pageLabels, true);
