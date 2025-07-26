@@ -54,42 +54,39 @@ typedef DecodeAdpcm10Or12Dart = int Function(
     );
 
 class ADPCM {
-  late final DynamicLibrary _lib;
+  final DecodeAdpcmDart? overrideDecodeAdpcm;
+  final DecodeAdpcm10Or12Dart? overrideDecodeAdpcm10Or12;
 
   late final DecodeAdpcmDart _decodeAdpcm;
   late final DecodeAdpcm10Or12Dart _decodeAdpcmFor10Or12BitAnd100ms;
 
-  ADPCM() {
-    // Load the native library
-    _lib = Platform.isAndroid
-        ? DynamicLibrary.open('libadpcm.so') // Android (shared object)
-        : DynamicLibrary.process();          // iOS (linked automatically)
+  ADPCM({this.overrideDecodeAdpcm, this.overrideDecodeAdpcm10Or12}) {
+    if (overrideDecodeAdpcm != null && overrideDecodeAdpcm10Or12 != null) {
+      _decodeAdpcm = overrideDecodeAdpcm!;
+      _decodeAdpcmFor10Or12BitAnd100ms = overrideDecodeAdpcm10Or12!;
+    } else {
+      final lib = Platform.isAndroid
+          ? DynamicLibrary.open('libadpcm.so')
+          : DynamicLibrary.process();
 
-    _decodeAdpcm = _lib
-        .lookupFunction<DecodeAdpcmNative, DecodeAdpcmDart>('decode_adpcm');
+      _decodeAdpcm = lib
+          .lookupFunction<DecodeAdpcmNative, DecodeAdpcmDart>('decode_adpcm');
 
-    _decodeAdpcmFor10Or12BitAnd100ms = _lib.lookupFunction<
-        DecodeAdpcm10Or12Native,
-        DecodeAdpcm10Or12Dart>('decode_adpcm_for_10_or_12_bit_and_100ms');
+      _decodeAdpcmFor10Or12BitAnd100ms = lib.lookupFunction<
+          DecodeAdpcm10Or12Native,
+          DecodeAdpcm10Or12Dart>('decode_adpcm_for_10_or_12_bit_and_100ms');
+    }
   }
 
-  /// Decode ADPCM data
   List<int> decodeAdpcm(BluetoothData data) {
     final outputPtr = calloc<Int16>(200);
     final inputPtr = calloc<Uint8>(data.mValue.length);
+    inputPtr.asTypedList(data.mValue.length).setAll(0, data.mValue);
 
-    Uint8List inputBytes = inputPtr.asTypedList(data.mValue.length);
-    inputBytes.setAll(0, data.mValue);  // Copy data correctly
-
-    // debugPrint("Input length: ${inputBytes.length}");
-    // debugPrint("Output buffer allocated: ${outputPtr.value.bitLength}");
-    // debugPrint("Sample rate: 100");
-    // debugPrint("Params: ${inputBytes[104]}, ${inputBytes[105]}, ${inputBytes[106]}");
-
-    _decodeAdpcm(outputPtr, 0, inputPtr, 3, 100, inputBytes[104], inputBytes[105], inputBytes[106]);
+    _decodeAdpcm(outputPtr, 0, inputPtr, 3, 100, data.mValue[104],
+        data.mValue[105], data.mValue[106]);
 
     final result = outputPtr.asTypedList(200);
-    // debugPrint("Output result : ${result.length}");
 
     calloc.free(outputPtr);
     calloc.free(inputPtr);
@@ -97,7 +94,6 @@ class ADPCM {
     return result;
   }
 
-  /// Decode ADPCM data for 10 or 12-bit and 100ms
   List<int> decodeAdpcmFor10Or12BitAnd100ms(
       Int16List output,
       int var1,
@@ -110,13 +106,10 @@ class ADPCM {
       int var8) {
     final outputPtr = calloc<Int16>(output.length);
     final inputPtr = calloc<Uint8>(input.length);
+    inputPtr.asTypedList(input.length).setAll(0, input);
 
-    for (int i = 0; i < input.length; i++) {
-      inputPtr[i] = input[i];
-    }
-
-    _decodeAdpcmFor10Or12BitAnd100ms(
-        outputPtr, var1, inputPtr, var3, var4, var5, var6, var7, var8);
+    _decodeAdpcmFor10Or12BitAnd100ms(outputPtr, var1, inputPtr, var3, var4, var5,
+        var6, var7, var8);
 
     final result = List<int>.generate(output.length, (i) => outputPtr[i]);
 

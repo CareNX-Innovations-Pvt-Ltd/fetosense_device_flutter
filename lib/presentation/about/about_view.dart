@@ -45,15 +45,17 @@ class AboutView extends StatelessWidget {
                 height: 0.4.sw,
               ),
             ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            const Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 16,
               children: [
-                Text('Privacy Policy', style: TextStyle(fontSize: 18),),
-                Text('Terms & Conditions', style: TextStyle(fontSize: 18),),
-                Text('Website', style: TextStyle(fontSize: 18),),
-                Text('Contact Us', style: TextStyle(fontSize: 18),),
+                Text('Privacy Policy', style: TextStyle(fontSize: 18)),
+                Text('Terms & Conditions', style: TextStyle(fontSize: 18)),
+                Text('Website', style: TextStyle(fontSize: 18)),
+                Text('Contact Us', style: TextStyle(fontSize: 18)),
               ],
             )
+
           ],
         ),
       ),
