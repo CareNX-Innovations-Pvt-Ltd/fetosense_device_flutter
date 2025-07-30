@@ -21,7 +21,7 @@ import 'package:go_router/go_router.dart';
 
 class AllMothersView extends StatefulWidget {
   final bool autoFocus;
-   const AllMothersView({super.key, this.autoFocus = false});
+  const AllMothersView({super.key, this.autoFocus = false});
 
   @override
   State<AllMothersView> createState() => _AllMothersViewState();
@@ -47,9 +47,7 @@ class _AllMothersViewState extends State<AllMothersView> {
           preferredSize: const Size.fromHeight(70.0),
           child: AppBar(
             leading: IconButton(
-              onPressed: () {
-                context.pop();
-              },
+              onPressed: () => context.pop(),
               icon: const Icon(Icons.arrow_back),
             ),
             title: Padding(
@@ -57,14 +55,11 @@ class _AllMothersViewState extends State<AllMothersView> {
               child: Container(
                 height: 45,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1,
-                  ),
+                  border: Border.all(color: Colors.black, width: 1),
                 ),
                 child: Hero(
                   tag: 'search',
@@ -78,9 +73,8 @@ class _AllMothersViewState extends State<AllMothersView> {
                         hintStyle: TextStyle(color: Colors.grey),
                       ),
                       style: const TextStyle(color: Colors.black),
-                      onChanged: (query) {
-                        context.read<AllMothersCubit>().filterMothers(query);
-                      },
+                      onChanged: (query) =>
+                          context.read<AllMothersCubit>().filterMothers(query),
                     ),
                   ),
                 ),
@@ -94,36 +88,27 @@ class _AllMothersViewState extends State<AllMothersView> {
           child: BlocBuilder<AllMothersCubit, AllMothersState>(
             builder: (context, state) {
               if (state is AllMothersLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+                return const Center(child: CircularProgressIndicator());
               }
               if (state is AllMothersFailure) {
                 return Center(child: Text("Error: ${state.error}"));
               }
               if (state is AllMothersSuccess) {
                 final mothers = state.mother;
-                final totalTests = state.mother.fold<int>(
+                final totalTests = mothers.fold<int>(
                   0,
-                  (sum, mother) => sum + (mother.noOfTests ?? 0),
+                      (sum, mother) => sum + (mother.noOfTests ?? 0),
                 );
+
                 if (mothers.isEmpty) {
                   return const Center(child: Text("No mothers found."));
                 }
 
-                // final rows = mothers.map((mother) {
-                //   return {
-                //     "All mothers": mother.name ?? "Unknown",
-                //     "AGE": mother.age ?? "-",
-                //     "GEST": Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now()),
-                //   };
-                // }).toList();
-
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: 250.sp,
+                    Expanded(
+                      flex: 3,
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
@@ -135,9 +120,7 @@ class _AllMothersViewState extends State<AllMothersView> {
                                 color: ColorManager.primaryButtonColor,
                               ),
                             ),
-                            SizedBox(
-                              height: 50.sp,
-                            ),
+                            SizedBox(height: 50.sp),
                             Row(
                               children: [
                                 Image.asset(
@@ -145,14 +128,12 @@ class _AllMothersViewState extends State<AllMothersView> {
                                   scale: 15,
                                   color: ColorManager.primaryButtonColor,
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
+                                const SizedBox(width: 10),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     AnimatedCount(
-                                      count: state.mother.length,
+                                      count: mothers.length,
                                       style: TextStyle(
                                         fontSize: 35.sp,
                                         fontWeight: FontWeight.bold,
@@ -167,18 +148,11 @@ class _AllMothersViewState extends State<AllMothersView> {
                                 )
                               ],
                             ),
-                            SizedBox(
-                              height: 30.sp,
-                            ),
+                            SizedBox(height: 30.sp),
                             Row(
                               children: [
-                                Image.asset(
-                                  'assets/tests.jpg',
-                                  scale: 8,
-                                ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
+                                Image.asset('assets/tests.jpg', scale: 8),
+                                const SizedBox(width: 10),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -202,19 +176,13 @@ class _AllMothersViewState extends State<AllMothersView> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 10.sp,
-                    ),
-                    VerticalDivider(
+                    const VerticalDivider(
                       color: Colors.grey,
                       thickness: 2,
-                      width: 20.sp,
+                      width: 20,
                     ),
-                    SizedBox(
-                      width: 10.sp,
-                    ),
-                    SizedBox(
-                      width: 620.sp,
+                    Expanded(
+                      flex: 7,
                       child: SingleChildScrollView(
                         child: DataTable(
                           showCheckboxColumn: false,
@@ -255,9 +223,9 @@ class _AllMothersViewState extends State<AllMothersView> {
                               cells: [
                                 DataCell(
                                   InkWell(
-                                    onTap: () {
-                                      context.push(AppRoutes.motherDetails, extra:mother);
-                                    },
+                                    onTap: () => context.push(
+                                        AppRoutes.motherDetails,
+                                        extra: mother),
                                     child: Text(
                                       mother.name ?? "Unknown",
                                       style: TextStyle(fontSize: 18.sp),
