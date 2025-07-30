@@ -32,7 +32,7 @@ class AllMothersCubit extends Cubit<AllMothersState> {
     emit(AllMothersLoading());
     try {
       final client = GetIt.I<AppwriteService>().client;
-      final database = Databases(client);
+      final database = GetIt.I<Databases>();
       final prefs = GetIt.I<PreferenceHelper>();
       final user = prefs.getUser();
       debugPrint('user -> ${user?.toJson()}');

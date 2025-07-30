@@ -56,9 +56,9 @@ class ServiceLocator {
       PreferenceHelper.init();
 
   static BluetoothSerialService get bluetoothServiceHelper =>
-      BluetoothSerialService();
+      _getIt<BluetoothSerialService>();
 
-  static MyAudioTrack16Bit get myAudioTrack => MyAudioTrack16Bit();
-
-  static AppwriteService get appwriteService => AppwriteService();
+  static MyAudioTrack16Bit get myAudioTrack => _getIt<MyAudioTrack16Bit>();
+  static AppwriteService get appwriteService => _getIt<AppwriteService>();
+  static PreferenceHelper get preferenceHelper => _getIt<PreferenceHelper>();
 }

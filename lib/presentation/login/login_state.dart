@@ -8,7 +8,7 @@ part of 'login_cubit.dart';
 ///
 /// All subclasses must implement [Equatable] for value comparison.
 
-sealed class LoginState extends Equatable {
+class LoginState extends Equatable {
   const LoginState();
 
   @override
