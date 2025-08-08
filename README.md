@@ -1,5 +1,10 @@
 # 📱 Fetosense Device Flutter
 
+[![Discord](https://img.shields.io/discord/1403264387069775945?label=Join%20our%20Discord&logo=discord&style=flat)](https://discord.gg/aTBs7mCWgK)
+[![License](https://img.shields.io/github/license/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter/commits/main)
+[![Issues](https://img.shields.io/github/issues/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter/issues)
+
 A Flutter-based mobile application for interfacing with the Fetosense NST/CTG device—a portable, wireless fetal monitoring system developed by CareNX Innovations.
 
 > 🛠️ This app is to be used with **[Fetosense Web Flutter](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense-web-flutter) and [Fetosense Remote App](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_remote_flutter)**.
@@ -109,3 +114,12 @@ CareNX Innovations Pvt. Ltd.
 
 - Thanks to all healthcare providers and mothers who provided feedback during development
 - Flutter and Dart communities for excellent documentation and support
+
+## 💬 Join Our Discord Community
+
+Have questions, feedback, or want to contribute?  
+Join our official **Discord server** to connect with developers, collaborators, and contributors:
+
+[![Discord](https://img.shields.io/discord/1403264387069775945?label=Join%20us%20on%20Discord&logo=discord&color=7289da&style=flat)](https://discord.gg/aTBs7mCWgK)
+
+> 💡 Whether you're here to report bugs, suggest features, or just say hi — we’d love to have you!
