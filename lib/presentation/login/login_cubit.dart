@@ -25,14 +25,16 @@ part 'login_state.dart';
 /// ```
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit() : super(LoginInitial());
+  final Databases databases;
+
+  LoginCubit({Databases? db})
+      : databases = db ?? Databases(ServiceLocator.appwriteService.client),
+        super(LoginInitial());
 
   Future<void> login(String email, String password) async {
     emit(LoginLoading());
 
     try {
-      final client = ServiceLocator.appwriteService.client;
-      final databases = Databases(client);
       final prefs = GetIt.I<PreferenceHelper>();
 
       /// 🔍 Primary query: user collection
@@ -44,18 +46,14 @@ class LoginCubit extends Cubit<LoginState> {
         ],
       );
 
-      /// 📄 Try primary user
       if (result.total > 0) {
-        debugPrint('inside 1st if ');
         final userDoc = result.documents.first;
-
         final user = UserModel.fromMap(userDoc.data, userDoc.$id);
         await prefs.saveUser(user);
         prefs.setAutoLogin(true);
         emit(LoginSuccess());
         return;
       } else {
-        debugPrint('inside 1st else ');
         var getUserFromMis = await databases.listDocuments(
           databaseId: AppConstants.appwriteDatabaseId,
           collectionId: AppConstants.userCollectionId,
@@ -65,29 +63,15 @@ class LoginCubit extends Cubit<LoginState> {
         );
 
         if (getUserFromMis.total > 0) {
-
-          debugPrint('inside 2nd if ');
-
           final userDoc = getUserFromMis.documents.first;
-
-          /// ✅ Optional: filter unknown fields
           final safeData = Map<String, dynamic>.from(userDoc.data)
             ..removeWhere((key, _) => !UserModel().toJson().keys.contains(key));
-
-          debugPrint('data from cubit --> $safeData');
-
           final user = UserModel.fromMap(safeData, userDoc.$id);
-
-          debugPrint('user data is updated --> $user');
-
           await prefs.saveUser(user);
           prefs.setAutoLogin(true);
           emit(LoginSuccess());
         } else {
-          debugPrint('inside 2nd else ');
           final temp = email.split('@').first;
-
-          /// 🔁 Fallback: try device collection
           final result = await databases.listDocuments(
             databaseId: AppConstants.appwriteDatabaseId,
             collectionId: AppConstants.deviceCollectionId,
@@ -98,14 +82,9 @@ class LoginCubit extends Cubit<LoginState> {
 
           if (result.total > 0) {
             final deviceDoc = result.documents.first;
-            debugPrint('device document data  --> ${deviceDoc.data}');
             final allowedKeys = UserModel().toJson().keys;
-
             final safeData = Map<String, dynamic>.from(deviceDoc.data)
               ..removeWhere((key, _) => !allowedKeys.contains(key));
-
-            debugPrint('Filtered data for UserModel --> $safeData');
-
             safeData['email'] = email;
             safeData['type'] = "device";
             safeData['organizationName'] = deviceDoc.data['hospitalName'];
@@ -121,7 +100,6 @@ class LoginCubit extends Cubit<LoginState> {
 
             await prefs.saveUser(user);
             prefs.setAutoLogin(true);
-
             emit(LoginSuccess());
           } else {
             emit(const LoginFailure("User not found in any collection"));
