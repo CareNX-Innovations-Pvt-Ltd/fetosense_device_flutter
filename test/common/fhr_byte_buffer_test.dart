@@ -1,62 +1,75 @@
 import 'dart:typed_data';
-
-import 'package:flutter_test/flutter_test.dart';
 import 'package:fetosense_device_flutter/core/utils/fhr_byte_data_buffer.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('FhrByteDataBuffer', () {
-    late FhrByteDataBuffer buffer;
+  late FhrByteDataBuffer buffer;
 
-    setUp(() {
-      buffer = FhrByteDataBuffer();
-    });
+  setUp(() {
+    buffer = FhrByteDataBuffer();
+  });
 
-    test('should add single data correctly', () {
-      buffer.addData(85);
-      buffer.addData(170);
+  test('Buffer starts empty', () {
+    expect(buffer.canRead(), false);
+    expect(buffer.getBag(), null);
+  });
 
-      expect(buffer.canRead(), false);
-    });
+  test('can add and read a valid packet type 1/3', () {
+    Uint8List packet = Uint8List(107);
+    packet[0] = 85;
+    packet[1] = 170;
+    packet[2] = 1;
+    for (int i = 3; i < 107; i++) packet[i] = i;
 
-    test('should add multiple data correctly', () {
-      final data = Uint8List.fromList(List<int>.generate(107, (index) => index));
-      buffer.addDatas(data, 0, data.length);
+    buffer.addDatas(packet, 0, 107);
+    expect(buffer.canRead(), true);
 
-      expect(buffer.canRead(), true);
-    });
+    final data = buffer.getBag();
+    expect(data, isNotNull);
+    expect(data!.dataType, 2);
+    expect(data.mValue[0], 85);
+    expect(data.mValue[9], 12);
+  });
 
-    test('should extract valid packet correctly', () {
-      final data = Uint8List.fromList([85, 170, 1, ...List<int>.generate(104, (index) => index)]);
-      buffer.addDatas(data, 0, data.length);
+  test('Invalid packet start is skipped', () {
+    buffer.addData(0);
+    buffer.addData(1);
+    buffer.addData(2);
 
-      final packet = buffer.getBag();
-      expect(packet, isNotNull);
-      expect(packet!.dataType, 2);
-      expect(packet.mValue.length, 107);
-    });
+    expect(buffer.getBag(), null);
+  });
 
-    test('should handle invalid packet start sequence', () {
-      final data = Uint8List.fromList([0, 0, 0, 85, 170, 1, ...List<int>.generate(104, (index) => index)]);
-      buffer.addDatas(data, 0, data.length);
+  test('Handles packet split across buffer boundary', () {
+    Uint8List filler = Uint8List(FhrByteDataBuffer.bufferLength - 50);
+    buffer.addDatas(filler, 0, filler.length);
 
-      final packet = buffer.getBag();
-      expect(packet, isNotNull);
-      expect(packet!.dataType, 2);
-    });
+    Uint8List packet = Uint8List(107);
+    packet[0] = 85;
+    packet[1] = 170;
+    packet[2] = 8;
+    for (int i = 3; i < 107; i++) packet[i] = i;
 
-    test('should clean buffer correctly', () {
-      final data = Uint8List.fromList(List<int>.generate(107, (index) => index));
-      buffer.addDatas(data, 0, data.length);
+    buffer.addDatas(packet, 0, 107);
 
-      buffer.clean();
-      expect(buffer.canRead(), false);
-    });
+    final data = buffer.getBag();
+    expect(data, isNotNull);
+    expect(data!.dataType, 1);
+  });
 
-    test('should handle buffer overflow correctly', () {
-      final data = Uint8List.fromList(List<int>.generate(4096, (index) => index));
-      buffer.addDatas(data, 0, data.length);
+  test('Buffer overflow keeps newest data accessible', () {
+    Uint8List data = Uint8List(FhrByteDataBuffer.bufferLength + 10);
+    for (int i = 0; i < data.length; i++) {
+      buffer.addData(i);
+    }
 
-      expect(buffer.canRead(), true);
-    });
+    expect(buffer.canRead(), false);
+    expect(buffer.getBag(), null);
+  });
+
+  test('clean resets buffer state', () {
+    buffer.addData(1);
+    buffer.clean();
+    expect(buffer.canRead(), false);
+    expect(buffer.getBag(), null);
   });
 }

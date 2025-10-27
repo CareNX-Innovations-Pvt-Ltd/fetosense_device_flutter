@@ -6,7 +6,6 @@ import 'package:fetosense_device_flutter/presentation/mother_details/mother_deta
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -21,15 +20,7 @@ void main() {
     mockCubit = MockMotherDetailsCubit();
   });
 
-  Mother sampleMother = Mother(
-    name: 'Jane Doe',
-    patientId: 'P123',
-    age: 28,
-    lmp: DateTime(2024, 12, 1),
-    deviceId: 'D001',
-    deviceName: 'DeviceX',
-    noOfTests: 1,
-  );
+  Mother sampleMother = Mother();
 
   Test sampleTest = Test.withData(
     motherName: 'Jane Doe',

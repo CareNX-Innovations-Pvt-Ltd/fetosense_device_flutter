@@ -61,9 +61,9 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
 
   @override
   Widget build(BuildContext context) {
-    nameController.text = "Jena McArthy";
-    phoneNumberController.text = '1010441000';
-    ageController.text = '35';
+    // nameController.text = "Jena McArthy";
+    // phoneNumberController.text = '1010441000';
+    // ageController.text = '35';
 
     return BlocListener<RegisterMotherCubit, RegisterMotherState>(
       listener: (context, state) {
@@ -117,20 +117,20 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                       const SizedBox(
                         height: 20,
                       ),
-                      TextFormField(
-                        controller: phoneNumberController,
-                        decoration: const InputDecoration(
-                            hintText: "Phone Number", counterText: ''),
-                        maxLength: 10,
-                        keyboardType: TextInputType.phone,
-                        validator: (value) =>
-                            value == null || value.length != 10
-                                ? "Enter valid phone number"
-                                : null,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      // TextFormField(
+                      //   controller: phoneNumberController,
+                      //   decoration: const InputDecoration(
+                      //       hintText: "Phone Number", counterText: ''),
+                      //   maxLength: 10,
+                      //   keyboardType: TextInputType.phone,
+                      //   validator: (value) =>
+                      //       value == null || value.length != 10
+                      //           ? "Enter valid phone number"
+                      //           : null,
+                      // ),
+                      // const SizedBox(
+                      //   height: 20,
+                      // )
                       TextFormField(
                         controller: ageController,
                         decoration: const InputDecoration(
@@ -248,7 +248,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                   patientIdController.text,
                                   pickedDate,
                                   test,
-                                  phoneNumberController.text,
+                                  // phoneNumberController.text,
                                   cubit.selectedDoctorName,
                                   cubit.selectedDoctorId,
                                 );

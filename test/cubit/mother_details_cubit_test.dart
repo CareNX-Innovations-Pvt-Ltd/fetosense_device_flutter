@@ -1,123 +1,94 @@
-import 'package:bloc_test/bloc_test.dart';
-import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
 import 'package:fetosense_device_flutter/presentation/mother_details/mother_details_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:get_it/get_it.dart';
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart' as models;
+import 'package:appwrite/models.dart';
 
-
-// Mocks
-class MockAppwriteService extends Mock implements AppwriteService {}
-
+class MockClient extends Mock implements Client {}
 class MockDatabases extends Mock implements Databases {}
 
-class MockDocument extends Mock implements models.Document {}
-
-class MockDocumentList extends Mock implements models.DocumentList {}
-
 void main() {
-  late MockAppwriteService mockAppwriteService;
-  late MockDatabases mockDatabases;
   late MotherDetailsCubit cubit;
-
-  final getIt = GetIt.instance;
+  late MockClient mockClient;
+  late MockDatabases mockDatabases;
 
   setUp(() {
-    mockAppwriteService = MockAppwriteService();
+    GetIt.I.allowReassignment = true;
+
+    mockClient = MockClient();
     mockDatabases = MockDatabases();
 
-    getIt.reset();
-    getIt.registerSingleton<AppwriteService>(mockAppwriteService);
-    when(mockAppwriteService.client).thenReturn(Client());
+    GetIt.I.registerSingleton<AppwriteService>(AppwriteService());
 
     cubit = MotherDetailsCubit();
   });
 
-  tearDown(() {
-    cubit.close();
+  test('emits loading then success when data exists', () async {
+    final doc1 = Document(data: {'field': 'value1'}, $id: 'id1', $collectionId: '', $databaseId: '', $createdAt: '', $updatedAt: '', $permissions: []);
+    final doc2 = Document(data: {'field': 'value2'}, $id: 'id2', $collectionId: '', $databaseId: '', $createdAt: '', $updatedAt: '', $permissions: []);
+
+    when(() => mockDatabases.listDocuments(
+      databaseId: any(named: 'databaseId'),
+      collectionId: any(named: 'collectionId'),
+      queries: any(named: 'queries'),
+    )).thenAnswer((_) async => DocumentList(total: 2, documents: [doc1, doc2]));
+
+    when(() => Databases(mockClient)).thenReturn(mockDatabases);
+
+    final states = <MotherDetailsState>[];
+    cubit.stream.listen(states.add);
+
+    await cubit.fetchTests("Alice");
+
+    expect(states.length, 2);
+    expect(states[0], isA<MotherDetailsLoading>());
+    expect(states[1], isA<MotherDetailsSuccess>());
+    final successState = states[1] as MotherDetailsSuccess;
+    expect(successState.test.length, 2);
+    expect(successState.test[0].id, 'id1');
   });
 
-  blocTest<MotherDetailsCubit, MotherDetailsState>(
-    'emits [Loading, Success] when tests are found',
-    build: () {
-      final mockDoc = MockDocument();
-      when(mockDoc.data).thenReturn({
-        'motherName': 'Jane Doe',
-        'testId': 'abc123',
-        'deviceId': 'device123',
-        // add other required fields for Test.fromMap
-      });
-      when(mockDoc.$id).thenReturn('doc1');
+  test('emits loading then failure when no data exists', () async {
+    when(() => mockDatabases.listDocuments(
+      databaseId: any(named: 'databaseId'),
+      collectionId: any(named: 'collectionId'),
+      queries: any(named: 'queries'),
+    )).thenAnswer((_) async => DocumentList(total: 0, documents: []));
 
-      final mockDocList = MockDocumentList();
-      when(mockDocList.total).thenReturn(1);
-      when(mockDocList.documents).thenReturn([mockDoc]);
+    when(() => Databases(mockClient)).thenReturn(mockDatabases);
 
-      when(mockAppwriteService.client).thenReturn(Client());
-      when(mockDatabases.listDocuments(
-        databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.testsCollectionId,
-        queries: anyNamed('queries'),
-      )).thenAnswer((_) async => mockDocList);
+    final states = <MotherDetailsState>[];
+    cubit.stream.listen(states.add);
 
-      // Inject the mock database into the cubit method
-      getIt.registerSingleton<Databases>(mockDatabases);
+    await cubit.fetchTests("Alice");
 
-      return MotherDetailsCubit();
-    },
-    act: (cubit) => cubit.fetchTests('Jane Doe'),
-    expect: () => [
-      isA<MotherDetailsLoading>(),
-      isA<MotherDetailsSuccess>(),
-    ],
-  );
+    expect(states.length, 2);
+    expect(states[0], isA<MotherDetailsLoading>());
+    expect(states[1], isA<MotherDetailsFailure>());
+    final failureState = states[1] as MotherDetailsFailure;
+    expect(failureState.failure, "No data");
+  });
 
-  blocTest<MotherDetailsCubit, MotherDetailsState>(
-    'emits [Loading, Failure] when no documents are found',
-    build: () {
-      final emptyList = MockDocumentList();
-      when(emptyList.total).thenReturn(0);
-      when(emptyList.documents).thenReturn([]);
+  test('emits failure on exception', () async {
+    when(() => mockDatabases.listDocuments(
+      databaseId: any(named: 'databaseId'),
+      collectionId: any(named: 'collectionId'),
+      queries: any(named: 'queries'),
+    )).thenThrow(Exception('Test exception'));
 
-      when(mockAppwriteService.client).thenReturn(Client());
-      when(mockDatabases.listDocuments(
-        databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.testsCollectionId,
-        queries: anyNamed('queries'),
-      )).thenAnswer((_) async => emptyList);
+    when(() => Databases(mockClient)).thenReturn(mockDatabases);
 
-      getIt.registerSingleton<Databases>(mockDatabases);
+    final states = <MotherDetailsState>[];
+    cubit.stream.listen(states.add);
 
-      return MotherDetailsCubit();
-    },
-    act: (cubit) => cubit.fetchTests('Unknown'),
-    expect: () => [
-      isA<MotherDetailsLoading>(),
-      isA<MotherDetailsFailure>().having((e) => e, 'message', contains('No data')),
-    ],
-  );
+    await cubit.fetchTests("Alice");
 
-  blocTest<MotherDetailsCubit, MotherDetailsState>(
-    'emits [Loading, Failure] when an exception occurs',
-    build: () {
-      when(mockAppwriteService.client).thenReturn(Client());
-      when(mockDatabases.listDocuments(
-        databaseId: AppConstants.appwriteDatabaseId,
-        collectionId: AppConstants.testsCollectionId,
-        queries: anyNamed('queries'),
-      )).thenThrow(Exception('Fetch failed'));
-
-      getIt.registerSingleton<Databases>(mockDatabases);
-
-      return MotherDetailsCubit();
-    },
-    act: (cubit) => cubit.fetchTests('Crash Test'),
-    expect: () => [
-      isA<MotherDetailsLoading>(),
-      isA<MotherDetailsFailure>().having((e) => e, 'message', contains('error')),
-    ],
-  );
+    expect(states.length, 2);
+    expect(states[0], isA<MotherDetailsLoading>());
+    expect(states[1], isA<MotherDetailsFailure>());
+    final failureState = states[1] as MotherDetailsFailure;
+    expect(failureState.failure.contains('Test exception'), true);
+  });
 }

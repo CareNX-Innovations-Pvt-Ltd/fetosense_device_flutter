@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/audio.dart';
 import 'package:fetosense_device_flutter/core/utils/bluetooth_service_helper.dart';
 import 'package:fetosense_device_flutter/core/network/appwrite_config.dart';
@@ -47,18 +48,22 @@ class ServiceLocator {
     _getIt.registerLazySingleton<AppwriteService>(
       () => AppwriteService(),
     );
+    _getIt.registerLazySingleton(() => Databases(
+          _getIt<AppwriteService>().client,
+        ));
   }
 
   static BluetoothConnectionBloc get bluetoothBloc =>
       _getIt<BluetoothConnectionBloc>();
 
-  static Future<void> get sharedPrefsHelper =>
-      PreferenceHelper.init();
+  static Future<void> get sharedPrefsHelper => PreferenceHelper.init();
 
   static BluetoothSerialService get bluetoothServiceHelper =>
       _getIt<BluetoothSerialService>();
 
   static MyAudioTrack16Bit get myAudioTrack => _getIt<MyAudioTrack16Bit>();
+
   static AppwriteService get appwriteService => _getIt<AppwriteService>();
+
   static PreferenceHelper get preferenceHelper => _getIt<PreferenceHelper>();
 }
