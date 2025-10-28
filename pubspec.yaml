@@ -49,6 +49,8 @@ dev_dependencies:
   bloc_test:
   path_provider:
 
+dependency_overrides:
+  flutter_web_auth_2: ^4.0.0
 flutter:
 
   uses-material-design: true

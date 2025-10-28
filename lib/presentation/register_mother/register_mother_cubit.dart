@@ -37,7 +37,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       String patientId,
       DateTime? pickedDate,
       Test? test,
-      String mobile,
+      // String mobile,
       String? doctorName,
       String? doctorId) async {
     emit(RegisterMotherLoading());
@@ -53,7 +53,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       mother.deviceId = test.deviceId;
       mother.type = 'mother';
       mother.noOfTests = 1;
-      mother.mobileNo = int.parse(mobile);
+      // mother.mobileNo = int.parse(mobile);
       mother.organizationId = test.organizationId;
       mother.organizationName = test.organizationName;
       mother.documentId = id;

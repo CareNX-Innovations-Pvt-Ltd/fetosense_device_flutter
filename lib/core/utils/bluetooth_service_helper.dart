@@ -3,6 +3,7 @@ import 'package:fetosense_device_flutter/core/adpcm/adpcm.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/audio.dart';
 import 'package:fetosense_device_flutter/core/utils/fhr_byte_data_buffer.dart';
 import 'package:fetosense_device_flutter/data/models/my_fhr_data.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:typed_data';
 
@@ -44,6 +45,14 @@ class BluetoothSerialService {
   MyFhrData? lastFhr;
 
   Stream<MyFhrData> get dataStream => _dataStreamController.stream;
+  @visibleForTesting
+  void onDataReceivedForTesting(Uint8List data) => _onDataReceived(data);
+
+  @visibleForTesting
+  void settingBufferForTesting() => _settingBuffer();
+
+  @visibleForTesting
+  StreamController<MyFhrData> dataStreamControllerForTesting() => _dataStreamController;
 
   Future<List<BluetoothDevice>> getPairedDevices() async {
     try {

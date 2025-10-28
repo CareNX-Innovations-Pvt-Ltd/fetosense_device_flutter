@@ -212,45 +212,5 @@ class _CustomRadioButtonState extends State<CustomRadioBtn> {
               ),
       ),
     );
-
-    // return Container(
-    //   height: 50,
-    //   child: ListView.builder(
-    //     itemCount: widget.buttonLables.length,
-    //     scrollDirection: Axis.horizontal,
-    //     itemBuilder: (context, index) => Card(
-    //       color: index == currentSelected
-    //           ? widget.selectedColor
-    //           : widget.buttonColor,
-    //       elevation: 10,
-    //       shape: kRoundedButtonShape,
-    //       child: Container(
-    //         height: 40,
-    //         // width: 200,
-    //         constraints: BoxConstraints(maxWidth: 250),
-    //         child: MaterialButton(
-    //           // minWidth: 300,
-    //           // elevation: 10,
-    //           shape: kRoundedButtonShape,
-    //           onPressed: () {
-    //             widget.radioButtonValue(widget.buttonValues[index]);
-    //             setState(() {
-    //               currentSelected = index;
-    //             });
-    //           },
-    //           child: Text(
-    //             widget.buttonLables[index],
-    //             style: TextStyle(
-    //               color: index == currentSelected
-    //                   ? Colors.white
-    //                   : Theme.of(context).textTheme.body1.color,
-    //               fontSize: 15,
-    //             ),
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

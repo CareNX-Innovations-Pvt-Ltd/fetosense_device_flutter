@@ -1,161 +1,165 @@
-import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
-import 'package:fetosense_device_flutter/core/utils/preferences.dart';
-import 'package:fetosense_device_flutter/presentation/app_settings/app_setting.dart';
+// dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
+import 'package:fetosense_device_flutter/core/utils/preferences.dart';
+import 'package:fetosense_device_flutter/presentation/app_settings/app_setting.dart';
 
 class MockPreferenceHelper extends Mock implements PreferenceHelper {}
 
-void main() {
-  late MockPreferenceHelper mockPreferenceHelper;
-
-  setUp(() {
-    mockPreferenceHelper = MockPreferenceHelper();
-
-    if (GetIt.I.isRegistered<PreferenceHelper>()) {
-      GetIt.I.unregister<PreferenceHelper>();
-    }
-    GetIt.I.registerSingleton<PreferenceHelper>(mockPreferenceHelper);
-  });
-
-  tearDown(() {
-    GetIt.I.reset();
-  });
-
-  Widget createWidgetUnderTest() {
-    return const MaterialApp(
-      home: AppSetting(),
-    );
-  }
-
-  testWidgets('renders AppBar with title Settings', (WidgetTester tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Settings'), findsOneWidget);
-    expect(find.byIcon(Icons.arrow_back), findsOneWidget);
-  });
-
-  testWidgets('renders "Test" section with image and title', (WidgetTester tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Test'), findsOneWidget);
-    expect(find.byType(Image), findsWidgets);
-  });
-
-  testWidgets('Default test duration shows correct initial value', (tester) async {
-    when(() => mockPreferenceHelper.getString(AppConstants.defaultTestDurationKey))
-        .thenReturn('20 min');
-
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Default test duration'), findsOneWidget);
-    expect(find.text('20 min'), findsOneWidget);
-  });
-
-  testWidgets('FHR Alerts switch sets preference on enable', (tester) async {
-    when(() => mockPreferenceHelper.setBool(AppConstants.fhrAlertsKey, true))
-        .thenAnswer((_) async => {});
-    when(() => mockPreferenceHelper.setBool(AppConstants.fhrAlertsKey, false))
-        .thenAnswer((_) async => {});
-
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    final fhrTile = find.text('FHR Alerts');
-    expect(fhrTile, findsOneWidget);
-  });
-
-  testWidgets('renders Default print scale and opens dialog', (tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Default print scale'), findsOneWidget);
-    await tester.tap(find.text('Default print scale'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('1 cm/min'), findsOneWidget);
-    expect(find.text('3 cm/min'), findsOneWidget);
-  });
-
-  testWidgets('Auto interpretation toggle works and affects dependent preference visibility', (tester) async {
-    when(() => mockPreferenceHelper.setBool(AppConstants.autoInterpretationsKey, true))
-        .thenAnswer((_) async => {});
-    when(() => mockPreferenceHelper.setBool(AppConstants.autoInterpretationsKey, false))
-        .thenAnswer((_) async => {});
-
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Auto interpretation'), findsOneWidget);
-    expect(find.text('Highlight patterns'), findsOneWidget);
-  });
-
-  testWidgets('Display logo preference is shown', (tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Display logo'), findsOneWidget);
-  });
-
-  testWidgets('Doctor\'s comment switch is displayed', (tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Doctor\'s comment'), findsOneWidget);
-  });
-
-  testWidgets('Enable Patient ID switch sets correct preference', (tester) async {
-    when(() => mockPreferenceHelper.setBool(AppConstants.patientIdKey, true))
-        .thenAnswer((_) async => {});
-    when(() => mockPreferenceHelper.setBool(AppConstants.patientIdKey, false))
-        .thenAnswer((_) async => {});
-
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Enable Patient ID'), findsOneWidget);
-  });
-
-  testWidgets('Use Manual Movement Marker switch is visible', (tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Use Manual Movement Marker'), findsOneWidget);
-  });
-
-  testWidgets('Show Fisher Score switch is visible', (tester) async {
-    await tester.pumpWidget(createWidgetUnderTest());
-
-    expect(find.text('Show Fisher Score'), findsOneWidget);
-  });
-
-  testWidgets('tapping back button pops navigation', (tester) async {
-    bool didPop = false;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Builder(
-          builder: (context) {
-            return const AppSetting();
-          },
-        ),
-        navigatorObservers: [
-          NavigatorObserverMock(onPop: () => didPop = true),
-        ],
-      ),
-    );
-
-    await tester.tap(find.byIcon(Icons.arrow_back));
-    await tester.pumpAndSettle();
-
-    // No assert for didPop, as we're not using mock navigator here. This is just a tap test.
-  });
-}
-
-// Optional mock navigator observer for more advanced navigation test
-class NavigatorObserverMock extends NavigatorObserver {
+class TestNavigatorObserver extends NavigatorObserver {
   final VoidCallback onPop;
-
-  NavigatorObserverMock({required this.onPop});
-
+  TestNavigatorObserver({required this.onPop});
   @override
   void didPop(Route route, Route? previousRoute) {
     onPop();
     super.didPop(route, previousRoute);
   }
+}
+
+void main() {
+  late PreferenceHelper mockPrefs;
+
+  setUp(() {
+    mockPrefs = MockPreferenceHelper();
+    // Default returns used during initial builds
+    when(() => mockPrefs.getString(any())).thenReturn('20 min');
+    when(() => mockPrefs.getBool(any())).thenReturn(false);
+    when(() => mockPrefs.setString(any(), any())).thenAnswer((_) async {});
+    when(() => mockPrefs.setBool(any(), any())).thenAnswer((_) async {});
+    GetIt.I.registerSingleton<PreferenceHelper>(mockPrefs);
+  });
+
+  tearDown(() {
+    GetIt.I.reset();
+    resetMocktailState();
+  });
+
+  testWidgets('AppSetting builds all widgets and initial texts present', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: AppSetting()));
+
+    // AppBar
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+
+    // Sections
+    expect(find.text('Test'), findsOneWidget);
+    expect(find.text('Printing'), findsOneWidget);
+
+    // Sample switches and labels
+    final switches = [
+      "FHR Alerts",
+      "Use Manual Movement Marker",
+      "Enable Patient ID",
+      "Show Fisher Score",
+      "Doctor's comment",
+      "Auto interpretation",
+      "Highlight patterns",
+      "Display logo",
+    ];
+    for (var label in switches) {
+      expect(find.text(label), findsOneWidget);
+    }
+
+    // PreferenceDialogLink labels
+    expect(find.text('Default test duration'), findsOneWidget);
+    expect(find.text('Default print scale'), findsOneWidget);
+  });
+
+  testWidgets('All switches interact correctly and call PreferenceHelper', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: AppSetting()));
+
+    // FHR Alerts toggle
+    await tester.tap(find.text('FHR Alerts'));
+    await tester.pump();
+    verify(() => mockPrefs.setBool(AppConstants.fhrAlertsKey, true)).called(1);
+
+    // Enable Patient ID toggle
+    await tester.tap(find.text('Enable Patient ID'));
+    await tester.pump();
+    verify(() => mockPrefs.setBool(AppConstants.patientIdKey, true)).called(1);
+
+    // Use Manual Movement Marker toggle
+    await tester.tap(find.text('Use Manual Movement Marker'));
+    await tester.pump();
+    verify(() => mockPrefs.setBool(AppConstants.movementMarkerKey, true)).called(1);
+
+    // Auto interpretation toggles (only triggers setBool via underlying preference)
+    await tester.tap(find.text('Auto interpretation'));
+    await tester.pump();
+    verify(() => mockPrefs.setBool(AppConstants.autoInterpretationsKey, true)).called(1);
+
+    // Display logo toggle - ensure tapping does not crash (onEnable is empty in widget code)
+    await tester.tap(find.text('Display logo'));
+    await tester.pump();
+    // Underlying preference may call setBool; at minimum the tap exercised the branch
+  });
+
+  testWidgets('PreferenceDialogLink selects radio options for duration and print scale', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: AppSetting()));
+
+    // Default test duration: open dialog and select '10 min'
+    await tester.tap(find.text('Default test duration'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('10 min'));
+    await tester.pump();
+    // RadioPreference onSelect in this widget triggers setString directly
+    verify(() => mockPrefs.setString(AppConstants.defaultTestDurationKey, '10 min')).called(1);
+
+    // Default print scale: open dialog and choose '3 cm/min'
+    await tester.tap(find.text('Default print scale'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('3 cm/min'));
+    await tester.pump();
+    // Expect underlying preference saved '3'
+    verify(() => mockPrefs.setString(AppConstants.defaultPrintScaleKey, '3')).called(1);
+  });
+
+  testWidgets('PreferenceHider hides Highlight patterns when Auto interpretation enabled', (tester) async {
+    // Initial build: autoInterpretations false -> '!autoInterpretations' becomes true -> child shown
+    when(() => mockPrefs.getBool(AppConstants.autoInterpretationsKey)).thenReturn(false);
+    await tester.pumpWidget(const MaterialApp(home: AppSetting()));
+    expect(find.text('Highlight patterns'), findsOneWidget);
+
+    // Tap Auto interpretation to enable it
+    await tester.tap(find.text('Auto interpretation'));
+    await tester.pump();
+    verify(() => mockPrefs.setBool(AppConstants.autoInterpretationsKey, true)).called(1);
+
+    // Reconfigure mock to simulate saved preference as true and rebuild widget
+    when(() => mockPrefs.getBool(AppConstants.autoInterpretationsKey)).thenReturn(true);
+    await tester.pumpWidget(const MaterialApp(home: AppSetting()));
+    await tester.pumpAndSettle();
+
+    // Now PreferenceHider condition should hide the child
+    expect(find.text('Highlight patterns'), findsNothing);
+  });
+
+  testWidgets('Back button pops context', (tester) async {
+    bool popped = false;
+
+    await tester.pumpWidget(MaterialApp(
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: ElevatedButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AppSetting()),
+            ),
+            child: const Text('Go'),
+          ),
+        ),
+      ),
+      navigatorObservers: [TestNavigatorObserver(onPop: () => popped = true)],
+    ));
+
+    await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.pumpAndSettle();
+    expect(popped, isTrue);
+  });
 }

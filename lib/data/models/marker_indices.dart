@@ -12,7 +12,7 @@
 /// print(marker.getTo());   // 20
 /// marker.setFrom(15);
 /// marker.setTo(25);
-/// ```
+///
 
 class MarkerIndices {
   MarkerIndices() {}
