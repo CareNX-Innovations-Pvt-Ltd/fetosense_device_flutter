@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/github/license/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter/commits/main)
 [![Issues](https://img.shields.io/github/issues/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)](https://github.com/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter/issues)
+[![codecov](https://codecov.io/gh/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/CareNX-Innovations-Pvt-Ltd/fetosense_device_flutter)
 
 A Flutter-based mobile application for interfacing with the Fetosense NST/CTG device—a portable, wireless fetal monitoring system developed by CareNX Innovations.
 
