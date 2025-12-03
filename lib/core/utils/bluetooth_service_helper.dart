@@ -58,7 +58,7 @@ class BluetoothSerialService {
     try {
       return await FlutterBluetoothSerial.instance.getBondedDevices();
     } catch (e) {
-      print('Error getting paired devices: $e');
+      // print('Error getting paired devices: $e');
       return [];
     }
   }
@@ -67,12 +67,12 @@ class BluetoothSerialService {
     try {
       await disconnect();
       _connection = await BluetoothConnection.toAddress(device.address);
-      print("Connected to ${device.name}");
+      // print("Connected to ${device.name}");
 
       _connection!.input!.listen((data) {
         _onDataReceived(data);
       }, onDone: () {
-        print("Bluetooth Connection Closed");
+        // print("Bluetooth Connection Closed");
       });
       Timer.periodic(
         const Duration(milliseconds: 10),
@@ -102,10 +102,8 @@ class BluetoothSerialService {
     if (_buffer.canRead()) {
       BluetoothData? parsedData = _buffer.getBag();
       if (parsedData != null ) {
-        // onDataReceived!(parsedData);
         final last = dataAnalyze(parsedData);
         if(last!=null && last is MyFhrData){
-          // print("parsed data = ${lastFhr.toString()} : last $last");
           lastFhr = last;
         }
       } else {
@@ -145,7 +143,6 @@ class BluetoothSerialService {
     switch (data.dataType) {
       case 1:
         decodeData(ADPCM().decodeAdpcm(data));
-        //decodeData(data.mValue.sublist(3, 103));
         break;
 
       case 2:
@@ -173,18 +170,6 @@ class BluetoothSerialService {
         checkSum = checkSum & 0xFF;
 
         if (checkSum == data.mValue[11]) {
-          int index = (0xFF & data.mValue[3]) + ((data.mValue[4] & 0xFF) << 8);
-
-          // if (!monState) {
-          //   reSendStartOrStopCmd(false);
-          // } else {
-          //   rePlyAckMonIndex(index);
-          // }
-
-          // if (monCount != index) {
-          // monCount = index + 1;
-          // } else {
-          // monCount = index + 1;
           fhr = MyFhrData();
           fhr.fhr1 = data.mValue[5] & 0xFF;
           fhr.fhr2 = data.mValue[6] & 0xFF;
@@ -199,23 +184,6 @@ class BluetoothSerialService {
           fhr.isHaveAfm = ((data.mValue[10] & 128) != 0 ? 1 : 0);
 
           _dataStreamController.add(fhr);
-
-          // if (getFM()) {
-          //   fhr.fmFlag = 1;
-          // }
-          //
-          // if (getToco()) {
-          //   fhr.tocoFlag = 1;
-          // }
-          //
-          // if (getDocMark()) {
-          //   fhr.docFlag = 1;
-          // }
-          //
-          // if (mLMTPDecoderListener != null) {
-          //   mLMTPDecoderListener.fhrDataChanged(fhr);
-          // }
-          // }
         }
         break;
 
@@ -224,34 +192,20 @@ class BluetoothSerialService {
         ADPCM().decodeAdpcmFor10Or12BitAnd100ms(value, 0, data.mValue, 3, 100,
             data.mValue[104], data.mValue[105], data.mValue[106], 10);
         decodeData(value);
-        // if (mLMTPDecoderListener != null) {
-        //   mLMTPDecoderListener.fhrAudioChanged(value);
-        // }
         break;
 
       case 5:
-      // clearStartOrStopCmd();
-      // needLoopTranslate = true;
-      // monCount = 0;
         break;
 
       case 6:
         print("case 6");
-        // clearStartOrStopCmd();
-        // needLoopTranslate = false;
-        // monCount = 0;
         break;
     }
   }
 
   void decodeData(List<int> decodeValue) {
-    // myAudioTrack16Bit.prepareAudioTrack();
-    int len = decodeValue.length;
     if (myAudioTrack16Bit.initialized) {
       myAudioTrack16Bit.playPCM(decodeValue);
     }
-    /*if (len == 400) {
-      myAudioTrack16Bit.writeAudioTrack(decodeValue, 200, 200, false);
-    }*/
   }
 }

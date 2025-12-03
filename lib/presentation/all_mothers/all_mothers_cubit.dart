@@ -42,6 +42,7 @@ class AllMothersCubit extends Cubit<AllMothersState> {
         queries: [
           Query.equal('type', 'mother'),
           Query.equal('organizationName', user?.organizationName),
+          Query.limit(2000)
         ],
       );
       if (result.total > 0) {

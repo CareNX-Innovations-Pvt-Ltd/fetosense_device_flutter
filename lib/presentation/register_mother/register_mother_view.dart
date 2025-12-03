@@ -4,6 +4,7 @@ import 'package:fetosense_device_flutter/core/constants/app_constants.dart';
 import 'package:fetosense_device_flutter/core/utils/preferences.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/register_mother/register_mother_cubit.dart';
+import 'package:fetosense_device_flutter/presentation/widgets/consent_dialog.dart';
 import 'package:fetosense_device_flutter/presentation/widgets/date_picker_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -133,8 +134,10 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                       // )
                       TextFormField(
                         controller: ageController,
+                        maxLength: 2,
                         decoration: const InputDecoration(
                           hintText: "Age",
+                          counterText: '',
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) =>
@@ -229,46 +232,53 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                               ColorManager.primaryButtonColor,
                             ),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               if (pickedDate == null) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Please select LMP date")),
+                                  const SnackBar(content: Text("Please select LMP date")),
                                 );
                                 return;
                               }
 
-                              final cubit = context.read<RegisterMotherCubit>();
-
-                              if (route == AppConstants.instantTest) {
-                                cubit.saveTest(
-                                  nameController.text,
-                                  ageController.text,
-                                  patientIdController.text,
-                                  pickedDate,
-                                  test,
-                                  // phoneNumberController.text,
-                                  cubit.selectedDoctorName,
-                                  cubit.selectedDoctorId,
-                                );
+                              final accepted = await showDialog<bool>(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => const ConsentDialog(),
+                              );
+                              if(accepted == true){
+                                final cubit = context.read<RegisterMotherCubit>();
+                                if (route == AppConstants.instantTest) {
+                                  cubit.saveTest(
+                                    nameController.text,
+                                    ageController.text,
+                                    patientIdController.text,
+                                    pickedDate,
+                                    test,
+                                    cubit.selectedDoctorName,
+                                    cubit.selectedDoctorId,
+                                  );
+                                } else {
+                                  cubit.saveMother(
+                                    nameController.text,
+                                    ageController.text,
+                                    patientIdController.text,
+                                    pickedDate,
+                                    test,
+                                    cubit.selectedDoctorName,
+                                    cubit.selectedDoctorId,
+                                  );
+                                }
                               } else {
-                                cubit.saveMother(
-                                  nameController.text,
-                                  ageController.text,
-                                  patientIdController.text,
-                                  pickedDate,
-                                  test,
-                                  phoneNumberController.text,
-                                  cubit.selectedDoctorName,
-                                  cubit.selectedDoctorId,
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Consent is required before registration.')),
                                 );
                               }
                             }
                           },
                           child: const Text(
                             'Register Mother',
-                            style: TextStyle(color: ColorManager.white),
+                            style: TextStyle(color: ColorManager.white, fontSize: 18),
                           ),
                         ),
                       ),

@@ -47,6 +47,7 @@ class Test {
   bool? delete = false;
   DateTime createdOn = DateTime.now();
   String? createdBy;
+  bool? referral;
 
   /// Constructs a [Test] instance with the given data.
   Test.withData({
@@ -84,6 +85,7 @@ class Test {
     this.delete = false,
     required this.createdOn,
     this.createdBy,
+    this.referral
   });
 
   /// Constructs a [Test] instance with the given data.
@@ -123,6 +125,7 @@ class Test {
     this.delete,
     this.createdOn,
     this.createdBy,
+      this.referral,
   );
 
   /// Constructs a [Test] instance from a map.
@@ -186,7 +189,8 @@ class Test {
                 : snapshot['autoInterpretations'],
         delete = snapshot['delete'],
         createdOn = DateTime.parse(snapshot['createdOn']),
-        createdBy = snapshot['createdBy'];
+        createdBy = snapshot['createdBy'],
+  referral = snapshot['referral'] ?? false;
 
   /// Default constructor for the [Test] class.
   Test();
@@ -227,6 +231,7 @@ class Test {
       'delete': delete,
       'createdOn': createdOn.toIso8601String(),
       'createdBy': createdBy,
+      'referral': referral,
     };
   }
 
@@ -269,6 +274,7 @@ class Test {
       print('Deleted: $delete');
       print('Created On: $createdOn');
       print('Created By: $createdBy');
+      print('Referral: $referral');
     }
   }
 }
