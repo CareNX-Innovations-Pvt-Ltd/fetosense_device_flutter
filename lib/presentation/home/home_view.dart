@@ -56,12 +56,12 @@ class _HomeViewState extends State<HomeView> {
             const SizedBox(
               width: 20,
             ),
-            IconButton(
-              onPressed: () {
-                context.push(AppRoutes.notificationView);
-              },
-              icon: const Icon(Icons.notifications),
-            ),
+            // IconButton(
+            //   onPressed: () {
+            //     context.push(AppRoutes.notificationView);
+            //   },
+            //   icon: const Icon(Icons.notifications),
+            // ),
             IconButton(
               onPressed: () {
                 context.push(AppRoutes.appSettingsView);
