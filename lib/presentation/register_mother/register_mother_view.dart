@@ -154,9 +154,9 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                         builder: (context, state) {
                           final cubit = context.read<RegisterMotherCubit>();
                           final doctors = cubit.doctors;
-
+                          print('doctors --> $doctors');
                           if (doctors.isEmpty) {
-                            return const SizedBox(); // or CircularProgressIndicator
+                            return const SizedBox();
                           }
 
                           return Padding(
@@ -172,7 +172,7 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                                 final id = doctor['id']!;
                                 return DropdownMenuItem<String>(
                                   value: id,
-                                  child: Text(name), // 👈 Show only name
+                                  child: Text(name),
                                 );
                               }).toList(),
                               onChanged: (value) {
@@ -211,14 +211,11 @@ class _RegisterMotherViewState extends State<RegisterMotherView> {
                         controller: lmpDateController,
                         label: "LMP Date",
                         onDateSelected: (DateTime date) {
-                          if (kDebugMode) {
+                          // if (kDebugMode) {
                             pickedDate = date;
                             print(pickedDate);
-                          }
+                          // }
                         },
-                      ),
-                      const SizedBox(
-                        height: 20,
                       ),
                       const SizedBox(
                         height: 20,

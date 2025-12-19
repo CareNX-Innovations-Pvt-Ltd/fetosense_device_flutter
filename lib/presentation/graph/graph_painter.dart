@@ -111,10 +111,6 @@ class GraphPainter extends CustomPainter {
   ///details view only gets the highlighted interpretations
   bool isDetailsView = false;
 
-  /// Sampling rate in Hz (confirmed by user)
-  /// IMPORTANT: change here if device sampling rate differs.
-  static const int samplingHz = 2; // user confirmed 2 Hz
-
   GraphPainter(this.test, this.mOffset, this.gridPerMin, this.interpretations, this.isDetailsView);
 
   /// Screen height
@@ -203,12 +199,11 @@ class GraphPainter extends CustomPainter {
   /// Determines whether the painter should repaint
   @override
   bool shouldRepaint(GraphPainter oldDelegate) {
-    // Repaint when offset, grid density, test reference or interpretations change.
-    if (oldDelegate.mOffset != mOffset) return true;
-    if (oldDelegate.gridPerMin != gridPerMin) return true;
-    if (oldDelegate.test != test) return true;
-    if (oldDelegate.interpretations != interpretations) return true;
-    return false;
+    if (oldDelegate.mOffset != mOffset) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void init(Size size) {
@@ -218,7 +213,6 @@ class GraphPainter extends CustomPainter {
     paddingBottom = pixelsPerOneMM;
     paddingRight = pixelsPerOneMM! * 2;
 
-    // timeScaleFactor kept for backward-compat but not used for core scaling now
     timeScaleFactor = gridPerMin == 1 ? 6 : 2;
 
     xTocoOrigin = paddingLeft;
@@ -243,22 +237,11 @@ class GraphPainter extends CustomPainter {
     yTocoEnd = yOrigin + xDivLength!;
     yTocoDiv = (yTocoOrigin - yTocoEnd) / pixelsPerOneCM! * 2;
 
-    const samplesPerSecond = samplingHz; // e.g., 2Hz (user confirmed)
-    const samplesPerMinute = samplesPerSecond * 60; // e.g., 120 samples
+    pointsPerDiv = (timeScaleFactor * 10);
+    pointsPerPage = (pointsPerDiv * xDiv + (pointsPerDiv / 2)).truncate();
 
-    // Each minute should be 25mm wide → 25 * pixelsPerOneMM
-    final pixelsPerMinute = pixelsPerOneMM! * 25;
-
-    const correction = 1.15;   // ~15% faster
-    mIncrement = (pixelsPerMinute / samplesPerMinute) * correction;
-
-    // points per division: how many samples are in one gridPerMin division
-    pointsPerDiv = (samplesPerMinute ~/ (gridPerMin ?? 1));
-
-    // how many samples fit the current screen width
-    pointsPerPage = (xAxisLength / mIncrement).floor();
-
-    // Keep the offset clamped to valid range
+    mIncrement = (pixelsPerOneMM! / timeScaleFactor);
+    //nstTouchMove(offset);
     mOffset = trap(mOffset);
   }
 
@@ -337,16 +320,20 @@ class GraphPainter extends CustomPainter {
               xOrigin + (xDivLength! * i) + xDivLength! / 2, paddingTop),
           Offset(xOrigin + (xDivLength! * i) + xDivLength! / 2, yOrigin),
           graphGridSubLines);
-
-      // compute how many "big divisions" (minutes) are offset by mOffset
-      int offsetMinutes = (mOffset / pointsPerDiv).truncate();
-
-      if ((i + offsetMinutes) % gridPerMin! == 0) {
+      int offset = (mOffset / pointsPerDiv).truncate();
+      if ((i + offset) % gridPerMin! == 0) {
+        // if (gridPerMin == 1 && printMin) {
+        //   canvas.drawParagraph(
+        //       getParagraph(((i + (offset)) / gridPerMin).truncate().toString()),
+        //       new Offset(xOrigin + (xDivLength * i) - pixelsPerOneMM * 5,
+        //           pixelsPerOneCM * 0.2));
+        // } else if (gridPerMin == 3) {
         canvas.drawParagraph(
-            getParagraph(((i + (offsetMinutes)) / gridPerMin!).truncate().toString()),
+            getParagraph(((i + (offset)) / gridPerMin!).truncate().toString()),
             Offset(xOrigin + (xDivLength! * i) - pixelsPerOneMM! * 5,
                 pixelsPerOneCM! * 0.2));
-
+        // }
+        // printMin = !printMin;
         canvas.drawLine(
             Offset(xOrigin + (xDivLength! * i), paddingTop),
             Offset(xOrigin + (xDivLength! * i), yOrigin),
@@ -420,8 +407,7 @@ class GraphPainter extends CustomPainter {
           graphGridSubLines);
       //}
 
-      // Use pointsPerDiv to calc minute markers correctly for TOCO
-      if ((i + (mOffset / pointsPerDiv).floor()) % gridPerMin! == 0) {
+      if ((i + mOffset / 60) % gridPerMin! == 0) {
         canvas.drawLine(
             Offset(xOrigin + (xDivLength! * i), yTocoEnd),
             Offset(xOrigin + (xDivLength! * i), yTocoOrigin),
@@ -557,7 +543,7 @@ class GraphPainter extends CustomPainter {
     /*if (movementList == null && movementList.size() > 0)
             return;*/
 
-    double increment = mIncrement; // pixels per sample
+    double increment = (pixelsPerOneMM! / timeScaleFactor);
     for (int i = 0; i < movementList.length; i++) {
       int movement = movementList[i];
       if (movement > 0 &&
@@ -604,7 +590,7 @@ class GraphPainter extends CustomPainter {
     /*if (movementList == null && movementList.size() > 0)
             return;*/
 
-    double increment = mIncrement; // pixels per sample
+    double increment = (pixelsPerOneMM! / timeScaleFactor);
     for (int i = 0; i < movementList.length; i++) {
       int movement = movementList[i];
       if (movement > 0 &&
@@ -645,7 +631,7 @@ class GraphPainter extends CustomPainter {
   /// Draws data points and connecting lines for TOCO measurements
   /// [canvas] is the canvas to draw on.
   void drawTocoLine(Canvas canvas) {
-    if (test!.tocoEntries.isEmpty) {
+    if (test!.tocoEntries == null || test!.tocoEntries!.isEmpty) {
       return;
     }
 
@@ -738,15 +724,12 @@ class GraphPainter extends CustomPainter {
   /// Returns clamped offset between 0 and maximum data points.
   int trap(int pos) {
     if (pos < 0) return 0;
-
-    // max is computed as number of samples minus one screen worth of samples
-    int max = (test!.bpmEntries!.length) - pointsPerPage;
+    int max = test!.bpmEntries!.length + pointsPerDiv - pointsPerPage;
     if (max < 0) max = 0;
 
     if (pos > max) pos = max;
 
-    // Align to division boundary (samples per div) for stable paging
-    if (pointsPerDiv > 0 && pos != 0) pos = pos - (pos % pointsPerDiv);
+    if (pos != 0) pos = pos - (pos % pointsPerDiv);
 
     debugPrint("$pos   $pointsPerPage   $pointsPerDiv");
 

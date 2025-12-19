@@ -10,7 +10,7 @@ import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_serial_plus/flutter_bluetooth_serial_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -165,10 +165,12 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
       builder: (context, state) {
         return SafeArea(
           child: Scaffold(
+            backgroundColor: Colors.white,
             body: Center(
               child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -193,7 +195,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 30),
                       width: 800.w,
-                      height: 500.h,
+                      // height: 400.h,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         color: ColorManager.white,

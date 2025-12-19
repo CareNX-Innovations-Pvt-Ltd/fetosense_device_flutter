@@ -63,13 +63,18 @@ class DetailsViewState extends State<DetailsView>
       child: BlocBuilder<DetailsCubit, DetailsState>(
         builder: (context, state) {
           return PopScope(
-            onPopInvokedWithResult: (pop, result) {
-              if (widget.fromRoute?.isNotEmpty == true &&
-                  widget.fromRoute == "motherDetails") {
-                context.pop();
-              } else {
-                context.go(AppRoutes.home);
-              }
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                print('from --> ${widget.fromRoute}');
+                if (widget.fromRoute == "motherDetails") {
+                  context.pop();
+                } else {
+                  context.go(AppRoutes.home);
+                }
+              });
             },
             child: Scaffold(
               body: SafeArea(
@@ -108,7 +113,7 @@ class DetailsViewState extends State<DetailsView>
         leading: IconButton(
           iconSize: 35,
           icon: const Icon(Icons.arrow_back, size: 30, color: Colors.teal),
-          onPressed: () => context.go(AppRoutes.home),
+          onPressed: () => widget.fromRoute == "motherDetails" ? context.pop() :context.go(AppRoutes.home),
         ),
         subtitle: Stack(alignment: Alignment.center, children: [
           Row(

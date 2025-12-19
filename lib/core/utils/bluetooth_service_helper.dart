@@ -4,8 +4,9 @@ import 'package:fetosense_device_flutter/presentation/widgets/audio.dart';
 import 'package:fetosense_device_flutter/core/utils/fhr_byte_data_buffer.dart';
 import 'package:fetosense_device_flutter/data/models/my_fhr_data.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:typed_data';
+
+import 'package:flutter_bluetooth_serial_plus/flutter_bluetooth_serial_plus.dart';
 
 /// A singleton service for managing Bluetooth serial communication and FHR data processing.
 ///

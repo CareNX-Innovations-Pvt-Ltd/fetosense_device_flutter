@@ -73,6 +73,10 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.age = int.parse(age);
       test.gAge = gestationalAge;
       test.patientId = patientId;
+      test.doctorName = doctorName;
+      test.doctorId = doctorId;
+      test.motherId = id;
+      test.createdOn = DateTime.now();
 
       await databases.updateDocument(
         databaseId: AppConstants.appwriteDatabaseId,
@@ -117,6 +121,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.gAge = gestationalAge;
       test.patientId = patientId;
       mother.documentId = id;
+      test.motherId = id;
       test.doctorId = doctorId;
       test.doctorName = doctorName;
 

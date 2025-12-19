@@ -72,6 +72,10 @@ class TestViewState extends State<TestView> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late int remainingSeconds;
   Timer? _updateTimer;
+  DateTime? _lastCheckTime;
+  int _lastBpmCount = 0;
+  MyFhrData? _latestFhrData;
+
 
   final Map<String, int> timerOptions = {
     '10 min': 600,
@@ -143,6 +147,8 @@ class TestViewState extends State<TestView> {
   }
 
   saveTest() async {
+    test!.doctorName = mother!.doctorName;
+    test!.doctorId = mother!.doctorId;
     Databases databases = Databases(client.client);
     try {
       Document result = await databases.updateDocument(
@@ -178,10 +184,10 @@ class TestViewState extends State<TestView> {
   }
 
   void endTest() {
-    test!.live = false;
     countdownTimer?.cancel();
     _updateTimer?.cancel();
     setState(() {
+      test!.live = false;
       isTestRunning = false;
       hasTestStarted = false;
       test!.averageFHR = interpretations?.basalHeartRate;
@@ -208,9 +214,8 @@ class TestViewState extends State<TestView> {
   }
 
   void startTimer() async {
-    countdownTimer?.cancel();
-    _updateTimer?.cancel();
     remainingSeconds = 0;
+    countdownTimer?.cancel();
     _startTime = DateTime.now();
 
     setState(() {
@@ -220,30 +225,47 @@ class TestViewState extends State<TestView> {
 
     test = await saveInitialTest();
 
-    // 1-second countdown timer
+    _lastCheckTime = null;
+    _lastBpmCount = 0;
+
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (hasTestStarted && isTestRunning && _latestFhrData != null) {
+        test?.bpmEntries.add(_latestFhrData!.fhr1);
+        test?.bpmEntries2.add(_latestFhrData!.fhr2);
+        test?.tocoEntries.add(_latestFhrData!.toco);
+
+        if (_lastCheckTime == null) {
+          _lastCheckTime = DateTime.now();
+          _lastBpmCount = test!.bpmEntries.length;
+        } else {
+          final elapsed =
+              DateTime.now().difference(_lastCheckTime!).inSeconds;
+          if (elapsed >= 1) {
+            final samplesAdded =
+                test!.bpmEntries.length - _lastBpmCount;
+            debugPrint("Samples per second: $samplesAdded");
+            _lastCheckTime = DateTime.now();
+            _lastBpmCount = test!.bpmEntries.length;
+          }
+        }
+
+        if (timer.tick % 30 == 0) {
+          _updateTest();
+        }
+
+        final selectedDuration = timerOptions[selectedValue] ?? 0;
+        if (selectedDuration > 0 && timer.tick >= selectedDuration) {
+          endTest();
+          timer.cancel();
+          return;
+        }
+      }
+
       setState(() {
         remainingSeconds++;
       });
-
-      final selectedDuration = timerOptions[selectedValue] ?? 0;
-      if (selectedDuration > 0 && remainingSeconds >= selectedDuration) {
-        endTest();
-      }
-    });
-
-    // 30-second update timer
-    _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (isTestRunning) {
-        print('🟡 Auto-updating test...');
-        _updateTest();
-      } else {
-        print('🛑 Stopping update timer');
-        _updateTimer?.cancel();
-      }
     });
   }
-
 
   Future<Test> saveInitialTest() async {
     Databases databases = Databases(client.client);
@@ -358,16 +380,13 @@ class TestViewState extends State<TestView> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: IconButton(
-                iconSize: 35,
-                icon: _isAlertOnCooldown
+              child:
+                 _isAlertOnCooldown
                     ? const Icon(
                         Icons.warning,
                         color: Colors.red,
                       )
                     : const Icon(Icons.warning_amber_outlined),
-                onPressed: _handleZoomChange,
-              ),
             ),
           ],
         ),
@@ -388,10 +407,8 @@ class TestViewState extends State<TestView> {
             }
 
             var data = snapshot.data!;
-            if (hasTestStarted) {
-              test?.bpmEntries.add(data.fhr1);
-              test?.bpmEntries2.add(data.fhr2);
-              test?.tocoEntries.add(data.toco);
+            _latestFhrData = data;
+            if(hasTestStarted){
               alert();
             }
             return Center(
@@ -486,14 +503,14 @@ class TestViewState extends State<TestView> {
                           ),
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 25,
                         ),
                         Column(
                           children: [
                             Text(
-                              hasTestStarted && test!.bpmEntries != []
+                              hasTestStarted && test!.bpmEntries.isNotEmpty
                                   ? '${test!.bpmEntries.last}'
-                                  : '0',
+                                  : '${_latestFhrData?.fhr1 ?? 0}',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 46.sp,
@@ -522,7 +539,7 @@ class TestViewState extends State<TestView> {
                           ],
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 25,
                         ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -560,12 +577,12 @@ class TestViewState extends State<TestView> {
                           ],
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 25,
                         ),
                         Column(
                           children: [
                             Text(
-                              hasTestStarted
+                              hasTestStarted && test!.tocoEntries.isNotEmpty
                                   ? '${test!.tocoEntries.last}'
                                   : '0',
                               style: TextStyle(

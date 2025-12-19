@@ -8,19 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-/// A stateful widget that displays a searchable and filterable list of mothers.
-///
-/// The `AllMothersView` widget presents a dashboard with statistics (total registered mothers,
-/// tests performed) and a data table listing all mothers, their ages, and gestational ages.
-/// It features a search bar for filtering mothers by name or ID, and uses Bloc for state management.
-///
-/// Example usage:
-/// ```dart
-/// Navigator.push(context, MaterialPageRoute(builder: (_) => const AllMothersView()));
-/// ```
-
 class AllMothersView extends StatefulWidget {
   final bool autoFocus;
+
   const AllMothersView({super.key, this.autoFocus = false});
 
   @override
@@ -34,6 +24,7 @@ class _AllMothersViewState extends State<AllMothersView> {
   void initState() {
     super.initState();
     context.read<AllMothersCubit>().getMothersList();
+    context.read<AllMothersCubit>().getCount();
   }
 
   @override
@@ -94,16 +85,6 @@ class _AllMothersViewState extends State<AllMothersView> {
                 return Center(child: Text("Error: ${state.error}"));
               }
               if (state is AllMothersSuccess) {
-                final mothers = state.mother;
-                final totalTests = mothers.fold<int>(
-                  0,
-                      (sum, mother) => sum + (mother.noOfTests ?? 0),
-                );
-
-                if (mothers.isEmpty) {
-                  return const Center(child: Text("No mothers found."));
-                }
-
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -133,7 +114,7 @@ class _AllMothersViewState extends State<AllMothersView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     AnimatedCount(
-                                      count: mothers.length,
+                                      count: state.summary.totalMothers,
                                       style: TextStyle(
                                         fontSize: 35.sp,
                                         fontWeight: FontWeight.bold,
@@ -157,7 +138,7 @@ class _AllMothersViewState extends State<AllMothersView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     AnimatedCount(
-                                      count: totalTests,
+                                      count: state.summary.totalMothers,
                                       style: TextStyle(
                                         fontSize: 35.sp,
                                         fontWeight: FontWeight.bold,
@@ -218,32 +199,22 @@ class _AllMothersViewState extends State<AllMothersView> {
                               ),
                             ),
                           ],
-                          rows: mothers.map((mother) {
+                          rows: state.summary.rows.map((item) {
                             return DataRow(
                               cells: [
                                 DataCell(
                                   InkWell(
                                     onTap: () => context.push(
-                                        AppRoutes.motherDetails,
-                                        extra: mother),
-                                    child: Text(
-                                      mother.name ?? "Unknown",
-                                      style: TextStyle(fontSize: 18.sp),
+                                      AppRoutes.motherDetails,
+                                      extra: item.mother,
                                     ),
+                                    child: Text(item.mother.name ?? "Unknown"),
                                   ),
                                 ),
                                 DataCell(
-                                  Text(
-                                    mother.age?.toString() ?? "-",
-                                    style: TextStyle(fontSize: 18.sp),
-                                  ),
-                                ),
+                                    Text(item.mother.age?.toString() ?? "-")),
                                 DataCell(
-                                  Text(
-                                    "${Utilities.getGestationalAgeWeeks(mother.lmp ?? DateTime.now())}",
-                                    style: TextStyle(fontSize: 18.sp),
-                                  ),
-                                ),
+                                    Text(item.test?.gAge?.toString() ?? "-")), // ✅ CRITICAL FIX: Added ? after test
                               ],
                             );
                           }).toList(),

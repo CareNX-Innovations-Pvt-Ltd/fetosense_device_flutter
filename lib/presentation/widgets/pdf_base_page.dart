@@ -138,85 +138,85 @@ class PfdBasePage extends pw.StatelessWidget {
                         ],
                       ),
                       pw.SizedBox(height: PdfPageFormat.mm * 4),
-                      pw.Text("FHR2",
-                          style: pw.TextStyle(
-                              color: PdfColors.teal,
-                              fontSize: 12,
-                              fontWeight: pw.FontWeight.bold,
-                              letterSpacing: 1.0),
-                          textAlign: pw.TextAlign.left),
-                      pw.SizedBox(height: PdfPageFormat.mm * 1.5),
-                      pw.Row(
-                        children: [
-                          pw.RichText(
-                            text: pw.TextSpan(
-                              text: "BASAL HR",
-                              children: const [
-                                pw.TextSpan(
-                                  text: "\nACCELERATION",
-                                ),
-                                pw.TextSpan(
-                                  text: "\nDECELERATION",
-                                ),
-                                pw.TextSpan(
-                                  text: "\nFISHER SCORE",
-                                ),
-                                pw.TextSpan(
-                                  text: "\nSHORT TERM VARI ",
-                                ),
-                                pw.TextSpan(
-                                  text: "\nLONG TERM VARI ",
-                                ),
-                              ],
-                              style: pw.TextStyle(
-                                  fontSize: 10,
-                                  color: PdfColors.grey,
-                                  lineSpacing: PdfPageFormat.mm * 1.5,
-                                  fontWeight: pw.FontWeight.bold),
-                            ),
-                            textAlign: pw.TextAlign.left,
-                          ),
-                          pw.RichText(
-                            text: pw.TextSpan(
-                              text:
-                                  ": ${(interpretation2?.basalHeartRate ?? "--")}",
-                              children: [
-                                pw.TextSpan(
-                                  text:
-                                      "\n: ${(interpretation2?.getnAccelerationsStr() ?? "--")}",
-                                ),
-                                pw.TextSpan(
-                                  text:
-                                      "\n: ${(interpretation2?.getnDecelerationsStr() ?? "--")}",
-                                ),
-                                pw.TextSpan(
-                                  text:
-                                      "\n: ${(interpretation2?.fisherScore ?? "--")}", //todo need to check here MP
-                                ),
-                                pw.TextSpan(
-                                  text:
-                                      "\n: ${(interpretation2?.getShortTermVariationBpmStr() ?? "--")}/${(interpretation2?.getShortTermVariationMilliStr() ?? "--")}",
-                                ),
-                                pw.TextSpan(
-                                  text:
-                                      "\n: ${(interpretation2?.getLongTermVariationStr() ?? "--")}",
-                                ),
-                              ],
-                              style: pw.TextStyle(
-                                  fontSize: 10,
-                                  lineSpacing: PdfPageFormat.mm * 1.5,
-                                  fontWeight: pw.FontWeight.bold),
-                            ),
-                            textAlign: pw.TextAlign.left,
-                            /*
-                        style: pw.TextStyle(
-                            fontSize: 16,
-                            color: PdfColors.white,
-                            fontWeight: pw.FontWeight.bold),*/
-                          ),
-                        ],
-                      ),
-                      pw.SizedBox(height: PdfPageFormat.mm * 4),
+                      // pw.Text("FHR2",
+                      //     style: pw.TextStyle(
+                      //         color: PdfColors.teal,
+                      //         fontSize: 12,
+                      //         fontWeight: pw.FontWeight.bold,
+                      //         letterSpacing: 1.0),
+                      //     textAlign: pw.TextAlign.left),
+                      // pw.SizedBox(height: PdfPageFormat.mm * 1.5),
+                      // pw.Row(
+                      //   children: [
+                      //     pw.RichText(
+                      //       text: pw.TextSpan(
+                      //         text: "BASAL HR",
+                      //         children: const [
+                      //           pw.TextSpan(
+                      //             text: "\nACCELERATION",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text: "\nDECELERATION",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text: "\nFISHER SCORE",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text: "\nSHORT TERM VARI ",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text: "\nLONG TERM VARI ",
+                      //           ),
+                      //         ],
+                      //         style: pw.TextStyle(
+                      //             fontSize: 10,
+                      //             color: PdfColors.grey,
+                      //             lineSpacing: PdfPageFormat.mm * 1.5,
+                      //             fontWeight: pw.FontWeight.bold),
+                      //       ),
+                      //       textAlign: pw.TextAlign.left,
+                      //     ),
+                      //     pw.RichText(
+                      //       text: pw.TextSpan(
+                      //         text:
+                      //             ": ${(interpretation2?.basalHeartRate ?? "--")}",
+                      //         children: [
+                      //           pw.TextSpan(
+                      //             text:
+                      //                 "\n: ${(interpretation2?.getnAccelerationsStr() ?? "--")}",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text:
+                      //                 "\n: ${(interpretation2?.getnDecelerationsStr() ?? "--")}",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text:
+                      //                 "\n: ${(interpretation2?.fisherScore ?? "--")}", //todo need to check here MP
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text:
+                      //                 "\n: ${(interpretation2?.getShortTermVariationBpmStr() ?? "--")}/${(interpretation2?.getShortTermVariationMilliStr() ?? "--")}",
+                      //           ),
+                      //           pw.TextSpan(
+                      //             text:
+                      //                 "\n: ${(interpretation2?.getLongTermVariationStr() ?? "--")}",
+                      //           ),
+                      //         ],
+                      //         style: pw.TextStyle(
+                      //             fontSize: 10,
+                      //             lineSpacing: PdfPageFormat.mm * 1.5,
+                      //             fontWeight: pw.FontWeight.bold),
+                      //       ),
+                      //       textAlign: pw.TextAlign.left,
+                      //       /*
+                      //   style: pw.TextStyle(
+                      //       fontSize: 16,
+                      //       color: PdfColors.white,
+                      //       fontWeight: pw.FontWeight.bold),*/
+                      //     ),
+                      //   ],
+                      // ),
+                      // pw.SizedBox(height: PdfPageFormat.mm * 4),
                       pw.Text( data.interpretationType?.isNotEmpty ?? false ? "NOTES: ${data.interpretationType}" : "NOTES",
                           style: pw.TextStyle(
                               color: PdfColors.teal,
