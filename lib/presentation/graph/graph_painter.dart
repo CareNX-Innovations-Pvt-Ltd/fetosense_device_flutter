@@ -626,20 +626,6 @@ class GraphPainter extends CustomPainter {
 
       }
     }
-
-    //Testing dummy movements
-    /* for (int pageNumber = 0;pageNumber<pages;pageNumber++) {
-            int move[] = {2, 12, 24,60, 120, 240, 300, 420, 600,690, 1220, 1240, 1300, 1420, 1600};
-            for (int i = 0; i < move.length; i++) {
-
-               if (move[i]-(pageNumber*pointsPerPage) > 0 && move[i]-(pageNumber*pointsPerPage) < pointsPerPage)
-                    canvas.drawBitmap(movementBitmap,
-                            xOrigin+(pixelsPerOneMM/timeScaleFactor*(move[i]-(pageNumber*pointsPerPage))-(movementBitmap.getWidth()/2)),
-                            yOrigin+pixelsPerOneMM, null);
-
-
-            }
-        }*/
   }
 
   /// Draws data points and connecting lines for TOCO measurements
@@ -668,13 +654,6 @@ class GraphPainter extends CustomPainter {
       stopY = getYValueFromToco(test!.tocoEntries![i]); // getScreenY(stopData);
 
       if (i < 1) continue;
-      /*if (Math.abs(startData - stopData) > 150) {
-                continue;
-            }*/
-
-      // a. If the value is 0, it is not drawn
-      // b. If the results of the two values before and after are different by more than 30, they are not connected.
-
       canvas.drawLine(
           Offset(startX, startY), Offset(stopX, stopY), graphBpmLine!);
     }
@@ -702,51 +681,6 @@ class GraphPainter extends CustomPainter {
       canvas.drawRect(zoneRect, zoneStyle!);
     }
   }
-
-/*  void drawDecelerationAreas(Canvas canvas,List<MarkerIndices> list) {
-    if (list == null || list.length<=0) {
-      return;
-    }
-
-    double startX, stopX = 0;
-
-    for (int i = 0; i < list.length; i++) {
-
-      startX = getScreenX(list[i].getFrom());
-      stopX = getScreenX(list[i].getTo());
-
-
-      //Marker
-      Rect zoneRect = new Rect.fromLTRB(startX,
-          paddingTop,
-          stopX,
-          yTocoOrigin );//50
-      canvas.drawRect(zoneRect, graphSafeZone);
-    }
-  }
-
-  void drawNoiseAreas(Canvas canvas,List<MarkerIndices> list) {
-    if (list == null || list.length<=0) {
-      return;
-    }
-
-    double startX, stopX = 0;
-
-    for (int i = 0; i < list.length; i++) {
-
-      startX = getScreenX(list[i].getFrom());
-      stopX = getScreenX(list[i].getTo());
-
-
-      //Marker
-      Rect zoneRect = new Rect.fromLTRB(startX,
-          paddingTop,
-          stopX,
-          yTocoOrigin );//50
-      canvas.drawRect(zoneRect, graphSafeZone);
-    }
-  }*/
-
 
   /// Calculates screen x-coordinate from data index
   double getScreenX(int i) {

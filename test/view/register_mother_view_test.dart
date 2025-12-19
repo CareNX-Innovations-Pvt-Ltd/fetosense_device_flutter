@@ -203,7 +203,6 @@ void main() {
                   any(),
                   any(),
                   any(),
-                  any(),
                   any()));
         });
 
@@ -275,7 +274,6 @@ void main() {
                   any(),
                   any(),
                   any(),
-                  any(),
                   any())).thenAnswer((_) async {});
 
           await tester.pumpWidget(createTestableWidget(RegisterMotherView(
@@ -305,8 +303,6 @@ void main() {
                 '',
                 any(that: isA<DateTime>()),
                 mockTest,
-                '',
-                // Phone number controller is commented out in the view
                 'Dr. First',
                 'doc_1',
               )).called(1);

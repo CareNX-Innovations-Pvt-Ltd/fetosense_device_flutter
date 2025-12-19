@@ -73,6 +73,10 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       test.age = int.parse(age);
       test.gAge = gestationalAge;
       test.patientId = patientId;
+      test.doctorName = doctorName;
+      test.doctorId = doctorId;
+      test.motherId = id;
+      test.createdOn = DateTime.now();
 
       await databases.updateDocument(
         databaseId: AppConstants.appwriteDatabaseId,
@@ -97,7 +101,7 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       String patientId,
       DateTime? pickedDate,
       Test? test,
-      String mobile,
+      // String mobile,
       String? doctorName,
       String? doctorId) async {
     Databases databases = Databases(client);
@@ -111,11 +115,13 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
       mother.deviceName = test!.deviceName;
       mother.deviceId = test.deviceId;
       mother.type = 'mother';
+      mother.createdOn = DateTime.now();
       test.motherName = name;
       test.age = int.parse(age);
       test.gAge = gestationalAge;
       test.patientId = patientId;
       mother.documentId = id;
+      test.motherId = id;
       test.doctorId = doctorId;
       test.doctorName = doctorName;
 
@@ -172,6 +178,6 @@ class RegisterMotherCubit extends Cubit<RegisterMotherState> {
     selectedDoctorId = id;
     selectedDoctorName =
         _doctors.firstWhere((doc) => doc['id'] == id, orElse: () => {})['name'];
-    emit(DoctorSelected()); // custom state if needed
+    emit(DoctorSelected());
   }
 }

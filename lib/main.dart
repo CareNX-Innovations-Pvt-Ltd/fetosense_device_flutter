@@ -11,6 +11,7 @@ import 'package:fetosense_device_flutter/presentation/register_mother/register_m
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:preferences/preference_service.dart';
 
 /// The root widget of the Fetosense Device Flutter application.
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(

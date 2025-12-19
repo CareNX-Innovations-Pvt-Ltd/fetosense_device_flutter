@@ -17,8 +17,7 @@ class AppwriteService {
   AppwriteService()
       : client = Client()
     ..setEndpoint(AppConstants.appwriteEndpoint)
-    ..setProject(AppConstants.appwriteProjectId)
-    ..setSelfSigned(status: true);
+    ..setProject(AppConstants.appwriteProjectId);
 
   Client get instance => client;
 }

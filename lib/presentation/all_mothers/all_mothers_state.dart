@@ -13,7 +13,7 @@ sealed class AllMothersState extends Equatable {
   const AllMothersState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class AllMothersInitial extends AllMothersState {}
@@ -21,12 +21,12 @@ final class AllMothersInitial extends AllMothersState {}
 final class AllMothersLoading extends AllMothersState {}
 
 final class AllMothersSuccess extends AllMothersState {
-  final List<Mother> mother;
+  final AllMothersSummary summary;
 
-  const AllMothersSuccess(this.mother);
+  const AllMothersSuccess(this.summary);
 
   @override
-  List<Object> get props => [mother];
+  List<Object?> get props => [summary];
 }
 
 final class AllMothersFailure extends AllMothersState {
@@ -35,5 +35,5 @@ final class AllMothersFailure extends AllMothersState {
   const AllMothersFailure(this.error);
 
   @override
-  List<Object> get props => [error];
+  List<Object?> get props => [error];
 }

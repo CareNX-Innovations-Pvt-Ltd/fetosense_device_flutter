@@ -4,7 +4,7 @@ import 'package:fetosense_device_flutter/data/models/mother_model.dart';
 import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/doppler_connection_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_serial_plus/flutter_bluetooth_serial_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';

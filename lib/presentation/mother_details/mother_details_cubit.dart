@@ -53,4 +53,18 @@ class MotherDetailsCubit extends Cubit<MotherDetailsState> {
       }
     }
   }
+  Future<void> loadMother(String motherId) async {
+    emit(MotherDetailsLoading());
+
+    final databases = GetIt.I<Databases>();
+
+    final res = await databases.getDocument(
+      databaseId: AppConstants.appwriteDatabaseId,
+      collectionId: AppConstants.userCollectionId,
+      documentId: motherId,
+    );
+
+    // emit(MotherDetailsSuccess(Mother.fromJson(res.data)));
+  }
+
 }
