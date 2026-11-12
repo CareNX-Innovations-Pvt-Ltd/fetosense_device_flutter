@@ -1,0 +1,105 @@
+{
+    "organizationId": "67d1577b001299b243cd",
+    "projectId": "67d157b9003b4e1a231c",
+    "projectName": "fetosense_mis",
+    "endpoint": "https://fra.cloud.appwrite.io/v1",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "protocols": {
+            "rest": true,
+            "graphql": true,
+            "websocket": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 31536000,
+                "limit": null,
+                "sessionsLimit": 10,
+                "passwordHistory": null,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "tablesDB": [
+        {
+            "$id": "67d500bc0013d0c4a9d9",
+            "name": "fetosense-mis",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "67d500dd00307186f877",
+            "$permissions": [],
+            "databaseId": "67d500bc0013d0c4a9d9",
+            "name": "users",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 30,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "emailId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "default": null,
+                    "format": "email"
+                }
+            ],
+            "indexes": []
+        },
+        {
+            "$id": "67d7b2720010111a41cb",
+            "$permissions": [],
+            "databaseId": "67d500bc0013d0c4a9d9",
+            "name": "organization",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "name",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 30,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": []
+        }
+    ]
+}
