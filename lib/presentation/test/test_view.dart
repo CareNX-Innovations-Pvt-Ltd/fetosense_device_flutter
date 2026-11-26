@@ -72,6 +72,10 @@ class TestViewState extends State<TestView> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late int remainingSeconds;
   Timer? _updateTimer;
+  DateTime? _lastCheckTime;
+  int _lastBpmCount = 0;
+  MyFhrData? _latestFhrData;
+
 
   final Map<String, int> timerOptions = {
     '10 min': 600,
@@ -143,6 +147,8 @@ class TestViewState extends State<TestView> {
   }
 
   saveTest() async {
+    test!.doctorName = mother!.doctorName;
+    test!.doctorId = mother!.doctorId;
     Databases databases = Databases(client.client);
     try {
       Document result = await databases.updateDocument(
@@ -178,10 +184,10 @@ class TestViewState extends State<TestView> {
   }
 
   void endTest() {
-    test!.live = false;
     countdownTimer?.cancel();
     _updateTimer?.cancel();
     setState(() {
+      test!.live = false;
       isTestRunning = false;
       hasTestStarted = false;
       test!.averageFHR = interpretations?.basalHeartRate;
@@ -208,9 +214,8 @@ class TestViewState extends State<TestView> {
   }
 
   void startTimer() async {
-    countdownTimer?.cancel();
-    _updateTimer?.cancel();
     remainingSeconds = 0;
+    countdownTimer?.cancel();
     _startTime = DateTime.now();
 
     setState(() {
@@ -220,30 +225,47 @@ class TestViewState extends State<TestView> {
 
     test = await saveInitialTest();
 
-    // 1-second countdown timer
+    _lastCheckTime = null;
+    _lastBpmCount = 0;
+
     countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (hasTestStarted && isTestRunning && _latestFhrData != null) {
+        test?.bpmEntries.add(_latestFhrData!.fhr1);
+        test?.bpmEntries2.add(_latestFhrData!.fhr2);
+        test?.tocoEntries.add(_latestFhrData!.toco);
+
+        if (_lastCheckTime == null) {
+          _lastCheckTime = DateTime.now();
+          _lastBpmCount = test!.bpmEntries.length;
+        } else {
+          final elapsed =
+              DateTime.now().difference(_lastCheckTime!).inSeconds;
+          if (elapsed >= 1) {
+            final samplesAdded =
+                test!.bpmEntries.length - _lastBpmCount;
+            debugPrint("Samples per second: $samplesAdded");
+            _lastCheckTime = DateTime.now();
+            _lastBpmCount = test!.bpmEntries.length;
+          }
+        }
+
+        if (timer.tick % 30 == 0) {
+          _updateTest();
+        }
+
+        final selectedDuration = timerOptions[selectedValue] ?? 0;
+        if (selectedDuration > 0 && timer.tick >= selectedDuration) {
+          endTest();
+          timer.cancel();
+          return;
+        }
+      }
+
       setState(() {
         remainingSeconds++;
       });
-
-      final selectedDuration = timerOptions[selectedValue] ?? 0;
-      if (selectedDuration > 0 && remainingSeconds >= selectedDuration) {
-        endTest();
-      }
-    });
-
-    // 30-second update timer
-    _updateTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (isTestRunning) {
-        print('🟡 Auto-updating test...');
-        _updateTest();
-      } else {
-        print('🛑 Stopping update timer');
-        _updateTimer?.cancel();
-      }
     });
   }
-
 
   Future<Test> saveInitialTest() async {
     Databases databases = Databases(client.client);
@@ -358,16 +380,13 @@ class TestViewState extends State<TestView> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: IconButton(
-                iconSize: 35,
-                icon: _isAlertOnCooldown
+              child:
+                 _isAlertOnCooldown
                     ? const Icon(
                         Icons.warning,
                         color: Colors.red,
                       )
                     : const Icon(Icons.warning_amber_outlined),
-                onPressed: _handleZoomChange,
-              ),
             ),
           ],
         ),
@@ -388,20 +407,15 @@ class TestViewState extends State<TestView> {
             }
 
             var data = snapshot.data!;
-            if (hasTestStarted) {
-              test?.bpmEntries.add(data.fhr1);
-              test?.bpmEntries2.add(data.fhr2);
-              test?.tocoEntries.add(data.toco);
+            _latestFhrData = data;
+            if(hasTestStarted){
               alert();
             }
             return Center(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    width: 700,
-                    height: 500,
+                  Expanded(
                     child: GestureDetector(
                       onHorizontalDragStart: (DragStartDetails start) =>
                           _onDragStart(context, start),
@@ -422,16 +436,13 @@ class TestViewState extends State<TestView> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  SizedBox(
-                    width: 250.sp,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    width: 250.w,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Container(
-                          margin: const EdgeInsets.symmetric(vertical: 5),
                           decoration: const BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
@@ -447,24 +458,23 @@ class TestViewState extends State<TestView> {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                const Text(
+                                 Text(
                                   "Test duration:",
                                   style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 16,
+                                    fontSize: 26.sp,
                                   ),
                                 ),
                                 DropdownButton<String>(
                                   alignment: Alignment.center,
-
                                   value: selectedValue,
                                   items: timerOptions.keys.map((String item) {
                                     return DropdownMenuItem<String>(
                                       value: item,
                                       child: Text(
                                         item,
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 16),
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 26.sp),
                                       ),
                                     );
                                   }).toList(),
@@ -493,17 +503,17 @@ class TestViewState extends State<TestView> {
                           ),
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 25,
                         ),
                         Column(
                           children: [
                             Text(
-                              hasTestStarted && test!.bpmEntries != []
+                              hasTestStarted && test!.bpmEntries.isNotEmpty
                                   ? '${test!.bpmEntries.last}'
-                                  : '0',
-                              style: const TextStyle(
+                                  : '${_latestFhrData?.fhr1 ?? 0}',
+                              style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 26,
+                                fontSize: 46.sp,
                               ),
                             ),
                             Row(
@@ -529,7 +539,7 @@ class TestViewState extends State<TestView> {
                           ],
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 25,
                         ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -539,9 +549,9 @@ class TestViewState extends State<TestView> {
                                       test!.movementEntries.isNotEmpty
                                   ? '${test!.movementEntries.last}'
                                   : '0',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 26,
+                                fontSize: 46.sp,
                               ),
                             ),
                             Row(
@@ -567,17 +577,17 @@ class TestViewState extends State<TestView> {
                           ],
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 25,
                         ),
                         Column(
                           children: [
                             Text(
-                              hasTestStarted
+                              hasTestStarted && test!.tocoEntries.isNotEmpty
                                   ? '${test!.tocoEntries.last}'
                                   : '0',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 26,
+                                fontSize: 46.sp,
                               ),
                             ),
                             Row(
@@ -612,99 +622,6 @@ class TestViewState extends State<TestView> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Row(
-                              //   // crossAxisAlignment: CrossAxisAlignment.center,
-                              //   mainAxisAlignment: MainAxisAlignment.center,
-                              //   children: <Widget>[
-                              //     Column(
-                              //       children: [
-                              //         Row(
-                              //           children: [
-                              //             IconButton(
-                              //               iconSize: 35,
-                              //               icon: const Icon(Icons.zoom_in),
-                              //               onPressed: () =>
-                              //                   _handleZoomChange(increase: true),
-                              //             ),
-                              //             IconButton(
-                              //               iconSize: 35,
-                              //               icon: const Icon(Icons.zoom_out),
-                              //               onPressed: () =>
-                              //                   _handleZoomChange(increase: false),
-                              //             ),
-                              //           ],
-                              //         ),
-                              //         // IconButton(
-                              //         //   iconSize: 35,
-                              //         //   icon: Icon(this.gridPreMin == 1
-                              //         //       ? Icons.zoom_in
-                              //         //       : Icons.zoom_out),
-                              //         //   onPressed: _handleZoomChange,
-                              //         // ),
-                              //         hasTestStarted
-                              //             ? Container(
-                              //                 height: 32,
-                              //               )
-                              //             : Row(
-                              //                 children: [
-                              //                   const SizedBox(
-                              //                     height: 20,
-                              //                   ),
-                              //                   const Text(
-                              //                     "Select test duration: ",
-                              //                     style: TextStyle(
-                              //                         color: Colors.black,
-                              //                         fontSize: 18,
-                              //                         fontWeight: FontWeight.bold),
-                              //                   ),
-                              //                   DropdownButton<String>(
-                              //                     value: selectedValue,
-                              //                     // hint: const Text("Select"),
-                              //                     items: timerOptions.keys
-                              //                         .map((String item) {
-                              //                       return DropdownMenuItem<String>(
-                              //                         value: item,
-                              //                         child: Text(
-                              //                           item,
-                              //                           style: const TextStyle(
-                              //                               color: Colors.black,
-                              //                               fontSize: 16),
-                              //                         ),
-                              //                       );
-                              //                     }).toList(),
-                              //                     onChanged: (String? newValue) {
-                              //                       if (!isTestRunning &&
-                              //                           newValue != null) {
-                              //                         setState(() {
-                              //                           selectedValue = newValue;
-                              //                           remainingSeconds =
-                              //                               timerOptions[newValue]!;
-                              //                         });
-                              //                       }
-                              //                     },
-                              //                     icon: const Icon(
-                              //                         Icons.arrow_drop_down,
-                              //                         size: 20),
-                              //                     // Smaller icon
-                              //                     dropdownColor: Colors.white,
-                              //                     // Dropdown background color
-                              //                     style: const TextStyle(
-                              //                         color: Colors.black,
-                              //                         fontSize: 18,
-                              //                         fontWeight: FontWeight.bold),
-                              //                     // Text color
-                              //                     borderRadius:
-                              //                         BorderRadius.circular(8),
-                              //                     // Rounded corners
-                              //                     underline:
-                              //                         Container(), // Remove default underline
-                              //                   ),
-                              //                 ],
-                              //               ),
-                              //       ],
-                              //     ),
-                              //   ],
-                              // ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -713,7 +630,7 @@ class TestViewState extends State<TestView> {
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      maximumSize: const Size(250, 50),
+                                      maximumSize: Size(200.w, 80.h),
                                       backgroundColor: isTestRunning
                                           ? Colors.red
                                           : ColorManager.primaryButtonColor,

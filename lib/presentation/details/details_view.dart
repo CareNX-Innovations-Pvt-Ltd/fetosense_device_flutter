@@ -5,7 +5,6 @@ import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/details/details_cubit.dart';
 import 'package:fetosense_device_flutter/presentation/details/details_state.dart';
 import 'package:fetosense_device_flutter/presentation/graph/graph_painter.dart';
-import 'package:fetosense_device_flutter/presentation/widgets/custom_radio_btn.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +28,7 @@ import 'package:intl/intl.dart';
 
 class DetailsView extends StatefulWidget {
   final Test test;
- final String? fromRoute;
+  final String? fromRoute;
 
   const DetailsView({super.key, required this.test, this.fromRoute});
 
@@ -64,12 +63,18 @@ class DetailsViewState extends State<DetailsView>
       child: BlocBuilder<DetailsCubit, DetailsState>(
         builder: (context, state) {
           return PopScope(
-            onPopInvokedWithResult: (pop, result) {
-              if(widget.fromRoute?.isNotEmpty == true && widget.fromRoute == "motherDetails") {
-                context.pop();
-              } else {
-                context.go(AppRoutes.home);
-              }
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                print('from --> ${widget.fromRoute}');
+                if (widget.fromRoute == "motherDetails") {
+                  context.pop();
+                } else {
+                  context.go(AppRoutes.home);
+                }
+              });
             },
             child: Scaffold(
               body: SafeArea(
@@ -108,41 +113,40 @@ class DetailsViewState extends State<DetailsView>
         leading: IconButton(
           iconSize: 35,
           icon: const Icon(Icons.arrow_back, size: 30, color: Colors.teal),
-          onPressed: () => context.go(AppRoutes.home),
+          onPressed: () => widget.fromRoute == "motherDetails" ? context.pop() :context.go(AppRoutes.home),
         ),
-        subtitle: Stack(
-          alignment: Alignment.center,
-          children: [
-            Row(
+        subtitle: Stack(alignment: Alignment.center, children: [
+          Row(
             children: [
               Text(
                 DateFormat('dd MMM yy - hh:mm a').format(state.test.createdOn),
                 style: const TextStyle(
-                    fontWeight: FontWeight.w500, fontSize: 18, color: Colors.black87),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    color: Colors.black87),
               ),
-
             ],
           ),
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
-                decoration: BoxDecoration(
-                  color: state.radioValue == 'normal'
-                      ? Colors.green.withOpacity(0.4)
-                      : Colors.red.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(8.w),
-                ),
-
-                child: Text(
-                  "${state.radioValue}",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
-                ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 3.h),
+              decoration: BoxDecoration(
+                color: state.radioValue == 'normal'
+                    ? Colors.green.withOpacity(0.4)
+                    : Colors.red.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(8.w),
+              ),
+              child: Text(
+                "${state.radioValue}",
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black),
               ),
             ),
-          ]
-        ),
+          ),
+        ]),
         title: Text(
           "${state.test.motherName}",
           style: const TextStyle(
@@ -177,31 +181,6 @@ class DetailsViewState extends State<DetailsView>
         ),
       ),
     );
-  }
-
-  Widget _buildRadioButtons(BuildContext context, DetailsState state) {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: CustomRadioBtn(
-          buttonColor: Theme.of(context).canvasColor,
-          buttonLables: const [
-            "Normal",
-            "Abnormal",
-            "Atypical",
-          ],
-          buttonValues: const [
-            "Normal",
-            "Abnormal",
-            "Atypical",
-          ],
-          enableAll: state.test.interpretationType == null ||
-              state.test.interpretationType!.trim().isEmpty,
-          defaultValue: state.radioValue,
-          radioButtonValue: (value) => context
-              .read<DetailsCubit>()
-              .handleRadioClick(value, context, widget.test),
-          selectedColor: Colors.blue,
-        ));
   }
 
   Widget _buildGraphArea(BuildContext context, DetailsState state) {
@@ -580,7 +559,7 @@ class DetailsViewState extends State<DetailsView>
             iconSize: 35,
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Implementation for settings can be added here
+              context.push(AppRoutes.appSettingsView);
             },
           ),
         ],

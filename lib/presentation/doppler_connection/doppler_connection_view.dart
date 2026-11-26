@@ -10,10 +10,12 @@ import 'package:fetosense_device_flutter/data/models/test_model.dart';
 import 'package:fetosense_device_flutter/presentation/doppler_connection/bluetoothlocal_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_serial_plus/flutter_bluetooth_serial_plus.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// A stateful widget that manages and displays the Doppler device connection flow.
 ///
@@ -53,24 +55,28 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
   bool showLoader = true;
   String? route;
   void _initializeBluetooth() async {
-    route = widget.previousRoute;
-    bool bluetoothEnabled = await _bluetoothService.enableBluetooth();
-    if (!bluetoothEnabled && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bluetooth could not be enabled'),
-        ),
-      );
-      return;
-    }
+    await Permission.bluetoothScan.request();
+    await Permission.bluetoothConnect.request();
+    await Permission.location.request();
 
-    List<BluetoothDevice> devices = await _bluetoothService.getPairedDevices();
+    bool bluetoothEnabled = await _bluetoothService.enableBluetooth();
+    if (!bluetoothEnabled) return;
+
+    List<BluetoothDevice> devices =
+    await _bluetoothService.getPairedDevices();
+
+    debugPrint("devices ---> $devices");
+
     setState(() {
       _pairedDevices = devices;
+      showLoader = false;
     });
-    debugPrint("devices--->> ${_pairedDevices[0].name}");
-    _connectToDevice(_pairedDevices[0]);
+
+    if (_pairedDevices.isNotEmpty) {
+      _connectToDevice(_pairedDevices.first);
+    }
   }
+
 
   DateTime formatDateTime(DateTime dateTime) {
     final formattedString = DateFormat("MMMM d, yyyy 'at' hh:mm:ss a 'UTC'XXX")
@@ -118,11 +124,12 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
             extra: {'test': test, 'route': route, 'mother': mother});
       }
     } else {
-      setState(() {
+      debugPrint("Failed to connect to  ${device.name}");
+      if (mounted) {
+        setState(() {
         showLoader = false;
       });
-      debugPrint("Failed to connect to  ${device.name}");
-     if (mounted) {
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to connect to ${device.name}'),
@@ -137,6 +144,7 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
     super.initState();
     test = widget.test;
     mother = widget.mother;
+    route = widget.previousRoute;
     _initializeBluetooth();
     Timer(const Duration(seconds: 30), () {
       if (mounted) {
@@ -157,10 +165,12 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
       builder: (context, state) {
         return SafeArea(
           child: Scaffold(
+            backgroundColor: Colors.white,
             body: Center(
               child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -182,86 +192,84 @@ class _DopplerConnectionViewState extends State<DopplerConnectionView> {
                       ],
                     ),
                     const SizedBox(height: 40),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 30),
-                        width: 800,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: ColorManager.white,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(38.0),
-                                  child: SizedBox(
-                                    height: 600,
-                                    child: Image.asset('assets/ic_probe.png'),
-                                  ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      width: 800.w,
+                      // height: 400.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: ColorManager.white,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 300,
+                                child: Image.asset(
+                                  'assets/ic_probe.png',
+                                  fit: BoxFit.fill,
                                 ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    const Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              '1. Turn on the doppler.',
-                                              style: TextStyle(
-                                                fontSize: 22,
-                                              ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            '1. Turn on the doppler.',
+                                            style: TextStyle(
+                                              fontSize: 22,
                                             ),
-                                            SizedBox(height: 10),
-                                            Text(
-                                              '2. Make sure the battery is charged.',
-                                              style: TextStyle(
-                                                fontSize: 22,
-                                              ),
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            '2. Make sure the battery is charged.',
+                                            style: TextStyle(
+                                              fontSize: 22,
                                             ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        showLoader
-                                            ? const CircularProgressIndicator()
-                                            : ElevatedButton(
-                                                onPressed: () {
-                                                  _initializeBluetooth();
-                                                },
-                                                style: const ButtonStyle(
-                                                  backgroundColor:
-                                                      WidgetStatePropertyAll<
-                                                          Color>(
-                                                    ColorManager
-                                                        .primaryButtonColor,
-                                                  ),
-                                                ),
-                                                child: const Text(
-                                                  'RETRY',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      showLoader
+                                          ? const CircularProgressIndicator()
+                                          : ElevatedButton(
+                                              onPressed: () {
+                                                _initializeBluetooth();
+                                              },
+                                              style: const ButtonStyle(
+                                                backgroundColor:
+                                                    WidgetStatePropertyAll<
+                                                        Color>(
+                                                  ColorManager
+                                                      .primaryButtonColor,
                                                 ),
                                               ),
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                                              child: const Text(
+                                                'RETRY',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                    ],
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],

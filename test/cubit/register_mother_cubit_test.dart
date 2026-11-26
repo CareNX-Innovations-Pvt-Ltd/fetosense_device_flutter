@@ -208,7 +208,6 @@ void main() {
           testPatientId,
           testPickedDate,
           testTestModel,
-          testMobile,
           testDoctorName,
           testDoctorId,
         );
@@ -243,7 +242,6 @@ void main() {
           testPatientId,
           testPickedDate,
           testTestModel,
-          testMobile,
           testDoctorName,
           testDoctorId,
         );
